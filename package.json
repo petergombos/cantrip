@@ -1,0 +1,31 @@
+{
+  "name": "Cantrip",
+  "version": "0.0.1",
+  "description": "\"Use a REST Api to manage a JSON file\"",
+  "main": "server.js",
+  "dependencies": {
+    "MD5": "~1.2.1",
+    "express": "~3.5.1",
+    "underscore": "~1.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petergombos/cantrip.git"
+  },
+  "keywords": [
+    "rest",
+    "api",
+    "json"
+  ],
+  "author": "Kriek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/petergombos/cantrip/issues"
+  },
+  "homepage": "https://github.com/petergombos/cantrip"
+}
