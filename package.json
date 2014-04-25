@@ -9,7 +9,11 @@
     "underscore": "~1.6.0",
     "cors": "^2.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "load-grunt-tasks": "~0.4.0",
+    "grunt": "~0.4.4",
+    "grunt-nodemon": "~0.2.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
