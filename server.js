@@ -25,8 +25,15 @@ data = JSON.parse(data);
 
 var app = express();
 app.configure(function(){
+	app.use (express.json());
+	app.use(function(err, req, res, next) {
+		res.status(400);
+  		res.send({"error": "Invalid JSON supplied in request body."});
+  		next(err);
+	});
+	app.use (express.urlencoded ());
+	app.use (express.multipart ());
 	app.use(cors());
-	app.use(express.bodyParser());
 });
 
 
