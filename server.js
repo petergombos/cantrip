@@ -2,6 +2,7 @@ var express = require('express');
 var _ = require("underscore");
 var fs = require('fs');
 var md5 = require('MD5');
+var cors = require('cors');
 
 var dataFile = "data.json";
 
@@ -19,13 +20,14 @@ if (!fs.existsSync(dataFile)) {
 
 var app = express();
 app.configure(function(){
-  app.use(express.bodyParser());
+	app.use(cors());
+	app.use(express.bodyParser());
 });
 
 //Check if the file exists
 
 //Listen on port 3000
-app.listen(3000);
+app.listen(9000);
 
 //Set up a get hook on all paths
 app.get('*', function(request, response) {
