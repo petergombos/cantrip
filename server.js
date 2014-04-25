@@ -38,7 +38,7 @@ app.configure(function(){
 
 
 //Listen on port 3000
-app.listen(9000);
+app.listen(process.env.PORT || 3000);
 
 //Set up a get hook on all paths
 app.get('*', function(request, response) {
