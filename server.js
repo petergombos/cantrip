@@ -6,17 +6,23 @@ var cors = require('cors');
 
 var dataFile = "data.json";
 
+
+// TODO Folder support
 process.argv.forEach(function(val, index, array) {
 	if (index === 2 && val !== undefined) {
 		dataFile = val;
-		
 	}
 });
 
+// If the file dosen't exists creates an empty JSON
 if (!fs.existsSync(dataFile)) {
 	fs.writeFile(dataFile, "{}", function() {
 	});
 }
+
+// File contents to memory
+var data = fs.readFileSync(dataFile, {encoding: 'utf-8'});
+data = JSON.parse(data);
 
 var app = express();
 app.configure(function(){
@@ -24,7 +30,6 @@ app.configure(function(){
 	app.use(express.bodyParser());
 });
 
-//Check if the file exists
 
 //Listen on port 3000
 app.listen(9000);
@@ -54,14 +59,7 @@ var Cantrip = {
 		});
 	},
 	getData : function(callback) {
-		fs.readFile(dataFile, {encoding: 'utf-8'}, function(err,data){
-			 if (!err){
-			 	data = JSON.parse(data);
-			 	callback(data);
-			 } else {
-			 	console.log(err);
-			 }
-		});
+		callback(data);
 	},
 	getTargetNode : function(data) {
 		var path = this.path;
@@ -117,6 +115,13 @@ var Cantrip = {
 
     	return route;
 	},
+	saveData : function(){
+		fs.writeFile(dataFile, JSON.stringify(data), function(err) {
+			if (err) {
+				console.log(err);
+			}
+		});
+	},
 	get: function(request, response) {
 		this.request = request;
 		this.response = response;
@@ -145,13 +150,8 @@ var Cantrip = {
 					_id : md5(JSON.stringify(request.body) + (new Date()).getTime() + Math.random() )
 				}, request.body);
 				target.push(newEntry);
-				fs.writeFile(dataFile, JSON.stringify(data), function(err) {
-					if (err) {
-						console.log(err);
-					} else {
-						response.send(newEntry);
-					}
-				});
+				response.send(target);
+				self.saveData();
 			} else {
 				response.send("Whoops, cant post to an object. Use PUT instead");
 			}
@@ -166,13 +166,8 @@ var Cantrip = {
 			var target = self.getTargetNode(data);
 			if (_.isObject(target)) {
 				target = _.extend(target, request.body);
-				fs.writeFile(dataFile, JSON.stringify(data), function(err) {
-					if (err) {
-						console.log(err);
-					} else {
-						response.send(target);
-					}
-				});
+				response.send(target);
+				self.saveData();
 			} else {
 				response.send("Whoops, cant put a collection.");
 			}
@@ -200,13 +195,8 @@ var Cantrip = {
 	    			parent.splice(_.indexOf(parent, obj), 1);
 				}
 			}
-			fs.writeFile(dataFile, JSON.stringify(data), function(err) {
-				if (err) {
-					console.log(err);
-				} else {
-					response.send(parent);
-				}
-			});
+			response.send(parent);
+			self.saveData();
 		});
 	}
 }
