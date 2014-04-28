@@ -65,6 +65,15 @@ var Cantrip = {
 	 */
 	start: function() {
 
+		//Override options from command line arguments
+		var self = this;
+		process.argv.forEach(function(val, index, array) {
+			if (val.indexOf("=") > -1) {
+				var option = val.split("=");
+				self.options[option[0]] = option[1];
+			}
+		});
+
 		//Set up memory by reading the contents of the file
 		if (!fs.existsSync(this.options.file)) {
 			fs.writeFileSync(this.options.file, "{}");

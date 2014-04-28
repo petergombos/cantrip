@@ -2,7 +2,7 @@ var Cantrip = require("./index.js");
 
 /**
  * All options for Cantrip and their default values are listed here.
- * You can overwrite all settings in the command line by passing parameters with a --port=2000 like syntax
+ * You can overwrite all settings in the command line by passing parameters with a port=2000 like syntax
  */
 
 /**
