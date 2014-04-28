@@ -76,7 +76,7 @@ var Cantrip = {
 
 		//Set up memory by reading the contents of the file
 		if (!fs.existsSync(this.options.file)) {
-			fs.writeFileSync(this.options.file, "{_contents: {}, _metadata:{root: {}}}");
+			fs.writeFileSync(this.options.file, "{\"_contents\": {}, \"_schema\":{\"root\": {}}}");
 		}
 
 		this.data = fs.readFileSync(this.options.file, {
@@ -283,9 +283,9 @@ var Cantrip = {
 			}
 		}
 	},
-	getMetadata: function() {
-		if (this.data._metadata !== undefined) {
-			return this.data._metadata;
+	getSchema: function() {
+		if (this.data._schema !== undefined) {
+			return this.data._schema;
 		} else {
 			return false;
 		}
@@ -314,7 +314,7 @@ var Cantrip = {
 	 * @return {Object}          Returns a validation object. If it doesn't exists, returns false.
 	 */
 	getValidation: function(typeName, req) {
-		var metadata = this.getMetadata();
+		var metadata = this.getSchema();
 		if (metadata) {
 			//When we check the root, we go through the metadata following the path.
 			//When we use this function later to dig into another type in the schema, we just return that object
@@ -328,9 +328,9 @@ var Cantrip = {
 					validation = validation[req.path[i]];
 					//if it's an object, get out of the current type and search for that type on the metadata root
 					if (validation.type === "object") {
-						validation = metadata[validation.name];
+						validation = metadata[validation.schema];
 					} else if (validation.type === "collection") {
-						validation = metadata[validation.model];
+						validation = metadata[validation.schema];
 					}
 				} else {
 					//We are in a model inside a collection
@@ -360,19 +360,19 @@ var Cantrip = {
 				return false;
 			}
 		}
-
+		//Loop through the keys in the posted object
 		for (var key in object) {
 			var v = validation[key];
 			//return false if we try to validate a key that doesn't exist in the schema
 			if (v === undefined) {
 				req.response.status(400).send({
-					"error": "Type error. Invalid key in object (" + key + ")."
+					"error": "Type error. Invalid key "+key+" in object."
 				});
 				return false;
 			}
 			//Check type
 			if (!this.checkType(object[key], v, req)) {
-				var correctType = v.type === "object" ? v.name : v.type;
+				var correctType = v.type === "object" || v.type === "collection" ? v.schema : v.type;
 				req.response.status(400).send({
 					"error": "Type error. Key " + key + " must be of type " + correctType
 				});
@@ -394,19 +394,18 @@ var Cantrip = {
 			if (_.isNumber(value)) return true;
 			else return false;
 		} else if (type === "object") {
-			console.log(validation.name, value, this.getValidation(validation.name, req));
-			//If we specified a name, then the object must be of a given shema. If we didn't, its free for all!
-			if (validation.name === undefined) return true;
-			if (this.validateObject(value, this.getValidation(validation.name, req), req)) return true;
+			//If we specified a schema, then the object must be of a given shema. If we didn't, its free for all!
+			if (validation.schema === undefined) return true;
+			if (this.validateObject(value, this.getValidation(validation.schema, req), req)) return true;
 			else return false;
 		} else if (type === "collection") {
-			if (validation.model === undefined) return true;
+			if (validation.schema === undefined) return true;
 			else {
-				if (_.indexOf(["string", "number", "boolean"], validation.model) > -1) {
+				if (_.indexOf(["string", "number", "boolean"], validation.schema) > -1) {
 					var valid = true;
 					for (var i = 0; i < value.length; i++) {
 						if (!this.checkType(value[i], {
-							type: validation.model
+							type: validation.schema
 						}, req)) valid = false;
 					}
 					return valid;
@@ -414,7 +413,7 @@ var Cantrip = {
 					var valid = true;
 					for (var i = 0; i < value.length; i++) {
 						if (!_.isObject(value[i])) valid = false;
-						if (!this.validateObject(value[i], this.getValidation(validation.model, req), req)) valid = false;
+						if (!this.validateObject(value[i], this.getValidation(validation.schema, req), req)) valid = false;
 					}
 					return valid;
 				}
