@@ -3,9 +3,9 @@ var _ = require("underscore");
 var fs = require('fs');
 var md5 = require('MD5');
 var cors = require('cors');
+var io = require("socket.io");
 
-
-
+//Set up express
 var app = express();
 app.configure(function() {
 	app.use(express.json());
@@ -20,8 +20,6 @@ app.configure(function() {
 	app.use(express.multipart());
 	app.use(cors());
 });
-
-
 
 //Set up a get hook on all paths
 app.get('*', function(request, response) {
@@ -88,7 +86,11 @@ var Cantrip = {
 		this.app = app;
 
 		//Start the server
-		this.app.listen(this.options.port);
+		var server = this.app.listen(this.options.port);
+
+		//Start socket io service too
+		this.io = io.listen(server);
+
 	},
 	getTargetNode: function(request) {
 		var path = request.path;
@@ -190,6 +192,7 @@ var Cantrip = {
 			}
 			//Push it to the target array
 			target.push(request.body);
+			this.io.sockets.emit("POST:/" + req.path, request.body);
 
 			response.send(request.body);
 			this.saveData();
@@ -206,6 +209,7 @@ var Cantrip = {
 			this.addIdsToModels(request.body);
 			target = _.extend(target, request.body);
 			response.send(target);
+			this.io.sockets.emit("PUT:/" + req.path, target);
 			this.saveData();
 		} else {
 			response.status(400).send({
@@ -243,6 +247,7 @@ var Cantrip = {
 			}
 		}
 		response.send(parent);
+		this.io.sockets.emit("DELETE:/" + req.path, parent);
 		this.saveData();
 	},
 	//Recursively add _ids to all objects within an array (but not arrays) within the specified object.

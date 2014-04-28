@@ -9,7 +9,7 @@ module.exports = function(grunt) {
             dev: {
                 script: 'server.js',
                 options: {
-                    watch: ['server.js']
+                    watch: ['index.js']
                 }
             }
         }
