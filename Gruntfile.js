@@ -12,6 +12,14 @@ module.exports = function(grunt) {
                     watch: ['server.js']
                 }
             }
+        },
+        jasmine: {
+            all: {
+                src: 'index.js',
+                options: {
+                    specs: 'tests/*Spec.js'
+                }
+            }
         }
     });
 
