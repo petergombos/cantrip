@@ -369,7 +369,23 @@ var Cantrip = {
 			if (this.validateObject(value, this.getValidation(validation.name, req), req)) return true;
 			else return false;
 		} else if (type === "collection") {
-			
+			if (validation.model === undefined) return true;
+			else {
+				if (_.indexOf(["string", "number", "boolean"], validation.model) > -1) {
+					var valid = true;
+					for (var i = 0; i < value.length; i++) {
+						if (!this.checkType(value[i], {type: validation.model}, req)) valid = false;
+					}
+					return valid;
+				} else {
+					var valid = true;
+					for (var i = 0; i < value.length; i++) {
+						if (!_.isObject(value[i])) valid = false;
+						if (!this.validateObject(value[i], this.getValidation(validation.model, req), req)) valid = false;
+					}
+					return valid;
+				}
+			}
 		}
 	}
 }
