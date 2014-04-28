@@ -7,7 +7,8 @@
     "MD5": "~1.2.1",
     "express": "~3.5.1",
     "underscore": "~1.6.0",
-    "cors": "^2.2.0"
+    "cors": "^2.2.0",
+    "socket.io": "~0.9.16"
   },
   "devDependencies": {
     "load-grunt-tasks": "~0.4.0",
