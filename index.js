@@ -290,12 +290,42 @@ var Cantrip = {
 			return false;
 		}
 	},
-	getValidation: function(req) {
-		var metadata;
-		if (metadata = this.getMetadata()) {
-			var validation = metadata.root;
+	/**
+	 * The wrapper method for validation. Creates a Request object, then checks if we have validation in our JSON.
+	 * If we do, it runs the data through it, returning either true or false based on whether the data passed the test or not.
+	 * If the JSON doesn't support validation, it automatically returns true.
+	 * @param  {Object} request From Express
+	 * @param  {Object} response From Express
+	 * @return {boolean}         
+	 */
+	validate: function(request, response) {
+		var req = new Request(request, response);
+		var validation = this.getValidation("root", req);
+		if (validation) {
+			return this.validateObject(request.body, validation, req);
+		} else {
+			return true;
+		}
+	},
+	/**
+	 * Gets a validation object from the metadata.
+	 * @param  {String} typeName The name of the validation object. The ke "root" is special and signifies the whole JSON object
+	 * @param  {Object} req      The Request object
+	 * @return {Object}          Returns a validation object. If it doesn't exists, returns false.
+	 */
+	getValidation: function(typeName, req) {
+		var metadata = this.getMetadata();
+		if (metadata) {
+			//When we check the root, we go through the metadata following the path.
+			//When we use this function later to dig into another type in the schema, we just return that object
+			if (typeName !== "root") {
+				return metadata[typeName];
+			}
+			var validation = metadata[typeName];
+			//go through the metadata following the path
 			for (var i = 0; i < req.path.length; i++) {
 				validation = validation[req.path[i]];
+				//if it's an object, get out of the current type and search for that type on the metadata root
 				if (validation.type === "object") {
 					validation = metadata[validation.name];
 				}
@@ -305,22 +335,11 @@ var Cantrip = {
 			return false;
 		}
 	},
-	getObjectValidation: function(name) {
-		var metadata = this.getMetadata();
-		return metadata[name];
-	},
-	validate: function(request, response) {
-		var req = new Request(request, response);
-		var validation = this.getValidation(req);
-		if (validation) {
-			return this.validateObject(request.body, validation, req);
-		} else {
-			return true;
-		}
-	},
 	validateObject: function(object, validation, req) {
 		for (var key in object) {
 			var v = validation[key];
+			//return false if we try to validate a key that doesn't exist in the schema
+			if (v === undefined) return false
 			//Check type
 			if (!this.checkType(object[key], v, req)) {
 				var correctType = v.type === "object" ? v.name : v.type;
@@ -329,8 +348,9 @@ var Cantrip = {
 				});
 				return false;
 			}
-			return true;
+			//TODO egyéb validációk
 		}
+		return true;
 	},
 	checkType: function(value, validation, req) {
 		var type = validation.type;
@@ -344,7 +364,7 @@ var Cantrip = {
 			if (_.isNumber(value)) return true;
 			else return false;
 		} else if (type === "object") {
-			if (this.validateObject(value, this.getObjectValidation(validation.name), req)) return true;
+			if (this.validateObject(value, this.getValidation(validation.name, req), req)) return true;
 			else return false;
 		}
 	}
