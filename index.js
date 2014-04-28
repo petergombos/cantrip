@@ -27,14 +27,17 @@ app.get('*', function(request, response) {
 });
 
 app.post("*", function(request, response) {
+	if (Cantrip.validate(request, response))
 	Cantrip.post(request, response);
 });
 
 app.delete("*", function(request, response) {
+	if (Cantrip.validate(request, response))
 	Cantrip.delete(request, response);
 });
 
 app.put("*", function(request, response) {
+	if (Cantrip.validate(request, response))
 	Cantrip.put(request, response);
 });
 
@@ -74,7 +77,7 @@ var Cantrip = {
 
 		//Set up memory by reading the contents of the file
 		if (!fs.existsSync(this.options.file)) {
-			fs.writeFileSync(this.options.file, "{_contents: {}, _metadata:{}}");
+			fs.writeFileSync(this.options.file, "{_contents: {}, _metadata:{root: {}}}");
 		}
 
 		this.data = fs.readFileSync(this.options.file, {
@@ -279,6 +282,57 @@ var Cantrip = {
 			} else if (_.isObject(obj[key])) {
 				this.addIdsToModels(obj[key]);
 			}
+		}
+	},
+	getMetadata: function() {
+		if (this.data._metadata !== undefined) {
+			return this.data._metadata;
+		} else {
+			return false;
+		}
+	},
+	getValidation: function(req) {
+		var metadata;
+		if (metadata = this.getMetadata()) {
+			var validation = metadata.root;
+			for (var i = 0; i < req.path.length; i++) {
+				//TODO ne csak ezt dobja vissza mert ez nem az ami kell. Modeleknél ki kell menni a rooton kívülre
+				validation = validation[req.path[i]];
+			}
+			return validation;
+		} else {
+			return false;
+		}
+	},
+	validate: function(request, response) {
+		var req = new Request(request, response);
+		var validation = this.getValidation(req);
+		if (validation) {
+			for (var key in request.body) {
+				var v = validation[key];
+				//Check type
+				if (!this.checkType(request.body[key], v.type)) {
+					response.status(400).send({
+						"error": "Type error. Key " + key + " must be of type " + v.type
+					});
+					return false;
+				}
+				return true;
+			}
+		} else {
+			return true;
+		}
+	},
+	checkType: function(value, type) {
+		if (type === "boolean") {
+			if (_.isBoolean(value)) return true;
+			else return false;
+		} else if (type === "string") {
+			if (_.isString(value)) return true;
+			else return false;
+		} else if (type === "number") {
+			if (_.isNumber(value)) return true;
+			else return false;
 		}
 	}
 }
