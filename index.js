@@ -296,7 +296,7 @@ var Cantrip = {
 	 * If the JSON doesn't support validation, it automatically returns true.
 	 * @param  {Object} request From Express
 	 * @param  {Object} response From Express
-	 * @return {boolean}         
+	 * @return {boolean}
 	 */
 	validate: function(request, response) {
 		var req = new Request(request, response);
@@ -343,12 +343,19 @@ var Cantrip = {
 		}
 	},
 	validateObject: function(object, validation, req) {
+		//If object is not an object return error
+		if (!_.isObject(object)) {
+			req.response.status(400).send({
+				"error": "Type error. Expected object, found "+object+"."
+			});
+			return false;
+		}
 		for (var key in object) {
 			var v = validation[key];
 			//return false if we try to validate a key that doesn't exist in the schema
 			if (v === undefined) {
 				req.response.status(400).send({
-					"error": "Type error. Invalid key in object."
+					"error": "Type error. Invalid key in object (" + key + ")."
 				});
 				return false;
 			}
@@ -376,6 +383,7 @@ var Cantrip = {
 			if (_.isNumber(value)) return true;
 			else return false;
 		} else if (type === "object") {
+			console.log(validation.name, value, this.getValidation(validation.name, req));
 			//If we specified a name, then the object must be of a given shema. If we didn't, its free for all!
 			if (validation.name === undefined) return true;
 			if (this.validateObject(value, this.getValidation(validation.name, req), req)) return true;
@@ -386,7 +394,9 @@ var Cantrip = {
 				if (_.indexOf(["string", "number", "boolean"], validation.model) > -1) {
 					var valid = true;
 					for (var i = 0; i < value.length; i++) {
-						if (!this.checkType(value[i], {type: validation.model}, req)) valid = false;
+						if (!this.checkType(value[i], {
+							type: validation.model
+						}, req)) valid = false;
 					}
 					return valid;
 				} else {
