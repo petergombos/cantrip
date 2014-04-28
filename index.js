@@ -324,12 +324,17 @@ var Cantrip = {
 			var validation = metadata[typeName];
 			//go through the metadata following the path
 			for (var i = 0; i < req.path.length; i++) {
-				validation = validation[req.path[i]];
-				//if it's an object, get out of the current type and search for that type on the metadata root
-				if (validation.type === "object") {
-					validation = metadata[validation.name];
-				} else if (validation.type === "collection") {
-					validation = metadata[validation.model];
+				if (validation[req.path[i]] !== undefined) {
+					validation = validation[req.path[i]];
+					//if it's an object, get out of the current type and search for that type on the metadata root
+					if (validation.type === "object") {
+						validation = metadata[validation.name];
+					} else if (validation.type === "collection") {
+						validation = metadata[validation.model];
+					}
+				} else {
+					//We are in a model inside a collection
+					validation = validation;
 				}
 			}
 			return validation;
