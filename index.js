@@ -395,11 +395,11 @@ var Cantrip = {
 			else return false;
 		} else if (type === "object") {
 			//If we specified a schema, then the object must be of a given shema. If we didn't, its free for all!
-			if (validation.schema === undefined) return true;
+			if (validation.schema === undefined && _.isObject(value)) return true;
 			if (this.validateObject(value, this.getValidation(validation.schema, req), req)) return true;
 			else return false;
 		} else if (type === "collection") {
-			if (validation.schema === undefined) return true;
+			if (validation.schema === undefined && _.isArray(value)) return true;
 			else {
 				if (_.indexOf(["string", "number", "boolean"], validation.schema) > -1) {
 					var valid = true;
