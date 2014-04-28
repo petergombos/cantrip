@@ -328,6 +328,8 @@ var Cantrip = {
 				//if it's an object, get out of the current type and search for that type on the metadata root
 				if (validation.type === "object") {
 					validation = metadata[validation.name];
+				} else if (validation.type === "collection") {
+					validation = metadata[validation.model];
 				}
 			}
 			return validation;
@@ -339,7 +341,12 @@ var Cantrip = {
 		for (var key in object) {
 			var v = validation[key];
 			//return false if we try to validate a key that doesn't exist in the schema
-			if (v === undefined) return false
+			if (v === undefined) {
+				req.response.status(400).send({
+					"error": "Type error. Invalid key in object."
+				});
+				return false;
+			}
 			//Check type
 			if (!this.checkType(object[key], v, req)) {
 				var correctType = v.type === "object" ? v.name : v.type;
