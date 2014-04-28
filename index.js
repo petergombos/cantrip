@@ -364,8 +364,12 @@ var Cantrip = {
 			if (_.isNumber(value)) return true;
 			else return false;
 		} else if (type === "object") {
+			//If we specified a name, then the object must be of a given shema. If we didn't, its free for all!
+			if (validation.name === undefined) return true;
 			if (this.validateObject(value, this.getValidation(validation.name, req), req)) return true;
 			else return false;
+		} else if (type === "collection") {
+			
 		}
 	}
 }
