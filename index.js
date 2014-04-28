@@ -74,7 +74,7 @@ var Cantrip = {
 
 		//Set up memory by reading the contents of the file
 		if (!fs.existsSync(this.options.file)) {
-			fs.writeFileSync(this.options.file, "{}");
+			fs.writeFileSync(this.options.file, "{_contents: {}, _metadata:{}}");
 		}
 
 		this.data = fs.readFileSync(this.options.file, {
@@ -92,9 +92,20 @@ var Cantrip = {
 		this.io = io.listen(server);
 
 	},
+	/**
+	 * Gets the contents of the JSON based on whether there's a _contents key or not
+	 * @return {Object} The actual contents object
+	 */
+	getContents: function() {
+		if (this.data._contents !== undefined) {
+			return this.data._contents
+		} else {
+			return this.data;
+		}
+	},
 	getTargetNode: function(request) {
 		var path = request.path;
-		var route = this.data;
+		var route = this.getContents();
 		//Loop through the data by the given paths
 		for (var i = 0; i < path.length; i++) {
 			var temp = route[path[i]];
@@ -123,7 +134,7 @@ var Cantrip = {
 	},
 	getParentNode: function(request) {
 		var path = request.path;
-		var route = this.data;
+		var route = this.getContents();
 		//Loop through the data by the given paths
 		for (var i = 0; i < path.length - 1; i++) {
 			var temp = route[path[i]];
