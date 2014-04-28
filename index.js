@@ -32,8 +32,7 @@ app.post("*", function(request, response) {
 });
 
 app.delete("*", function(request, response) {
-	if (Cantrip.validate(request, response))
-		Cantrip.delete(request, response);
+	Cantrip.delete(request, response);
 });
 
 app.put("*", function(request, response) {
@@ -306,6 +305,10 @@ var Cantrip = {
 			return false;
 		}
 	},
+	getObjectValidation: function(name) {
+		var metadata = this.getMetadata();
+		return metadata[name];
+	},
 	validate: function(request, response) {
 		var req = new Request(request, response);
 		var validation = this.getValidation(req);
@@ -318,18 +321,19 @@ var Cantrip = {
 	validateObject: function(object, validation, req) {
 		for (var key in object) {
 			var v = validation[key];
-			console.log(object, v);
 			//Check type
-			if (!this.checkType(object[key], v.type)) {
+			if (!this.checkType(object[key], v, req)) {
+				var correctType = v.type === "object" ? v.name : v.type;
 				req.response.status(400).send({
-					"error": "Type error. Key " + key + " must be of type " + v.type
+					"error": "Type error. Key " + key + " must be of type " + correctType
 				});
 				return false;
 			}
 			return true;
 		}
 	},
-	checkType: function(value, type) {
+	checkType: function(value, validation, req) {
+		var type = validation.type;
 		if (type === "boolean") {
 			if (_.isBoolean(value)) return true;
 			else return false;
@@ -338,6 +342,9 @@ var Cantrip = {
 			else return false;
 		} else if (type === "number") {
 			if (_.isNumber(value)) return true;
+			else return false;
+		} else if (type === "object") {
+			if (this.validateObject(value, this.getObjectValidation(validation.name), req)) return true;
 			else return false;
 		}
 	}
