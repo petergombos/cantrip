@@ -162,7 +162,7 @@ var Cantrip = {
 					console.log(err);
 				}
 			});
-			this.options.saveEvery = 0;
+			this.counter = 0;
 		}
 	},
 	get: function(request, response) {
