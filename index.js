@@ -28,17 +28,17 @@ app.get('*', function(request, response) {
 
 app.post("*", function(request, response) {
 	if (Cantrip.validate(request, response))
-	Cantrip.post(request, response);
+		Cantrip.post(request, response);
 });
 
 app.delete("*", function(request, response) {
 	if (Cantrip.validate(request, response))
-	Cantrip.delete(request, response);
+		Cantrip.delete(request, response);
 });
 
 app.put("*", function(request, response) {
 	if (Cantrip.validate(request, response))
-	Cantrip.put(request, response);
+		Cantrip.put(request, response);
 });
 
 //The object that handles requests
@@ -296,8 +296,10 @@ var Cantrip = {
 		if (metadata = this.getMetadata()) {
 			var validation = metadata.root;
 			for (var i = 0; i < req.path.length; i++) {
-				//TODO ne csak ezt dobja vissza mert ez nem az ami kell. Modeleknél ki kell menni a rooton kívülre
 				validation = validation[req.path[i]];
+				if (validation.type === "object") {
+					validation = metadata[validation.name];
+				}
 			}
 			return validation;
 		} else {
@@ -308,18 +310,22 @@ var Cantrip = {
 		var req = new Request(request, response);
 		var validation = this.getValidation(req);
 		if (validation) {
-			for (var key in request.body) {
-				var v = validation[key];
-				//Check type
-				if (!this.checkType(request.body[key], v.type)) {
-					response.status(400).send({
-						"error": "Type error. Key " + key + " must be of type " + v.type
-					});
-					return false;
-				}
-				return true;
-			}
+			return this.validateObject(request.body, validation, req);
 		} else {
+			return true;
+		}
+	},
+	validateObject: function(object, validation, req) {
+		for (var key in object) {
+			var v = validation[key];
+			console.log(object, v);
+			//Check type
+			if (!this.checkType(object[key], v.type)) {
+				req.response.status(400).send({
+					"error": "Type error. Key " + key + " must be of type " + v.type
+				});
+				return false;
+			}
 			return true;
 		}
 	},
