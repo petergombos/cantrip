@@ -346,10 +346,21 @@ var Cantrip = {
 		//If object is not an object return error
 		if (!_.isObject(object)) {
 			req.response.status(400).send({
-				"error": "Type error. Expected object, found "+object+"."
+				"error": "Type error. Expected object, found " + object + "."
 			});
 			return false;
 		}
+		//If the posted object doesn't contain all keys needed for the validation, throw an error
+		//But only if the object is not equal to the request body, because when we PUT the object, we don't want to specify all keys
+		for (var key in validation) {
+			if (object[key] === undefined && object !== req.request.body) {
+				req.response.status(400).send({
+					"error": "Type error. Missing key "+key+"."
+				});
+				return false;
+			}
+		}
+
 		for (var key in object) {
 			var v = validation[key];
 			//return false if we try to validate a key that doesn't exist in the schema
