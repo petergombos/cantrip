@@ -223,7 +223,7 @@ var Cantrip = {
 		//Get the parent node so we can unset the target
 		var parent = this.getParentNode(req);
 		//Last identifier in the path
-		var index = _.last(this.path);
+		var index = _.last(req.path);
 		//If it's an object (not an array), then we just unset the key with the keyword delete
 		if (_.isObject(parent) && !_.isArray(parent)) {
 			//We're not letting users delete the _id
@@ -232,7 +232,7 @@ var Cantrip = {
 					"error": "You can't delete the id of an object."
 				});
 			} else {
-				delete parent[index];
+				parent = _.omit(parent, index);
 			}
 			//If it's an array, we must remove it by id with the splice method	
 		} else if (_.isArray(parent)) {

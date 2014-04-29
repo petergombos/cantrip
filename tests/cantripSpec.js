@@ -103,6 +103,60 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 
 		});
 
+		describe("DELETE", function() {
+			var id = "";
+
+			it("should allow you to delete a key from an object", function(done) {
+				request({
+						method: "DELETE",
+						url: serverUrl + "foo/string",
+						json: true,
+					}, function(error, response, body) {
+					expect(body.string).toBeUndefined();
+					done();
+				});
+			});
+
+			it("but shouldn't let you delete an object's _id", function(done) {
+				request({
+						method: "DELETE",
+						url: serverUrl + "foo/collection/0/_id",
+						json: true,
+					}, function(error, response, body) {
+					expect(body.error).toBeDefined();
+					done();
+				});
+			});
+
+			it("should allow you to delete a model from a collection by index", function(done) {
+				request({
+						method: "DELETE",
+						url: serverUrl + "foo/collection/0",
+						json: true,
+					}, function(error, response, body) {
+					expect(body.length).toBe(1);
+					id = body[0]._id;
+					done();
+				});
+			});
+
+			it("should allow you to delete a model from a collection by id", function(done) {
+				request({
+						method: "DELETE",
+						url: serverUrl + "foo/collection/" + id,
+						json: true,
+					}, function(error, response, body) {
+					expect(body).toEqual([]);
+					done();
+				});
+			});
+
+
+
+
+
+		});
+
 		
 
 	});
