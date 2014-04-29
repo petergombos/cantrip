@@ -103,6 +103,57 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 
 		});
 
+		describe("GET", function() {
+
+			it("should get you the whole JSON when requesting the root", function(done) {
+				request({
+						method: "GET",
+						url: serverUrl,
+						json: true,
+					}, function(error, response, body) {
+					expect(body.foo).toBeDefined();
+					expect(body.foo.string).toBe("other string");
+					expect(body.foo.collection.length).toBe(2);
+					expect(body.foo.collection[0].foo).toBe("bar");
+					done();
+				});
+			});
+
+			it("should get you an object's single property wrapped in an object", function(done) {
+				request({
+						method: "GET",
+						url: serverUrl + "foo/string",
+						json: true,
+					}, function(error, response, body) {
+						expect(body).toEqual({value: "other string"});
+					done();
+				});
+			});
+
+			it("should throw an error when requesting a non existent node", function(done) {
+				request({
+						method: "GET",
+						url: serverUrl + "nonexistent/bar/baz/foo",
+						json: true,
+					}, function(error, response, body) {
+						expect(body.error).toBeDefined();
+					done();
+				});
+			});
+
+			it("should get you an array when requesting a collection", function(done) {
+				request({
+						method: "GET",
+						url: serverUrl + "foo/collection",
+						json: true,
+					}, function(error, response, body) {
+						expect(body.length).toBe(2);
+					done();
+				});
+			});
+
+		});
+
 		describe("DELETE", function() {
 			var id = "";
 
