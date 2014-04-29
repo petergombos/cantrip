@@ -22,6 +22,11 @@ app.configure(function() {
 	app.use(cors());
 });
 
+var validations = {};
+validations.string = require("./types/string");
+validations.boolean = require("./types/boolean");
+validations.number = require("./types/number");
+
 //Set up a get hook on all paths
 app.get('*', function(request, response) {
 	Cantrip.get(request, response);
@@ -379,7 +384,17 @@ var Cantrip = {
 				});
 				return false;
 			}
-			//TODO egyéb validációk
+			
+			//Now run all custom validations defined in an array in the key "validation"
+			if (v.validation) {
+				var customValidation = validations[v.type].validate(object[key], v.validation);
+				if (!customValidation.valid) {
+					req.response.status(400).send({
+						"error": "Validation error with key "+key+". " + customValidation.message
+					});
+					return false;
+				}
+			}
 		}
 		return true;
 	},

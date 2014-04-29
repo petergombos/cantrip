@@ -6,24 +6,17 @@
 
 	var _ = _ || require("underscore");
 
-	var validations = {
+	var validationFunctions = {
 		max: function(value, n) {
-			if (value.length > n) {
-				return {valid: false, message: "Text length must be longer than " + n};
+			if (value > n) {
+				return {valid: false, message: "Value must be less than " + n};
 			} else {
 				return {valid: true};
 			}
 		},
 		min: function(value, n) {
-			if (value.length < n) {
-				return {valid: false, message: "Text length must be shorter than " + n};
-			} else {
-				return {valid: true};
-			}
-		},
-		length: function(value, n) {
-			if (value.length !== n) {
-				return {valid: false, message: "Text length must be " + n};
+			if (value < n) {
+				return {valid: false, message: "Value must be greater than " + n};
 			} else {
 				return {valid: true};
 			}
@@ -39,9 +32,9 @@
     		 for (var i = 0; i < validations.length; i++) {
     		 	if (_.isString(validations[i])) {
     		 		var name = validations[i].split(":")[0];
-    		 		var args = validations[i].split(":")[0].split(,);
+    		 		var args = validations[i].split(":")[1].split(",");
     		 		args.unshift(value);
-    		 		var result = validations[name].apply(this, args);
+    		 		var result = validationFunctions[name].apply(this, args);
     		 		if (!result.valid) {
     		 			valid = false;
     		 			message = result.message;
