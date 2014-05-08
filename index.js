@@ -96,6 +96,7 @@ var Cantrip = {
 	getTargetNode: function(request) {
 		var path = request.path;
 		var route = this.data;
+		request.parentNodes = []; //This array holds all nodes ultil we get to the target node
 		//Loop through the data by the given paths
 		for (var i = 0; i < path.length; i++) {
 			var temp = route[path[i]];
@@ -118,39 +119,11 @@ var Cantrip = {
 					return;
 				}
 			}
+			request.parentNodes.push(route);
 		}
 
 		return route;
-	},
-	getParentNode: function(request) {
-		var path = request.path;
-		var route = this.data;
-		//Loop through the data by the given paths
-		for (var i = 0; i < path.length - 1; i++) {
-			var temp = route[path[i]];
-			//If we found the given key, assign the route object to its value
-			if (temp !== undefined) {
-				route = route[path[i]];
-				//If the given key doesn't exist, try the _id
-			} else {
-				temp = _.find(route, function(obj) {
-					return obj._id === path[i];
-				});
-				//If it's not undefined, then assign it as the value
-				if (temp !== undefined) {
-					route = temp;
-				} else {
-					//If it's still undefined, return
-					request.response.status(404).send({
-						"error": "Requested node doesn't exists."
-					});
-					return;
-				}
-			}
-		}
-
-		return route;
-	},
+	}
 	//Save the JSON in memory to the specified JSON file. Runs after every API call, once the answer has been sent.
 	//Uses the async writeFile so it doesn't interrupt other stuff.
 	//If options.saveEvery is different from 1, it doesn't save every time.
@@ -195,9 +168,11 @@ var Cantrip = {
 			}
 			//Push it to the target array
 			target.push(request.body);
+			//Emit socketio event
 			this.io.sockets.emit("POST:/" + req.path, request.body);
-
+			//Send the response
 			response.send(request.body);
+			//Start saving the data
 			this.saveData();
 		} else {
 			response.status(400).send({
@@ -213,8 +188,11 @@ var Cantrip = {
 			//If the target had previously had a _modifiedDate property, set it to the current time
 			if (target._modifiedDate) target._modifiedDate = (new Date()).getTime();
 			target = _.extend(target, request.body);
+			//Send the response
 			response.send(target);
+			//Emit socketio event
 			this.io.sockets.emit("PUT:/" + req.path, target);
+			//Start saving the data
 			this.saveData();
 		} else {
 			response.status(400).send({
@@ -225,7 +203,8 @@ var Cantrip = {
 	delete: function(request, response) {
 		var req = new Request(request, response);
 		//Get the parent node so we can unset the target
-		var parent = this.getParentNode(req);
+		var target = this.getTargetNode(req);
+		var parent = req.parentNodes[req.parentNodes.length -2];
 		//Last identifier in the path
 		var index = _.last(req.path);
 		//If it's an object (not an array), then we just unset the key with the keyword delete
@@ -251,8 +230,11 @@ var Cantrip = {
 				parent.splice(_.indexOf(parent, obj), 1);
 			}
 		}
+		//Send the response
 		response.send(parent);
+		//Emit socketio event
 		this.io.sockets.emit("DELETE:/" + req.path, parent);
+		//Start saving the data
 		this.saveData();
 	},
 	//Recursively add _ids to all objects within an array (but not arrays) within the specified object.
