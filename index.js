@@ -183,12 +183,14 @@ var Cantrip = {
 		//If it's an array, post the new entry to that array
 		if (_.isArray(target)) {
 			//Add ids to all objects within arrays in the sent object
-			this.addIdsToModels(request.body);
+			this.addMetadataToModels(request.body);
 			//If the posted body is an object itself, add an id to it
 			if (_.isObject(request.body) && !_.isArray(request.body)) {
 				//Extend the whole object with an _id property, but only if it doesn't already have one
 				request.body = _.extend({
-					_id: md5(JSON.stringify(request.body) + (new Date()).getTime() + Math.random())
+					_id: md5(JSON.stringify(request.body) + (new Date()).getTime() + Math.random()),
+					_createdDate: (new Date()).getTime(),
+					_modifiedDate: (new Date()).getTime()
 				}, request.body);
 			}
 			//Push it to the target array
@@ -207,7 +209,9 @@ var Cantrip = {
 		var req = new Request(request, response);
 		var target = this.getTargetNode(req);
 		if (_.isObject(target)) {
-			this.addIdsToModels(request.body);
+			this.addMetadataToModels(request.body);
+			//If the target had previously had a _modifiedDate property, set it to the current time
+			if (target._modifiedDate) target._modifiedDate = (new Date()).getTime();
 			target = _.extend(target, request.body);
 			response.send(target);
 			this.io.sockets.emit("PUT:/" + req.path, target);
@@ -227,9 +231,9 @@ var Cantrip = {
 		//If it's an object (not an array), then we just unset the key with the keyword delete
 		if (_.isObject(parent) && !_.isArray(parent)) {
 			//We're not letting users delete the _id
-			if (index === "_id") {
+			if ((index + "")[0] === "_") {
 				response.status(400).send({
-					"error": "You can't delete the id of an object."
+					"error": "You can't delete an object's metadata."
 				});
 			} else {
 				parent = _.omit(parent, index);
@@ -252,7 +256,7 @@ var Cantrip = {
 		this.saveData();
 	},
 	//Recursively add _ids to all objects within an array (but not arrays) within the specified object.
-	addIdsToModels: function(obj) {
+	addMetadataToModels: function(obj) {
 		//Loop through the objects keys
 		for (var key in obj) {
 			//If the value of the key is an array (means it's a collection), go through all of its contents
@@ -261,13 +265,17 @@ var Cantrip = {
 					//Assign an id to all objects
 					if (_.isObject(obj[key][i]) && !_.isArray(obj[key][i])) {
 						obj[key][i] = _.extend({
-							_id: md5(JSON.stringify(obj[key][i]) + (new Date()).getTime() + Math.random())
+							_id: md5(JSON.stringify(obj[key][i]) + (new Date()).getTime() + Math.random()),
+							_createdDate: (new Date()).getTime(),
+							_modifiedDate: (new Date()).getTime()
 						}, obj[key][i]);
+						//Modify the _modifiedDate metadata property
+						obj[key][i]._modifiedDate = (new Date()).getTime();
 					}
 				}
 				//If it's an object, call the recursive method with that object
 			} else if (_.isObject(obj[key])) {
-				this.addIdsToModels(obj[key]);
+				this.addMetadataToModels(obj[key]);
 			}
 		}
 	}
