@@ -58,8 +58,6 @@ var Cantrip = {
 
 		//Set up middlewares
 
-		//Parse the path
-		app.use(this.pathObject);
 		//Get to the target node and save all nodes in between
 		app.use(this.nodes);
 
@@ -87,15 +85,17 @@ var Cantrip = {
 		this.io = io.listen(server);
 
 	},
-	pathObject: function(req, res, next) {
+	nodes: function(req, res, next) {
+		//Parse the path and save it on the request
 		req.pathMembers = _.filter(req.url.split("/"), function(string) {
 			return string !== "";
 		});
-		next();
-	},
-	nodes: function(req, res, next) {
 		var path = req.pathMembers;
+
+		//Get the root element based on several factors: whether we have _contents in the JSON, did we try to access something inside a _meta parameter
 		var route = Cantrip.data;
+
+		
 		req.nodes = []; //This array holds all nodes until we get to the target node
 
 		//If the path's length is zero (so we are on the root), pass in the whole object
