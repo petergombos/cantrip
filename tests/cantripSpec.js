@@ -78,7 +78,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 				});
 			});
 
-			it("should allow you to post to a collection and generate you an id", function(done) {
+			it("should allow you to post to a collection and generate you an id, and the _createdDate and _modifiedDate metadata", function(done) {
 				request({
 						method: "POST",
 						url: serverUrl + "foo/collection",
@@ -86,6 +86,8 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					}, function(error, response, body) {
 					expect(body.foo).toEqual("bar");
 					expect(body._id).toBeDefined();
+					expect(body._createdDate).toBeDefined();
+					expect(body._modifiedDate).toBeDefined();
 					done();
 				});
 			});
@@ -98,6 +100,34 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					}, function(error, response, body) {
 					expect(body._id).toEqual("imanid");
 					done();
+				});
+			});
+
+			it("should allow you to post to a collection with a specific _modifiedDate and not overwrite it", function(done) {
+				request({
+						method: "POST",
+						url: serverUrl + "foo/collection",
+						json: {"metatest": "foo", "_modifiedDate" : 1, "_id": "metatestObject"}
+					}, function(error, response, body) {
+					expect(body._modifiedDate).toEqual(1);
+					done();
+				});
+			});
+
+			it("when modifing an object inside a collection, it should update the _modifiedDate meta property", function(done) {
+				request({
+						method: "PUT",
+						url: serverUrl + "foo/collection/metatestObject",
+						json: {"metatest": "bar"}
+					}, function(error, response, body) {
+					expect(body._modifiedDate).not.toEqual(1);
+					//Deleting this test object
+					request({
+						method: "DELETE",
+						url: serverUrl + "foo/collection/metatestObject",
+					}, function() {
+						done();
+					})
 				});
 			});
 
@@ -172,6 +202,17 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 				request({
 						method: "DELETE",
 						url: serverUrl + "foo/collection/0/_id",
+						json: true,
+					}, function(error, response, body) {
+					expect(body.error).toBeDefined();
+					done();
+				});
+			});
+
+			it("nor shoul it let you delete an object's other metadata like _modifiedDate", function(done) {
+				request({
+						method: "DELETE",
+						url: serverUrl + "foo/collection/0/_modifiedDate",
 						json: true,
 					}, function(error, response, body) {
 					expect(body.error).toBeDefined();

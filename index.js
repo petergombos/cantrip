@@ -3,7 +3,6 @@ var _ = require("underscore");
 var fs = require('fs');
 var md5 = require('MD5');
 var cors = require('cors');
-
 var io = require("socket.io");
 
 //Set up express
@@ -26,38 +25,6 @@ var validations = {};
 validations.string = require("./types/string");
 validations.boolean = require("./types/boolean");
 validations.number = require("./types/number");
-
-//Set up a get hook on all paths
-app.get('*', function(request, response) {
-	Cantrip.get(request, response);
-});
-
-app.post("*", function(request, response) {
-	if (Cantrip.validate(request, response))
-		Cantrip.post(request, response);
-});
-
-app.delete("*", function(request, response) {
-	Cantrip.delete(request, response);
-});
-
-app.put("*", function(request, response) {
-	if (Cantrip.validate(request, response))
-		Cantrip.put(request, response);
-});
-
-//The object that handles requests
-function Request(request, response) {
-	this.request = request;
-	this.response = response;
-	this.path = this.getPath();
-};
-
-Request.prototype.getPath = function() {
-	return _.filter(this.request.route.params[0].split("/"), function(string) {
-		return string !== "";
-	});
-};
 
 
 var Cantrip = {
@@ -93,6 +60,30 @@ var Cantrip = {
 		//Set up the server
 		this.app = app;
 
+		//Set up middlewares
+
+		//Parse the path
+		app.use(this.pathObject);
+		//Get to the target node and save all nodes in between
+		app.use(this.nodes);
+
+		//Set up a get hook on all paths
+		app.get('*', function(request, response) {
+			Cantrip.get(request, response);
+		});
+
+		app.post("*", function(request, response) {
+			Cantrip.post(request, response);
+		});
+
+		app.delete("*", function(request, response) {
+			Cantrip.delete(request, response);
+		});
+
+		app.put("*", function(request, response) {
+			Cantrip.put(request, response);
+		});
+
 		//Start the server
 		var server = this.app.listen(this.options.port);
 
@@ -100,20 +91,23 @@ var Cantrip = {
 		this.io = io.listen(server);
 
 	},
-	/**
-	 * Gets the contents of the JSON based on whether there's a _contents key or not
-	 * @return {Object} The actual contents object
-	 */
-	getContents: function() {
-		if (this.data._contents !== undefined) {
-			return this.data._contents
-		} else {
-			return this.data;
-		}
+	pathObject: function(req, res, next) {
+		req.pathMembers = _.filter(req.url.split("/"), function(string) {
+			return string !== "";
+		});
+		next();
 	},
-	getTargetNode: function(request) {
-		var path = request.path;
-		var route = this.getContents();
+	nodes: function(req, res, next) {
+		var path = req.pathMembers;
+		var route = Cantrip.data;
+		
+		
+		req.nodes = []; //This array holds all nodes until we get to the target node
+
+		//If the path's length is zero (so we are on the root), pass in the whole object
+		if (path.length === 0) {
+			req.nodes.push(route);
+		}
 		//Loop through the data by the given paths
 		for (var i = 0; i < path.length; i++) {
 			var temp = route[path[i]];
@@ -130,44 +124,15 @@ var Cantrip = {
 					route = temp;
 				} else {
 					//If it's still undefined, return
-					request.response.status(404).send({
+					res.status(404).send({
 						"error": "Requested node doesn't exists."
 					});
 					return;
 				}
 			}
+			req.nodes.push(route);
 		}
-
-		return route;
-	},
-	getParentNode: function(request) {
-		var path = request.path;
-		var route = this.getContents();
-		//Loop through the data by the given paths
-		for (var i = 0; i < path.length - 1; i++) {
-			var temp = route[path[i]];
-			//If we found the given key, assign the route object to its value
-			if (temp !== undefined) {
-				route = route[path[i]];
-				//If the given key doesn't exist, try the _id
-			} else {
-				temp = _.find(route, function(obj) {
-					return obj._id === path[i];
-				});
-				//If it's not undefined, then assign it as the value
-				if (temp !== undefined) {
-					route = temp;
-				} else {
-					//If it's still undefined, return
-					request.response.status(404).send({
-						"error": "Requested node doesn't exists."
-					});
-					return;
-				}
-			}
-		}
-
-		return route;
+		next();
 	},
 	//Save the JSON in memory to the specified JSON file. Runs after every API call, once the answer has been sent.
 	//Uses the async writeFile so it doesn't interrupt other stuff.
@@ -184,70 +149,75 @@ var Cantrip = {
 			this.counter = 0;
 		}
 	},
-	get: function(request, response) {
-		var req = new Request(request, response);
-		var target = this.getTargetNode(req);
+	get: function(req, res) {
+		var target = _.last(req.nodes);
 		if (_.isObject(target) || _.isArray(target)) {
-			response.send(target);
+			res.send(target);
 		} else if (target) {
-			response.send({
+			res.send({
 				value: target
 			});
 		}
 	},
-	post: function(request, response) {
-		var req = new Request(request, response);
-		var target = this.getTargetNode(req);
+	post: function(req, res) {
+		var target = _.last(req.nodes);
 		//If it's an array, post the new entry to that array
 		if (_.isArray(target)) {
 			//Add ids to all objects within arrays in the sent object
-			this.addIdsToModels(request.body);
+			this.addMetadataToModels(req.body);
 			//If the posted body is an object itself, add an id to it
-			if (_.isObject(request.body) && !_.isArray(request.body)) {
+			if (_.isObject(req.body) && !_.isArray(req.body)) {
 				//Extend the whole object with an _id property, but only if it doesn't already have one
-				request.body = _.extend({
-					_id: md5(JSON.stringify(request.body) + (new Date()).getTime() + Math.random())
-				}, request.body);
+				req.body = _.extend({
+					_id: md5(JSON.stringify(req.body) + (new Date()).getTime() + Math.random()),
+					_createdDate: (new Date()).getTime(),
+					_modifiedDate: (new Date()).getTime()
+				}, req.body);
 			}
 			//Push it to the target array
-			target.push(request.body);
-			this.io.sockets.emit("POST:/" + req.path, request.body);
-
-			response.send(request.body);
+			target.push(req.body);
+			//Emit socketio event
+			this.io.sockets.emit("POST:/" + req.path, req.body);
+			//Send the response
+			res.send(req.body);
+			//Start saving the data
 			this.saveData();
 		} else {
-			response.status(400).send({
+			res.status(400).send({
 				"error": "Can't POST to an object. Use PUT instead."
 			});
 		}
 	},
-	put: function(request, response) {
-		var req = new Request(request, response);
-		var target = this.getTargetNode(req);
+	put: function(req, res) {
+		var target = _.last(req.nodes);
 		if (_.isObject(target)) {
-			this.addIdsToModels(request.body);
-			target = _.extend(target, request.body);
-			response.send(target);
+			this.addMetadataToModels(req.body);
+			//If the target had previously had a _modifiedDate property, set it to the current time
+			if (target._modifiedDate) target._modifiedDate = (new Date()).getTime();
+			target = _.extend(target, req.body);
+			//Send the response
+			res.send(target);
+			//Emit socketio event
 			this.io.sockets.emit("PUT:/" + req.path, target);
+			//Start saving the data
 			this.saveData();
 		} else {
-			response.status(400).send({
+			res.status(400).send({
 				"error": "Can't PUT a collection."
 			});
 		}
 	},
-	delete: function(request, response) {
-		var req = new Request(request, response);
+	delete: function(req, res) {
 		//Get the parent node so we can unset the target
-		var parent = this.getParentNode(req);
+		var parent = req.nodes[req.nodes.length -2];
 		//Last identifier in the path
-		var index = _.last(req.path);
+		var index = _.last(req.pathMembers);
 		//If it's an object (not an array), then we just unset the key with the keyword delete
 		if (_.isObject(parent) && !_.isArray(parent)) {
 			//We're not letting users delete the _id
-			if (index === "_id") {
-				response.status(400).send({
-					"error": "You can't delete the id of an object."
+			if ((index + "")[0] === "_") {
+				res.status(400).send({
+					"error": "You can't delete an object's metadata."
 				});
 			} else {
 				parent = _.omit(parent, index);
@@ -265,12 +235,15 @@ var Cantrip = {
 				parent.splice(_.indexOf(parent, obj), 1);
 			}
 		}
-		response.send(parent);
+		//Send the response
+		res.send(parent);
+		//Emit socketio event
 		this.io.sockets.emit("DELETE:/" + req.path, parent);
+		//Start saving the data
 		this.saveData();
 	},
 	//Recursively add _ids to all objects within an array (but not arrays) within the specified object.
-	addIdsToModels: function(obj) {
+	addMetadataToModels: function(obj) {
 		//Loop through the objects keys
 		for (var key in obj) {
 			//If the value of the key is an array (means it's a collection), go through all of its contents
@@ -279,13 +252,17 @@ var Cantrip = {
 					//Assign an id to all objects
 					if (_.isObject(obj[key][i]) && !_.isArray(obj[key][i])) {
 						obj[key][i] = _.extend({
-							_id: md5(JSON.stringify(obj[key][i]) + (new Date()).getTime() + Math.random())
+							_id: md5(JSON.stringify(obj[key][i]) + (new Date()).getTime() + Math.random()),
+							_createdDate: (new Date()).getTime(),
+							_modifiedDate: (new Date()).getTime()
 						}, obj[key][i]);
+						//Modify the _modifiedDate metadata property
+						obj[key][i]._modifiedDate = (new Date()).getTime();
 					}
 				}
 				//If it's an object, call the recursive method with that object
 			} else if (_.isObject(obj[key])) {
-				this.addIdsToModels(obj[key]);
+				this.addMetadataToModels(obj[key]);
 			}
 		}
 	},
