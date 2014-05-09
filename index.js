@@ -93,12 +93,27 @@ var Cantrip = {
 		var path = req.pathMembers;
 
 		//Get the root element based on several factors: whether we have _contents in the JSON, did we try to access something inside a _meta parameter
+		//By default the root is the whole JSON
 		var route = Cantrip.data;
+		//If we're trying to access a meta object
+		if (path.length > 0 && path[0][0] === "_") {
+			//Set the root object to that meta object, or throw an error if it doesn't exist
+			if (Cantrip.data[path[0]]) {
+				route = Cantrip.data[path[0]];
+				var metaObject = path.shift();
+			} else {
+				res.status(404).send({
+					"error": "Requested meta object doesn't exist."
+				});
+			}
+		//If the first member of the url is not a meta object key, then check if we have _contents
+		} else if (Cantrip.data._contents){
+			route = Cantrip.data._contents;
+		}
 
-		
 		req.nodes = []; //This array holds all nodes until we get to the target node
 
-		//If the path's length is zero (so we are on the root), pass in the whole object
+		//If the remainin path's length is zero (so we are on the root), pass in the whole object
 		if (path.length === 0) {
 			req.nodes.push(route);
 		}
@@ -119,13 +134,19 @@ var Cantrip = {
 				} else {
 					//If it's still undefined, return
 					res.status(404).send({
-						"error": "Requested node doesn't exists."
+						"error": "Requested node doesn't exist."
 					});
 					return;
 				}
 			}
 			req.nodes.push(route);
 		}
+
+		//If the first member of the url was a _meta object, readd it to the beginning of the path array, so other middlewares still see the full path
+		if (metaObject) {
+			path.unshift(metaObject);
+		}
+
 		next();
 	},
 	//Save the JSON in memory to the specified JSON file. Runs after every API call, once the answer has been sent.
