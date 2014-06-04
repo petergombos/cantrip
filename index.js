@@ -56,10 +56,10 @@ var Cantrip = {
 		//Set up the server
 		this.app = app;
 
-		//Set up middlewares
-
 		//Get to the target node and save all nodes in between
 		app.use(this.nodes);
+		//Access Control
+		app.use(this.acl);
 
 		//Set up a get hook on all paths
 		app.get('*', function(request, response) {
@@ -279,6 +279,54 @@ var Cantrip = {
 			} else if (_.isObject(obj[key])) {
 				this.addMetadataToModels(obj[key]);
 			}
+		}
+	},
+
+	acl: function(req, res, next) {
+		req.currentRole = ["admin"];
+		var acl = Cantrip.data._acl;
+		var url = req.path;
+		//strip "/" characters from the start and end of the url
+		// if (url[0] === "/") url = url.substr(1);
+		if (url[url.length-1] === "/") url = url.substr(0,url.length-1);
+
+		var foundRestriction = false; //This indicates whether there was any restriction found during the process. If not, the requests defaults to pass.
+		//Loop through all possible urls starting from the beginning, eg: /, /users, /users/:id, /users/:id/comments, /users/:id/comments/:id.
+		for (var i = 0; i < url.split("/").length; i++) {
+			//Get the current url fragment
+			var fragment = _.first(url.split("/"), (i+1)).join("/");
+			if (fragment === "") fragment = "/"; //fragment for the root element
+			//Build a regex tht will be used to match urls in the _acl table
+			var regex = "";
+			fragment.substr(1).split("/").forEach(function(f) {
+				if (f !== "") {
+					regex += "/(" + f + "|:[a-zA-Z]+)";
+				}
+			});
+			if (regex === "") regex = "/"; //regex for the root element
+			var matcher = new RegExp(regex);
+
+			//Loop through the _acl table
+			Object.keys(acl).forEach(function(key) {
+				if (key.match(matcher)) {
+					if (acl[key][req.method]) {
+						foundRestriction = true;	
+						//Check if the user is in a group that is inside this restriction
+						if (_.intersection(req.currentRole, acl[key][req.method]).length > 0) {
+							next();
+						}					
+					}
+				}
+			});
+		}
+
+		//Check if we found any restrictions along the way
+		if (foundRestriction) {
+			res.status(403).send({
+				"error": "Access denied."
+			});
+		} else {
+			next();
 		}
 	}
 }
