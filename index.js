@@ -189,6 +189,15 @@ var Cantrip = {
 					_modifiedDate: (new Date()).getTime()
 				}, req.body);
 			}
+			//Check if the given ID already exists in the collection
+			for (var i = 0; i < target.length; i++) {
+				if (target[i]._id === req.body._id) {
+					res.status(400).send({
+						"error": "An object with the same _id already exists in this collection."
+					});
+					return;
+				}
+			}
 			//Push it to the target array
 			target.push(req.body);
 			//Emit socketio event
