@@ -4,6 +4,7 @@ var fs = require('fs');
 var md5 = require('MD5');
 var cors = require('cors');
 var io = require("socket.io");
+var crypto = require("crypto");
 
 //Set up express
 var app = express();
@@ -71,6 +72,10 @@ var Cantrip = {
 			Cantrip.userManagement.signup(request, response, next);
 		});
 
+		app.post("/_auth/login", function(request, response, next) {
+			Cantrip.userManagement.login(request, response, next);
+		});
+
 		app.post("*", function(request, response) {
 			Cantrip.post(request, response);
 		});
@@ -111,8 +116,8 @@ var Cantrip = {
 					"error": "Requested meta object doesn't exist."
 				});
 			}
-		//If the first member of the url is not a meta object key, then check if we have _contents
-		} else if (Cantrip.data._contents){
+			//If the first member of the url is not a meta object key, then check if we have _contents
+		} else if (Cantrip.data._contents) {
 			route = Cantrip.data._contents;
 		}
 
@@ -238,7 +243,7 @@ var Cantrip = {
 	},
 	delete: function(req, res) {
 		//Get the parent node so we can unset the target
-		var parent = req.nodes[req.nodes.length -2];
+		var parent = req.nodes[req.nodes.length - 2];
 		//Last identifier in the path
 		var index = _.last(req.pathMembers);
 		//If it's an object (not an array), then we just unset the key with the keyword delete
@@ -302,20 +307,20 @@ var Cantrip = {
 	 */
 	acl: function(req, res, next) {
 		// ---- TEMP VALUES ---- //
-		req.currentRole = ["admin"];
+		req.currentRole = ["user"];
 		req.userID = "justAnID";
 		// ---- TEMP VALUES ---- //
 		var acl = Cantrip.data._acl;
 		var url = req.path;
 		//strip "/" characters from the start and end of the url
 		// if (url[0] === "/") url = url.substr(1);
-		if (url[url.length-1] === "/") url = url.substr(0,url.length-1);
+		if (url[url.length - 1] === "/") url = url.substr(0, url.length - 1);
 
 		var foundRestriction = false; //This indicates whether there was any restriction found during the process. If not, the requests defaults to pass.
 		//Loop through all possible urls starting from the beginning, eg: /, /users, /users/:id, /users/:id/comments, /users/:id/comments/:id.
 		for (var i = 0; i < url.split("/").length; i++) {
 			//Get the current url fragment
-			var fragment = _.first(url.split("/"), (i+1)).join("/");
+			var fragment = _.first(url.split("/"), (i + 1)).join("/");
 			if (fragment === "") fragment = "/"; //fragment for the root element
 			//Build a regex tht will be used to match urls in the _acl table
 			var regex = "^";
@@ -331,7 +336,7 @@ var Cantrip = {
 			for (var key in acl) {
 				if (key.match(matcher)) {
 					if (acl[key][req.method]) {
-						foundRestriction = true;	
+						foundRestriction = true;
 						//Check if the user is in a group that is inside this restriction
 						if (_.intersection(req.currentRole, acl[key][req.method]).length > 0) {
 							next();
@@ -340,7 +345,7 @@ var Cantrip = {
 
 						//Check if the user is the owner of the object, when "owner" as a group is specified
 						if (acl[key][req.method].indexOf("owner") > -1) {
-							var target = _.last(req.nodes);					
+							var target = _.last(req.nodes);
 							if (target._owner === req.userID) {
 								next();
 								return;
@@ -372,9 +377,43 @@ var Cantrip = {
 				});
 				return;
 			}
-			//TODO: password hashelés
+			req.body.password = md5(req.body.password + "" + Cantrip.data._token);
 			next();
+		},
+		login: function(req, res, next) {
+			var user = _.find(Cantrip.data._users, function(u) {
+				return u._id === req.body._id
+			});
+			if (!user || user.password !== md5(req.body.password + "" + Cantrip.data._token)) {
+				res.status(400).send({
+					"error": "Wrong _id or password."
+				});
+				return;
+			}
+			var toCrypt = {
+				_id: user._id,
+				roles: user.roles,
+				expires: (new Date()) + 1000 * 60 * 60 * 24
+			}
+
+			res.send({
+				token: Cantrip.encrypt(toCrypt)
+			});
 		}
+	},
+
+	encrypt: function(obj) {
+		var cipher = crypto.createCipher('aes-256-cbc', this.data._token);
+		var crypted = cipher.update(JSON.stringify(obj), 'utf8', 'hex')
+		crypted += cipher.final('hex');
+		return crypted;
+	},
+
+	decrypt: function(string) {
+		var decipher = crypto.createDecipher('aes-256-cbc', this.data._token);
+		var dec = decipher.update(string, 'hex', 'utf8')
+		dec += decipher.final('utf8');
+		return JSON.parse(dec);
 	}
 }
 
