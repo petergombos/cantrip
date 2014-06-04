@@ -283,7 +283,10 @@ var Cantrip = {
 	},
 
 	acl: function(req, res, next) {
-		req.currentRole = ["admin"];
+		// ---- TEMP VALUES ---- //
+		req.currentRole = ["user"];
+		req.userID = "justAnID";
+		// ---- TEMP VALUES ---- //
 		var acl = Cantrip.data._acl;
 		var url = req.path;
 		//strip "/" characters from the start and end of the url
@@ -307,17 +310,27 @@ var Cantrip = {
 			var matcher = new RegExp(regex);
 
 			//Loop through the _acl table
-			Object.keys(acl).forEach(function(key) {
+			for (var key in acl) {
 				if (key.match(matcher)) {
 					if (acl[key][req.method]) {
 						foundRestriction = true;	
 						//Check if the user is in a group that is inside this restriction
 						if (_.intersection(req.currentRole, acl[key][req.method]).length > 0) {
 							next();
-						}					
+							return;
+						}
+
+						//Check if the user is the owner of the object, when "owner" as a group is specified
+						if (acl[key][req.method].indexOf("owner") > -1) {
+							var target = _.last(req.nodes);					
+							if (_.isObject(target) && target._owner === req.userID) {
+								next();
+								return;
+							}
+						}
 					}
 				}
-			});
+			}
 		}
 
 		//Check if we found any restrictions along the way
