@@ -306,14 +306,25 @@ var Cantrip = {
 	 * By default every user can do anything.
 	 */
 	acl: function(req, res, next) {
-		// ---- TEMP VALUES ---- //
-		req.currentRole = ["user"];
-		req.userID = "justAnID";
-		// ---- TEMP VALUES ---- //
+		//Check if there is an Authorization header or the token is passed in as the GET parameter accessToken
+		if (req.get("Authorization") || req.query.accessToken) {
+			var token = req.get("Authorization") ? req.get("Authorization").split(" ")[1] : req.query.accessToken;
+			try {
+				var user = Cantrip.decrypt(token);
+			} catch (err) {
+				var user = undefined;
+			}
+			if (user && user.expires > (new Date()).getTime()) {
+				req.user = _.find(Cantrip.data._users, function(u) {
+					return u._id === user._id
+				});
+			} else {
+				req.user = {};
+			}
+		}
 		var acl = Cantrip.data._acl;
 		var url = req.path;
-		//strip "/" characters from the start and end of the url
-		// if (url[0] === "/") url = url.substr(1);
+		//strip "/" character from the end of the url
 		if (url[url.length - 1] === "/") url = url.substr(0, url.length - 1);
 
 		var foundRestriction = false; //This indicates whether there was any restriction found during the process. If not, the requests defaults to pass.
@@ -338,7 +349,7 @@ var Cantrip = {
 					if (acl[key][req.method]) {
 						foundRestriction = true;
 						//Check if the user is in a group that is inside this restriction
-						if (_.intersection(req.currentRole, acl[key][req.method]).length > 0) {
+						if (_.intersection(req.user.roles || [], acl[key][req.method]).length > 0) {
 							next();
 							return;
 						}
@@ -346,7 +357,7 @@ var Cantrip = {
 						//Check if the user is the owner of the object, when "owner" as a group is specified
 						if (acl[key][req.method].indexOf("owner") > -1) {
 							var target = _.last(req.nodes);
-							if (target._owner === req.userID) {
+							if (target._owner === req.user._id) {
 								next();
 								return;
 							}
@@ -377,7 +388,10 @@ var Cantrip = {
 				});
 				return;
 			}
+			//Create password hash
 			req.body.password = md5(req.body.password + "" + Cantrip.data._token);
+			//If it's not an array or doesn't exist, create an empty roles array
+			if (!_.isArray(req.body.roles)) req.body.roles = [];
 			next();
 		},
 		login: function(req, res, next) {
@@ -393,7 +407,7 @@ var Cantrip = {
 			var toCrypt = {
 				_id: user._id,
 				roles: user.roles,
-				expires: (new Date()) + 1000 * 60 * 60 * 24
+				expires: (new Date()).getTime() + 1000 * 60 * 60 * 24
 			}
 
 			res.send({
