@@ -61,9 +61,14 @@ var Cantrip = {
 		//Access Control
 		app.use(this.acl);
 
-		//Set up a get hook on all paths
+
+		//Set up a get hook on all default paths
 		app.get('*', function(request, response) {
 			Cantrip.get(request, response);
+		});
+
+		app.post("/_auth/signup", function(request, response, next) {
+			Cantrip.userManagement.signup(request, response, next);
 		});
 
 		app.post("*", function(request, response) {
@@ -290,10 +295,14 @@ var Cantrip = {
 			}
 		}
 	},
-
+	/**
+	 * This middleware makes sure that the user making a request is authorized to do so.
+	 * Restrictions to paths are stored in the _acl meta object.
+	 * By default every user can do anything.
+	 */
 	acl: function(req, res, next) {
 		// ---- TEMP VALUES ---- //
-		req.currentRole = ["user"];
+		req.currentRole = ["admin"];
 		req.userID = "justAnID";
 		// ---- TEMP VALUES ---- //
 		var acl = Cantrip.data._acl;
@@ -309,15 +318,15 @@ var Cantrip = {
 			var fragment = _.first(url.split("/"), (i+1)).join("/");
 			if (fragment === "") fragment = "/"; //fragment for the root element
 			//Build a regex tht will be used to match urls in the _acl table
-			var regex = "";
+			var regex = "^";
 			fragment.substr(1).split("/").forEach(function(f) {
 				if (f !== "") {
 					regex += "/(" + f + "|:[a-zA-Z]+)";
 				}
 			});
-			if (regex === "") regex = "/"; //regex for the root element
+			regex += "$";
+			if (regex === "^$") regex = "^/$"; //regex for the root element
 			var matcher = new RegExp(regex);
-
 			//Loop through the _acl table
 			for (var key in acl) {
 				if (key.match(matcher)) {
@@ -332,7 +341,7 @@ var Cantrip = {
 						//Check if the user is the owner of the object, when "owner" as a group is specified
 						if (acl[key][req.method].indexOf("owner") > -1) {
 							var target = _.last(req.nodes);					
-							if (_.isObject(target) && target._owner === req.userID) {
+							if (target._owner === req.userID) {
 								next();
 								return;
 							}
@@ -348,6 +357,22 @@ var Cantrip = {
 				"error": "Access denied."
 			});
 		} else {
+			next();
+		}
+	},
+
+	userManagement: {
+		signup: function(req, res, next) {
+			//Redirect to write to the _users node instead
+			req.nodes = [Cantrip.data._users];
+			//Check for required password field
+			if (!req.body.password) {
+				res.status(400).send({
+					"error": "Missing required field: password."
+				});
+				return;
+			}
+			//TODO: password hashelés
 			next();
 		}
 	}
