@@ -1,0 +1,581 @@
+{
+	"products": [{
+		"_id": "b1d799f2ea42ab8769c591aa3e146cb7",
+		"_createdDate": 1401118763448,
+		"_modifiedDate": 1401118763448,
+		"hungarian": {
+			"assemply": "szerszám nélkül, egyedi csavarral",
+			"contents": "1db asztal, 2db csavar, útmutató",
+			"colors": "fekete",
+			"warranty": "1 év",
+			"cleaning": "száraz vagy nedves törlőkendővel",
+			"weight": "13.00 kg",
+			"flatSize": "75x60x75 cm",
+			"dimensions": "222x90x1,2 cm",
+			"material": "egyedi gyártású mart szendvicspanel, gumi, fenyő rétegelt lemez, alumínium csavar, keményviasz-olaj felületkezelés",
+			"price": "290000",
+			"description": "",
+			"name": "GRAND PLIÉ ASZTAL"
+		},
+		"english": {
+			"assemply": "with 2 specific screws (no extra tool needed) ",
+			"contents": "1 table, 2 screws, assembly instruction",
+			"colors": "rubber/black",
+			"warranty": "1 year",
+			"cleaning": "mildly soapy wet wipe",
+			"weight": "13.00 kg",
+			"flatSize": "L222.W90.H1,2 cm",
+			"dimensions": "L75.W60.H75 cm",
+			"material": "rubber, pine plywood, aluminium screw, Hard Wax Oil finish ",
+			"price": "970",
+			"description": "",
+			"name": "GRAND PLIÉ TABLE"
+		},
+		"common": {
+			"gallery": [{
+				"_id": "a779baaac3709a4eb7a356400542d7a7",
+				"_createdDate": 1401281455352,
+				"_modifiedDate": 1401468260493,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_f18019a9498bb03f7c3dc8e95573078e.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_f18019a9498bb03f7c3dc8e95573078e.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_3c5234fb95fc1aa2bf3216ed1ac791ad.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_3c5234fb95fc1aa2bf3216ed1ac791ad.jpg"
+			}, {
+				"_id": "7e29f37970f1e15c9abf8599dd84e01a",
+				"_createdDate": 1401281455353,
+				"_modifiedDate": 1401468260493,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_c9b032ebf13086dcac051d01f13f4fb2.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_c9b032ebf13086dcac051d01f13f4fb2.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_de1450281bf8aec78ef98c2491cee040.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_de1450281bf8aec78ef98c2491cee040.jpg"
+			}, {
+				"_id": "8519edbc03ac9a7991b11772fd23b728",
+				"_createdDate": 1401468259603,
+				"_modifiedDate": 1401468260494,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_df7f37189fe3a6efb8ae6c385fd29b69.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_df7f37189fe3a6efb8ae6c385fd29b69.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_9da7e72a1628cb2a99e2e50092ae1368.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_9da7e72a1628cb2a99e2e50092ae1368.jpg",
+				"highlight": true
+			}]
+		}
+	}, {
+		"_id": "0f5aed4eecdab648d3ba466c805e6773",
+		"_createdDate": 1401187508043,
+		"_modifiedDate": 1401187508043,
+		"hungarian": {
+			"assemply": "szerszám nélkül, egyedi csavarral",
+			"contents": "1db ágyasztal, 2db csavar, útmutató",
+			"colors": "gumi/fekete; vagy filc/kék, rózsaszín, fehér",
+			"warranty": "1 év",
+			"cleaning": "száraz vagy nedves törlőkendővel",
+			"weight": "gumi 4.50 kg / filc 3.00 kg",
+			"flatSize": "120x50x1,2 cm",
+			"dimensions": "66x32x28 cm",
+			"material": "egyedi gyártású mart szendvicspanel, gumi vagy filc, fenyő rétegelt lemez, alumínium csavar, keményviasz-olaj felületkezelés",
+			"price": "85000",
+			"description": "",
+			"name": "PETIT PLIÉ ÁGYASZTAL"
+		},
+		"english": {
+			"assemply": "with 2 specific screws (no extra tool needed) ",
+			"contents": "1 table, 2 screws, assembly instruction",
+			"colors": "rubber/black; OR felt/blue, pink, white",
+			"warranty": "1 year",
+			"cleaning": "mildly soapy wet wipe",
+			"weight": "rubber 4.50 kg / felt 3.00 kg",
+			"flatSize": "L120.W50.H1,2 cm",
+			"dimensions": "L66.W32.H28 cm",
+			"material": "rubber/felt, pine plywood, aluminium screw, Hard Wax Oil finish ",
+			"price": "290",
+			"description": "",
+			"name": "PETIT PLIÉ BED TABLE"
+		},
+		"common": {
+			"gallery": [{
+				"_id": "191704717f3251f906b7a9e79e22a6c4",
+				"_createdDate": 1401281670995,
+				"_modifiedDate": 1401468412132,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_98b9a861cadca212d2952915f871a961.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_98b9a861cadca212d2952915f871a961.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_98b9a861cadca212d2952915f871a961.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_948ab0c89561291f02e5a1c8a269050c.jpg",
+				"highlight": false
+			}, {
+				"_id": "e62d5f9170ffeb86b294bf94aa80aa7c",
+				"_createdDate": 1401281670872,
+				"_modifiedDate": 1401468412132,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_af41ff04fe24a18cafde666d8b2b2411.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_af41ff04fe24a18cafde666d8b2b2411.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_af41ff04fe24a18cafde666d8b2b2411.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_abdcf32cf3aa5183a1cc6dc0d96024a6.jpg"
+			}, {
+				"_id": "1069ec26b6a5427115502de4ce05e270",
+				"_createdDate": 1401468411490,
+				"_modifiedDate": 1401468412132,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_a0ecc3ccc90a0c91d0d52ec2381ae46d.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_5c8b3e963be91555de9ddc976079a7ce.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_5c8b3e963be91555de9ddc976079a7ce.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_5c8b3e963be91555de9ddc976079a7ce.jpg",
+				"highlight": true
+			}]
+		}
+	}, {
+		"_id": "d94f08f2b7e3ae177e020cfe52c9e7f8",
+		"_createdDate": 1401189210958,
+		"_modifiedDate": 1401189210958,
+		"hungarian": {
+			"assemply": "szerszám nélkül, egyedi csavarral ",
+			"contents": "1db hokedli, 1db csavar, útmutató",
+			"colors": "gumi/fekete",
+			"warranty": "1 év",
+			"cleaning": "száraz vagy nedves törlőkendővel",
+			"weight": "6.00 kg",
+			"flatSize": "112x105x1,2 cm",
+			"dimensions": "39x36x43 cm",
+			"material": "egyedi gyártású mart szendvicspanel, gumi, fenyő rétegelt lemez, alumínium csavar, keményviasz-olaj felületkezelés",
+			"price": "75000",
+			"description": "",
+			"name": "POUF PLIÉ HOKEDLI"
+		},
+		"english": {
+			"assemply": "with 1 specific screw (no extra tool needed) ",
+			"contents": "1 stool, 1 screw, assembly instruction ",
+			"colors": "rubber/black ",
+			"warranty": "1 year",
+			"cleaning": "mildly soapy wet wipe",
+			"weight": "6.00kg",
+			"flatSize": "L112.W105.H1,2 cm ",
+			"dimensions": "L39.W36.H43 cm",
+			"material": "rubber, pine plywood, aluminium screw, Hard Wax Oil finish ",
+			"price": "260",
+			"description": "",
+			"name": "POUF PLIÉ STOOL"
+		},
+		"common": {
+			"gallery": [{
+				"_id": "f5b7f1c7724ff8937d9827e1d683da69",
+				"_createdDate": 1401281793718,
+				"_modifiedDate": 1401468340789,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_4138976e2db3752627f5d13abfbd40d4.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_4138976e2db3752627f5d13abfbd40d4.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_4138976e2db3752627f5d13abfbd40d4.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_ad8f16ee04f67913ab89a778f5748630.jpg",
+				"highlight": false
+			}, {
+				"_id": "c2284f0235fe2d49788a58e00ae25169",
+				"_createdDate": 1401281792579,
+				"_modifiedDate": 1401468340789,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_44e2ac7f1abe7f29c5a14bb9eeaae7c0.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_9a7bb8b872afa550344233d238d7be66.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_9a7bb8b872afa550344233d238d7be66.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_9a7bb8b872afa550344233d238d7be66.jpg"
+			}, {
+				"_id": "befab13607f1a929e4211a93beae63ac",
+				"_createdDate": 1401281793718,
+				"_modifiedDate": 1401468340789,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_045e8762af8a3e912170991e91cfcaf0.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_045e8762af8a3e912170991e91cfcaf0.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_045e8762af8a3e912170991e91cfcaf0.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_33d2760dd8532cb89240b6486c398268.jpg",
+				"highlight": false
+			}, {
+				"_id": "0b98bb4f0c53a2df1ee036daf184dc62",
+				"_createdDate": 1401468339793,
+				"_modifiedDate": 1401468340790,
+				"normal": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_normal_daf21ee1ebcd8823356949ee1c9cdee6.jpg",
+				"original": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_original_44cfe411dea3b18bc103e4b4e352b24b.jpg",
+				"thumbnail": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_thumbnail_44cfe411dea3b18bc103e4b4e352b24b.jpg",
+				"gallery": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_gallery_44cfe411dea3b18bc103e4b4e352b24b.jpg",
+				"highlight": true
+			}]
+		}
+	}, {
+		"_id": "77337568dbad1bd1ac09e33360533c99",
+		"_createdDate": 1401960059464,
+		"_modifiedDate": 1401960059464,
+		"hungarian": {
+			"assemply": "",
+			"contents": "",
+			"colors": "",
+			"warranty": "",
+			"cleaning": "",
+			"weight": "",
+			"flatSize": "",
+			"dimensions": "",
+			"material": "",
+			"price": "",
+			"description": "",
+			"name": "dsada"
+		},
+		"english": {
+			"assemply": "",
+			"contents": "",
+			"colors": "",
+			"warranty": "",
+			"cleaning": "",
+			"weight": "",
+			"flatSize": "",
+			"dimensions": "",
+			"material": "",
+			"price": "",
+			"description": "",
+			"name": "dasda"
+		},
+		"common": {
+			"gallery": []
+		}
+	}, {
+		"_id": "ea96dffb651d1f47e5b04f1caadcbbcd",
+		"_createdDate": 1401960888643,
+		"_modifiedDate": 1401960888643,
+		"hungarian": {
+			"assemply": "",
+			"contents": "",
+			"colors": "",
+			"warranty": "",
+			"cleaning": "",
+			"weight": "",
+			"flatSize": "",
+			"dimensions": "",
+			"material": "",
+			"price": "",
+			"description": "",
+			"name": "dasfasd"
+		},
+		"english": {
+			"assemply": "",
+			"contents": "",
+			"colors": "",
+			"warranty": "",
+			"cleaning": "",
+			"weight": "",
+			"flatSize": "",
+			"dimensions": "",
+			"material": "",
+			"price": "",
+			"description": "",
+			"name": "dassfdad"
+		},
+		"common": {
+			"gallery": []
+		}
+	}],
+	"orders": [{
+		"_id": "a0eb72e518e68ae35d99b8f832ba6781",
+		"_createdDate": 1401277750138,
+		"_modifiedDate": 1401277750138,
+		"client": {
+			"comment": "",
+			"tel": "201",
+			"address": "dsadsa",
+			"email": "dassa@sda.jhu",
+			"name": "add asda",
+			"language": "hungarian"
+		},
+		"comment": "",
+		"status": "New Order",
+		"products": [{
+			"_id": "0f5aed4eecdab648d3ba466c805e6773",
+			"_createdDate": 1401277750138,
+			"_modifiedDate": 1401715549469,
+			"name": "PETIT PLIÉ ÁGYASZTAL",
+			"price": "85000",
+			"currency": "HUF",
+			"quantity": "1"
+		}, {
+			"_id": "d94f08f2b7e3ae177e020cfe52c9e7f8",
+			"_createdDate": 1401277750138,
+			"_modifiedDate": 1401715549495,
+			"name": "POUF PLIÉ HOKEDLI",
+			"price": "75000",
+			"currency": "HUF",
+			"quantity": "1"
+		}]
+	}, {
+		"_id": "4ae7618eb7753dffdd18e579dd5ec010",
+		"_createdDate": 1401699175934,
+		"_modifiedDate": 1401699175934,
+		"client": {
+			"comment": "This is my note",
+			"tel": "0036308582068",
+			"address": "6000 Kecskmét",
+			"email": "peter@kriek.hu",
+			"name": "Péter Gombos",
+			"language": "hungarian"
+		},
+		"comment": "This is my note",
+		"status": "New Order",
+		"products": [{
+			"_id": "0f5aed4eecdab648d3ba466c805e6773",
+			"_createdDate": 1401699175934,
+			"_modifiedDate": 1401699175934,
+			"name": "PETIT PLIÉ ÁGYASZTAL",
+			"price": "85000",
+			"currency": "HUF",
+			"quantity": "22"
+		}, {
+			"_id": "d94f08f2b7e3ae177e020cfe52c9e7f8",
+			"_createdDate": 1401699175934,
+			"_modifiedDate": 1401699175934,
+			"name": "POUF PLIÉ HOKEDLI",
+			"price": "75000",
+			"currency": "HUF",
+			"quantity": "4"
+		}]
+	}, {
+		"_id": "9ab112c1a436309bb596dca794f3c6b3",
+		"_createdDate": 1401957238119,
+		"_modifiedDate": 1401957238119,
+		"foo": "bar"
+	}],
+	"schema": {
+		"products": {
+			"hungarian": [{
+				"_id": "04e9350788736baab00d44c105f6479e",
+				"_createdDate": 1401112810862,
+				"_modifiedDate": 1401187968343,
+				"key": "name",
+				"component": "textInput",
+				"validation": "min5",
+				"title": "Name",
+				"description": "This is the name of the product"
+			}, {
+				"_id": "17481c6e36782c413e699cfea6e811ad",
+				"_createdDate": 1401112810862,
+				"_modifiedDate": 1401187968343,
+				"key": "description",
+				"component": "textInput",
+				"validation": "",
+				"title": "Description",
+				"description": "This is the description of the product"
+			}, {
+				"_id": "0bd806353a6cea184738a91bf2f0055d",
+				"_createdDate": 1401112810862,
+				"_modifiedDate": 1401187968343,
+				"key": "price",
+				"component": "textInput",
+				"validation": "",
+				"title": "Price",
+				"description": "This is the price of the product"
+			}, {
+				"_id": "9b17a88e217893d8530637dfd28bb78c",
+				"_createdDate": 1401112810863,
+				"_modifiedDate": 1401187968343,
+				"key": "material",
+				"component": "textInput",
+				"validation": "",
+				"title": "Material"
+			}, {
+				"_id": "8382b9a2a11528e9e17e2fe3934794f8",
+				"_createdDate": 1401112810863,
+				"_modifiedDate": 1401187968351,
+				"key": "dimensions",
+				"component": "textInput",
+				"validation": "",
+				"title": "Dimensions"
+			}, {
+				"_id": "0da54bda24e26946b2a4fb36bc8c6673",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968352,
+				"key": "flatSize",
+				"component": "textInput",
+				"validation": "",
+				"title": "Flat size"
+			}, {
+				"_id": "ef02411ae025fa9ff6cd1c10ad656fce",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968352,
+				"key": "weight",
+				"component": "textInput",
+				"validation": "",
+				"title": "Weight"
+			}, {
+				"_id": "a1dca4e90ee2c4acbc6484cb0cd6795f",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968352,
+				"key": "cleaning",
+				"component": "textInput",
+				"validation": "",
+				"title": "Cleaning"
+			}, {
+				"_id": "7eb3a34512338fc417f9a8262da368ee",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968352,
+				"key": "warranty",
+				"component": "textInput",
+				"validation": "",
+				"title": "Warranty"
+			}, {
+				"_id": "6e9bfb3010a505bf962c2f86e771a304",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968352,
+				"key": "colors",
+				"component": "textInput",
+				"validation": "",
+				"title": "Colours"
+			}, {
+				"_id": "8f15b7e75c1ed457f565b2fe80cf0586",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968352,
+				"key": "contents",
+				"component": "textInput",
+				"validation": "",
+				"title": "Package Contains"
+			}, {
+				"_id": "cf9eb18277b57ce21dacbcd07c53ec77",
+				"_createdDate": 1401280244947,
+				"_modifiedDate": 1401280244947,
+				"key": "assemply",
+				"component": "textInput",
+				"validation": "",
+				"title": "Assembly"
+			}],
+			"english": [{
+				"_id": "04e9350788736baab00d44c105f6479e",
+				"_createdDate": 1401112810862,
+				"_modifiedDate": 1401187968352,
+				"key": "name",
+				"component": "textInput",
+				"validation": "min5",
+				"title": "Name",
+				"description": "This is the name of the product"
+			}, {
+				"_id": "17481c6e36782c413e699cfea6e811ad",
+				"_createdDate": 1401112810862,
+				"_modifiedDate": 1401187968353,
+				"key": "description",
+				"component": "textInput",
+				"validation": "",
+				"title": "Description",
+				"description": "This is the description of the product"
+			}, {
+				"_id": "0bd806353a6cea184738a91bf2f0055d",
+				"_createdDate": 1401112810862,
+				"_modifiedDate": 1401187968353,
+				"key": "price",
+				"component": "textInput",
+				"validation": "",
+				"title": "Price",
+				"description": "This is the price of the product"
+			}, {
+				"_id": "9b17a88e217893d8530637dfd28bb78c",
+				"_createdDate": 1401112810863,
+				"_modifiedDate": 1401187968353,
+				"key": "material",
+				"component": "textInput",
+				"validation": "",
+				"title": "Material"
+			}, {
+				"_id": "8382b9a2a11528e9e17e2fe3934794f8",
+				"_createdDate": 1401112810863,
+				"_modifiedDate": 1401187968353,
+				"key": "dimensions",
+				"component": "textInput",
+				"validation": "",
+				"title": "Dimensions"
+			}, {
+				"_id": "0da54bda24e26946b2a4fb36bc8c6673",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968353,
+				"key": "flatSize",
+				"component": "textInput",
+				"validation": "",
+				"title": "Flat size"
+			}, {
+				"_id": "ef02411ae025fa9ff6cd1c10ad656fce",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968356,
+				"key": "weight",
+				"component": "textInput",
+				"validation": "",
+				"title": "Weight"
+			}, {
+				"_id": "a1dca4e90ee2c4acbc6484cb0cd6795f",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968356,
+				"key": "cleaning",
+				"component": "textInput",
+				"validation": "",
+				"title": "Cleaning"
+			}, {
+				"_id": "7eb3a34512338fc417f9a8262da368ee",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968356,
+				"key": "warranty",
+				"component": "textInput",
+				"validation": "",
+				"title": "Warranty"
+			}, {
+				"_id": "6e9bfb3010a505bf962c2f86e771a304",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968357,
+				"key": "colors",
+				"component": "textInput",
+				"validation": "",
+				"title": "Colours"
+			}, {
+				"_id": "8f15b7e75c1ed457f565b2fe80cf0586",
+				"_createdDate": 1401112810864,
+				"_modifiedDate": 1401187968357,
+				"key": "contents",
+				"component": "textInput",
+				"validation": "",
+				"title": "Package Contains"
+			}, {
+				"_id": "2ea4b18bf09c3733a14b879ac5e9c7e2",
+				"_createdDate": 1401280251959,
+				"_modifiedDate": 1401280251959,
+				"key": "assemply",
+				"component": "textInput",
+				"validation": "",
+				"title": "Assembly"
+			}],
+			"common": [{
+				"_id": "7a5d0adbd03ec3558c6882f9eb8bbfba",
+				"_createdDate": 1401112810865,
+				"_modifiedDate": 1401187968357,
+				"key": "gallery",
+				"component": "gallery",
+				"validation": "",
+				"title": "Gallery",
+				"description": "A collection of pictures for the product"
+			}]
+		}
+	},
+	"settings": {
+		"mainPicture": {
+			"banner": "https://s3-eu-west-1.amazonaws.com/apps.cnvs.io/1/assets/user/1_banner_82383ab9e30773024a7a8cd5af590565.jpg"
+		},
+		"color": "#2b2b2b"
+	},
+	"_salt": "dsal231mdasj23sdas",
+	"_users": [{
+		"_id": "admin",
+		"_createdDate": 1401957119373,
+		"_modifiedDate": 1401957119373,
+		"password": "9c0731fa417ce3bb0683de96e8136ff0",
+		"roles": ["admin"]
+	}],
+	"_auth": {
+		"signup": [],
+		"login": []
+	},
+	"_acl": {
+		"/": {
+			"GET": ["admin"],
+			"POST": ["admin"],
+			"DELETE": ["admin"],
+			"PUT": ["admin"]
+		},
+		"/products": {
+			"GET": ["unknown"]
+		},
+		"/orders": {
+			"POST": ["unknown"]
+		},
+		"/_auth": {
+			"POST": ["unknown"]
+		}
+	}
+}
