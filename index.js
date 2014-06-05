@@ -59,7 +59,7 @@ var Cantrip = {
 		//Get to the target node and save all nodes in between
 		app.use(this.nodes);
 		//Access Control
-		app.use(this.acl);
+		// app.use(this.acl);
 
 		//Set up a get hook on all default paths
 		app.get('*', function(request, response) {
