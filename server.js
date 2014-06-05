@@ -17,7 +17,7 @@ Cantrip.options.port = process.env.PORT || 3000;
  * A value of zero means it is never saved.
  * @type {Number}
  */
-Cantrip.options.saveEvery = 1;
+Cantrip.options.saveEvery = 0;
 
 /**
  * Override which file to save to. Default is data.json.
