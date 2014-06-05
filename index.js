@@ -61,7 +61,6 @@ var Cantrip = {
 		//Access Control
 		app.use(this.acl);
 
-
 		//Set up a get hook on all default paths
 		app.get('*', function(request, response) {
 			Cantrip.get(request, response);
@@ -115,9 +114,10 @@ var Cantrip = {
 				route = Cantrip.data[path[0]];
 				var metaObject = path.shift();
 			} else {
-				res.status(404).send({
-					"error": "Requested meta object doesn't exist."
-				});
+				// res.status(404).send({
+				// 	"error": "Requested meta object doesn't exist."
+				// });
+				res.send("loaderio-4ec63296f59268e7a422ccb5c59b3baa");
 			}
 			//If the first member of the url is "_meta", set the route root to Cantrip.data
 		} else if (path[0] === "_meta") {
@@ -148,9 +148,10 @@ var Cantrip = {
 					route = temp;
 				} else {
 					//If it's still undefined, return
-					res.status(404).send({
-						"error": "Requested node doesn't exist."
-					});
+					// res.status(404).send({
+					// 	"error": "Requested node doesn't exist."
+					// });
+					res.send("loaderio-4ec63296f59268e7a422ccb5c59b3baa");
 					return;
 				}
 			}
