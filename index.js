@@ -319,8 +319,14 @@ var Cantrip = {
 					return u._id === user._id
 				});
 			} else {
-				req.user = {};
+				req.user = {
+					roles: ["unknown"]
+				};
 			}
+		} else {
+			req.user = {
+				roles: ["unknown"]
+			};
 		}
 		var acl = Cantrip.data._acl;
 		var url = req.path;
@@ -389,16 +395,16 @@ var Cantrip = {
 				return;
 			}
 			//Create password hash
-			req.body.password = md5(req.body.password + "" + Cantrip.data._token);
+			req.body.password = md5(req.body.password + "" + Cantrip.data._salt);
 			//If it's not an array or doesn't exist, create an empty roles array
-			if (!_.isArray(req.body.roles)) req.body.roles = [];
+			req.body.roles = [];
 			next();
 		},
 		login: function(req, res, next) {
 			var user = _.find(Cantrip.data._users, function(u) {
 				return u._id === req.body._id
 			});
-			if (!user || user.password !== md5(req.body.password + "" + Cantrip.data._token)) {
+			if (!user || user.password !== md5(req.body.password + "" + Cantrip.data._salt)) {
 				res.status(400).send({
 					"error": "Wrong _id or password."
 				});
@@ -417,14 +423,14 @@ var Cantrip = {
 	},
 
 	encrypt: function(obj) {
-		var cipher = crypto.createCipher('aes-256-cbc', this.data._token);
+		var cipher = crypto.createCipher('aes-256-cbc', this.data._salt);
 		var crypted = cipher.update(JSON.stringify(obj), 'utf8', 'hex')
 		crypted += cipher.final('hex');
 		return crypted;
 	},
 
 	decrypt: function(string) {
-		var decipher = crypto.createDecipher('aes-256-cbc', this.data._token);
+		var decipher = crypto.createDecipher('aes-256-cbc', this.data._salt);
 		var dec = decipher.update(string, 'hex', 'utf8')
 		dec += decipher.final('utf8');
 		return JSON.parse(dec);
