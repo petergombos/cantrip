@@ -13,18 +13,21 @@ module.exports = function(grunt) {
                 }
             }
         },
-        jasmine: {
-            all: {
-                src: 'index.js',
-                options: {
-                    specs: 'tests/*Spec.js'
-                }
-            }
+        jasmine_node: {
+            options: {
+                forceExit: true,
+                match: '.',
+                matchall: false,
+                extensions: 'js',
+                specNameMatcher: 'Spec',
+            },
+            all: ['tests/']
         }
     });
 
     //console.log(grunt.option.flags());
 
     grunt.registerTask('server', ["nodemon"]);
+    grunt.registerTask('test', ["jasmine_node"]);
 
 };

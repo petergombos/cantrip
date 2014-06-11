@@ -15,7 +15,8 @@
     "grunt": "~0.4.4",
     "grunt-nodemon": "~0.2.1",
     "grunt-contrib-jasmine": "^0.6.3",
-    "request": "^2.34.0"
+    "request": "^2.34.0",
+    "grunt-jasmine-node": "~0.2.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
