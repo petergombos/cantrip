@@ -105,7 +105,7 @@ var Cantrip = {
 		//If we're trying to access a meta object
 		if (path.length > 0 && path[0][0] === "_" && path[0] !== "_meta") {
 			//Set the root object to that meta object, or throw an error if it doesn't exist
-			if (Cantrip.data[path[0]]) {
+			if (Cantrip.data[path[0]] !== undefined) {
 				route = Cantrip.data[path[0]];
 				var metaObject = path.shift();
 			} else {
@@ -113,10 +113,11 @@ var Cantrip = {
 					"error": "Requested meta object doesn't exist."
 				});
 			}
-			//If the first member of the url is not a meta object key, then check if we have _contents
+			//If the first member of the url is "_meta", set the route root to Cantrip.data
 		} else if (path[0] === "_meta") {
 			route = Cantrip.data;
 			var metaObject = path.shift();
+			//If the first member of the url is not a meta object key, then check if we have _contents
 		} else if (Cantrip.data._contents) {
 			route = Cantrip.data._contents;
 		}
@@ -176,7 +177,7 @@ var Cantrip = {
 		var target = _.last(req.nodes);
 		if (_.isObject(target) || _.isArray(target)) {
 			res.send(target);
-		} else if (target) {
+		} else {
 			res.send({
 				value: target
 			});
