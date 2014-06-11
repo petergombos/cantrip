@@ -90,7 +90,7 @@ var Cantrip = {
 
 	nodes: function(req, res, next) {
 		//Parse the path and save it on the request
-		req.pathMembers = _.filter(req.url.split("/"), function(string) {
+		req.pathMembers = _.filter(req.path.split("/"), function(string) {
 			return string !== "";
 		});
 		var path = req.pathMembers;

@@ -204,6 +204,17 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 				});
 			});
 
+			it("shouldn't matter if there is a query string at the end of the url", function(done) {
+				request({
+						method: "GET",
+						url: serverUrl + "foo/collection?foo=bar&baz=true",
+						json: true,
+					}, function(error, response, body) {
+						expect(body.length).toBe(2);
+					done();
+				});
+			});
+
 		});
 
 		describe("DELETE", function() {
