@@ -14,14 +14,14 @@ describe("Cantrip's _meta attributes provide a place to store metadata.", functi
 					_contents: {
 						foo: "bar"
 					},
-					_auth: true
+					_auth: false
 				}
 			}, function(error, response, body) {
 				expect(body).toEqual({
 					_contents: {
 						foo: "bar"
 					},
-					_auth: true
+					_auth: false
 				});
 				done();
 			});
@@ -50,7 +50,7 @@ describe("Cantrip's _meta attributes provide a place to store metadata.", functi
 					"_contents": {
 						"foo": "bar"
 					},
-					"_auth": true
+					"_auth": false
 				});
 				done();
 			});
@@ -63,7 +63,7 @@ describe("Cantrip's _meta attributes provide a place to store metadata.", functi
 				json: {}
 			}, function(error, response, body) {
 				expect(body).toEqual({
-					value: true
+					value: false
 				});
 				done();
 			});

@@ -3,7 +3,6 @@ var _ = require("underscore");
 var fs = require('fs');
 var md5 = require('MD5');
 var cors = require('cors');
-var io = require("socket.io");
 
 //Set up express
 var app = express();
@@ -80,9 +79,6 @@ var Cantrip = {
 
 		//Start the server
 		this.server = this.app.listen(this.options.port);
-
-		//Start socket io service too
-		this.io = io.listen(this.server);
 
 	},
 	/**
@@ -209,8 +205,6 @@ var Cantrip = {
 			}
 			//Push it to the target array
 			target.push(req.body);
-			//Emit socketio event
-			this.io.sockets.emit("POST:/" + req.path, req.body);
 			//Send the response
 			res.send(req.body);
 			//Start saving the data
@@ -244,8 +238,6 @@ var Cantrip = {
 			target = _.extend(target, req.body);
 			//Send the response
 			res.send(target);
-			//Emit socketio event
-			this.io.sockets.emit("PUT:/" + req.path, target);
 			//Start saving the data
 			this.saveData();
 		} else {
@@ -284,8 +276,6 @@ var Cantrip = {
 		}
 		//Send the response
 		res.send(parent || {});
-		//Emit socketio event
-		this.io.sockets.emit("DELETE:/" + req.path, parent);
 		//Start saving the data
 		this.saveData();
 	},
