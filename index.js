@@ -106,8 +106,8 @@ var Cantrip = {
 					"error": "Requested meta object doesn't exist."
 				});
 			}
-		//If the first member of the url is not a meta object key, then check if we have _contents
-		} else if (Cantrip.data._contents){
+			//If the first member of the url is not a meta object key, then check if we have _contents
+		} else if (Cantrip.data._contents) {
 			route = Cantrip.data._contents;
 		}
 
@@ -216,6 +216,20 @@ var Cantrip = {
 		var target = _.last(req.nodes);
 		if (_.isObject(target)) {
 			this.addMetadataToModels(req.body);
+			//If it's an element inside a collection, make sure the overwritten _id is not present in the collection
+			if (req.body._id && target._id && req.body._id !== target._id) {
+				var parent = req.nodes[req.nodes.length - 2];
+				if (parent) {
+					for (var i = 0; i < parent.length; i++) {
+						if (parent[i]._id === req.body._id) {
+							res.status(400).send({
+								"error": "An object with the same _id already exists in this collection."
+							});
+							return;
+						}
+					}
+				}
+			}
 			//If the target had previously had a _modifiedDate property, set it to the current time
 			if (target._modifiedDate) target._modifiedDate = (new Date()).getTime();
 			target = _.extend(target, req.body);
@@ -233,7 +247,7 @@ var Cantrip = {
 	},
 	delete: function(req, res) {
 		//Get the parent node so we can unset the target
-		var parent = req.nodes[req.nodes.length -2];
+		var parent = req.nodes[req.nodes.length - 2];
 		//Last identifier in the path
 		var index = _.last(req.pathMembers);
 		//If it's an object (not an array), then we just unset the key with the keyword delete
