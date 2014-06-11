@@ -405,19 +405,21 @@ var Cantrip = {
 				return u._id === req.body._id
 			});
 			if (!user || user.password !== md5(req.body.password + "" + Cantrip.data._salt)) {
-				res.status(400).send({
+				res.status(403).send({
 					"error": "Wrong _id or password."
 				});
 				return;
 			}
+			var expires = (new Date()).getTime() + 1000 * 60 * 60 * 24;
 			var toCrypt = {
 				_id: user._id,
 				roles: user.roles,
-				expires: (new Date()).getTime() + 1000 * 60 * 60 * 24
+				expires: expires
 			}
 
 			res.send({
-				token: Cantrip.encrypt(toCrypt)
+				token: Cantrip.encrypt(toCrypt),
+				expires: expires
 			});
 		}
 	},
