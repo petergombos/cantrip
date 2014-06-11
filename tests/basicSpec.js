@@ -265,14 +265,18 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 				});
 			});
 
-
-
-
+			it("should allow you to delete a key from the root object", function(done) {
+				request({
+						method: "DELETE",
+						url: serverUrl + "foo",
+						json: true,
+					}, function(error, response, body) {
+					expect(body).toEqual({});
+					done();
+				});
+			});
+			
 
 		});
-
-		
-
 	});
-
 });

@@ -79,12 +79,19 @@ var Cantrip = {
 		});
 
 		//Start the server
-		var server = this.app.listen(this.options.port);
+		this.server = this.app.listen(this.options.port);
 
 		//Start socket io service too
-		this.io = io.listen(server);
+		this.io = io.listen(this.server);
 
 	},
+	/**
+	 * Stop the server.
+	 */
+	close: function() {
+		this.server.close();
+	},
+
 	nodes: function(req, res, next) {
 		//Parse the path and save it on the request
 		req.pathMembers = _.filter(req.url.split("/"), function(string) {
@@ -96,7 +103,7 @@ var Cantrip = {
 		//By default the root is the whole JSON
 		var route = Cantrip.data;
 		//If we're trying to access a meta object
-		if (path.length > 0 && path[0][0] === "_") {
+		if (path.length > 0 && path[0][0] === "_" && path[0] !== "_meta") {
 			//Set the root object to that meta object, or throw an error if it doesn't exist
 			if (Cantrip.data[path[0]]) {
 				route = Cantrip.data[path[0]];
@@ -107,16 +114,17 @@ var Cantrip = {
 				});
 			}
 			//If the first member of the url is not a meta object key, then check if we have _contents
+		} else if (path[0] === "_meta") {
+			route = Cantrip.data;
+			var metaObject = path.shift();
 		} else if (Cantrip.data._contents) {
 			route = Cantrip.data._contents;
 		}
 
 		req.nodes = []; //This array holds all nodes until we get to the target node
 
-		//If the remainin path's length is zero (so we are on the root), pass in the whole object
-		if (path.length === 0) {
-			req.nodes.push(route);
-		}
+		//Pass in the root ibject as the first node
+		req.nodes.push(route);
 		//Loop through the data by the given paths
 		for (var i = 0; i < path.length; i++) {
 			var temp = route[path[i]];
@@ -258,7 +266,7 @@ var Cantrip = {
 					"error": "You can't delete an object's metadata."
 				});
 			} else {
-				parent = _.omit(parent, index);
+				delete parent[index];
 			}
 			//If it's an array, we must remove it by id with the splice method	
 		} else if (_.isArray(parent)) {
@@ -274,7 +282,7 @@ var Cantrip = {
 			}
 		}
 		//Send the response
-		res.send(parent);
+		res.send(parent || {});
 		//Emit socketio event
 		this.io.sockets.emit("DELETE:/" + req.path, parent);
 		//Start saving the data
