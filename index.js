@@ -3,7 +3,6 @@ var _ = require("underscore");
 var fs = require('fs');
 var md5 = require('MD5');
 var cors = require('cors');
-var io = require("socket.io");
 var crypto = require("crypto");
 
 //Set up express
@@ -89,15 +88,19 @@ var Cantrip = {
 		});
 
 		//Start the server
-		var server = this.app.listen(this.options.port);
-
-		//Start socket io service too
-		this.io = io.listen(server);
+		this.server = this.app.listen(this.options.port);
 
 	},
+	/**
+	 * Stop the server.
+	 */
+	close: function() {
+		this.server.close();
+	},
+
 	nodes: function(req, res, next) {
 		//Parse the path and save it on the request
-		req.pathMembers = _.filter(req.url.split("/"), function(string) {
+		req.pathMembers = _.filter(req.path.split("/"), function(string) {
 			return string !== "";
 		});
 		var path = req.pathMembers;
@@ -106,9 +109,9 @@ var Cantrip = {
 		//By default the root is the whole JSON
 		var route = Cantrip.data;
 		//If we're trying to access a meta object
-		if (path.length > 0 && path[0][0] === "_") {
+		if (path.length > 0 && path[0][0] === "_" && path[0] !== "_meta") {
 			//Set the root object to that meta object, or throw an error if it doesn't exist
-			if (Cantrip.data[path[0]]) {
+			if (Cantrip.data[path[0]] !== undefined) {
 				route = Cantrip.data[path[0]];
 				var metaObject = path.shift();
 			} else {
@@ -116,6 +119,10 @@ var Cantrip = {
 					"error": "Requested meta object doesn't exist."
 				});
 			}
+			//If the first member of the url is "_meta", set the route root to Cantrip.data
+		} else if (path[0] === "_meta") {
+			route = Cantrip.data;
+			var metaObject = path.shift();
 			//If the first member of the url is not a meta object key, then check if we have _contents
 		} else if (Cantrip.data._contents) {
 			route = Cantrip.data._contents;
@@ -123,10 +130,8 @@ var Cantrip = {
 
 		req.nodes = []; //This array holds all nodes until we get to the target node
 
-		//If the remainin path's length is zero (so we are on the root), pass in the whole object
-		if (path.length === 0) {
-			req.nodes.push(route);
-		}
+		//Pass in the root ibject as the first node
+		req.nodes.push(route);
 		//Loop through the data by the given paths
 		for (var i = 0; i < path.length; i++) {
 			var temp = route[path[i]];
@@ -178,7 +183,7 @@ var Cantrip = {
 		var target = _.last(req.nodes);
 		if (_.isObject(target) || _.isArray(target)) {
 			res.send(target);
-		} else if (target) {
+		} else {
 			res.send({
 				value: target
 			});
@@ -210,8 +215,6 @@ var Cantrip = {
 			}
 			//Push it to the target array
 			target.push(req.body);
-			//Emit socketio event
-			this.io.sockets.emit("POST:/" + req.path, req.body);
 			//Send the response
 			res.send(req.body);
 			//Start saving the data
@@ -226,13 +229,25 @@ var Cantrip = {
 		var target = _.last(req.nodes);
 		if (_.isObject(target)) {
 			this.addMetadataToModels(req.body);
+			//If it's an element inside a collection, make sure the overwritten _id is not present in the collection
+			if (req.body._id && target._id && req.body._id !== target._id) {
+				var parent = req.nodes[req.nodes.length - 2];
+				if (parent) {
+					for (var i = 0; i < parent.length; i++) {
+						if (parent[i]._id === req.body._id) {
+							res.status(400).send({
+								"error": "An object with the same _id already exists in this collection."
+							});
+							return;
+						}
+					}
+				}
+			}
 			//If the target had previously had a _modifiedDate property, set it to the current time
 			if (target._modifiedDate) target._modifiedDate = (new Date()).getTime();
 			target = _.extend(target, req.body);
 			//Send the response
 			res.send(target);
-			//Emit socketio event
-			this.io.sockets.emit("PUT:/" + req.path, target);
 			//Start saving the data
 			this.saveData();
 		} else {
@@ -254,7 +269,7 @@ var Cantrip = {
 					"error": "You can't delete an object's metadata."
 				});
 			} else {
-				parent = _.omit(parent, index);
+				delete parent[index];
 			}
 			//If it's an array, we must remove it by id with the splice method	
 		} else if (_.isArray(parent)) {
@@ -270,9 +285,7 @@ var Cantrip = {
 			}
 		}
 		//Send the response
-		res.send(parent);
-		//Emit socketio event
-		this.io.sockets.emit("DELETE:/" + req.path, parent);
+		res.send(parent || {});
 		//Start saving the data
 		this.saveData();
 	},

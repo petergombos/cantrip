@@ -103,6 +103,28 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 				});
 			});
 
+			it("shouldn't allow you to post to a collection with a specific id that already exists", function(done) {
+				request({
+						method: "POST",
+						url: serverUrl + "foo/collection",
+						json: {"foo": "bar", "_id" : "imanid"}
+					}, function(error, response, body) {
+					expect(body.error).toBeDefined();
+					done();
+				});
+			});
+
+			it("shouldn't allow you to put the _id attribute of an element in a collection if that change would make that _id not unique", function(done) {
+				request({
+						method: "PUT",
+						url: serverUrl + "foo/collection/0",
+						json: {"_id" : "imanid"}
+					}, function(error, response, body) {
+					expect(body.error).toBeDefined();
+					done();
+				});
+			});
+
 			it("should allow you to post to a collection with a specific _modifiedDate and not overwrite it", function(done) {
 				request({
 						method: "POST",
@@ -182,6 +204,17 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 				});
 			});
 
+			it("shouldn't matter if there is a query string at the end of the url", function(done) {
+				request({
+						method: "GET",
+						url: serverUrl + "foo/collection?foo=bar&baz=true",
+						json: true,
+					}, function(error, response, body) {
+						expect(body.length).toBe(2);
+					done();
+				});
+			});
+
 		});
 
 		describe("DELETE", function() {
@@ -243,14 +276,18 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 				});
 			});
 
-
-
-
+			it("should allow you to delete a key from the root object", function(done) {
+				request({
+						method: "DELETE",
+						url: serverUrl + "foo",
+						json: true,
+					}, function(error, response, body) {
+					expect(body).toEqual({});
+					done();
+				});
+			});
+			
 
 		});
-
-		
-
 	});
-
 });
