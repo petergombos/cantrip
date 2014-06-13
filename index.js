@@ -3,22 +3,21 @@ var _ = require("lodash");
 var fs = require('fs');
 var md5 = require('MD5');
 var cors = require('cors');
+var bodyParser = require('body-parser')
 
 //Set up express
 var app = express();
-app.configure(function() {
-	app.use(express.json());
-	app.use(function(err, req, res, next) {
-		res.status(400);
-		res.send({
-			"error": "Invalid JSON supplied in request body."
-		});
-		next(err);
+app.use(bodyParser.json());
+app.use(function(err, req, res, next) {
+	res.status(400);
+	res.send({
+		"error": "Invalid JSON supplied in request body."
 	});
-	app.use(express.urlencoded());
-	app.use(express.multipart());
-	app.use(cors());
+	next(err);
 });
+app.use(bodyParser.urlencoded());
+//app.use(express.multipart());
+app.use(cors());
 
 
 
@@ -78,13 +77,14 @@ var Cantrip = {
 		app.use(this.error);
 
 		//Send the response
-		app.use(this.response)
+		app.use(this.response);
+
 
 		//Set up 'after' middleware
 		this.afterMiddleware();
 
 		//Sync the data
-		this.use(this.syncData);
+		app.use(this.syncData);
 
 		//Start the server
 		this.server = this.app.listen(this.options.port);
@@ -138,7 +138,6 @@ var Cantrip = {
 	},
 
 	afterMiddleware: function() {
-
 		for (var i = 0; i < this.afterStack.length; i++) {
 			this.app.use(this.afterStack[i]);
 		}
@@ -216,15 +215,16 @@ var Cantrip = {
 	//If options.saveEvery is different from 1, it doesn't save every time.
 	//If options.saveEvery is 0, it never saves
 	counter: 0,
-	syncData: function() {
-		if (++this.counter === this.options.saveEvery && this.options.saveEvery !== 0) {
-			fs.writeFile(this.options.file, JSON.stringify(this.data), function(err) {
+	syncData: function(req, res, next) {
+		if (++Cantrip.counter === Cantrip.options.saveEvery && Cantrip.options.saveEvery !== 0) {
+			fs.writeFile(Cantrip.options.file, JSON.stringify(Cantrip.data), function(err) {
 				if (err) {
 					console.log(err);
 				}
 			});
-			this.counter = 0;
+			Cantrip.counter = 0;
 		}
+
 	},
 	get: function(req, res, next) {
 		var target = _.last(req.nodes);
@@ -379,6 +379,7 @@ var Cantrip = {
 	 */
 	response: function(req, res, next) {
 		res.send(res.body);
+		next();
 	}
 }
 

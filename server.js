@@ -25,5 +25,4 @@ Cantrip.options.saveEvery = 1;
  */
 Cantrip.options.file = "data.json";
 
-
 Cantrip.start();
