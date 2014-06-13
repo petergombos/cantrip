@@ -105,6 +105,14 @@ var Cantrip = {
 	 * Wrapper for express.use to be used before data insertion
 	 */
 	before: function() {
+		for (var i = 0; i < arguments.length; i++) {
+			if (_.isObject(arguments[i]) && arguments[i].registerMiddleware) {
+				var middlewares = arguments[i].registerMiddleware;
+				for (var j = 0; j < middlewares.length; j++) {
+					this[middlewares[j][0]](middlewares[j][1], middlewares[j][2]);
+				}
+			}
+		}
 		this.beforeStack.push(arguments);
 	},
 
@@ -118,7 +126,14 @@ var Cantrip = {
 	afterStack: [],
 
 	after: function() {
-
+		for (var i = 0; i < arguments.length; i++) {
+			if (_.isObject(arguments[i]) && arguments[i].registerMiddleware) {
+				var middlewares = arguments[i].registerMiddleware;
+				for (var j = 0; j < middlewares.length; j++) {
+					this[middlewares[j][0]](middlewares[j][1], middlewares[j][2]);
+				}
+			}
+		}
 		this.afterStack.push(arguments);
 
 	},
@@ -126,6 +141,14 @@ var Cantrip = {
 	alterStack: [],
 
 	alter: function() {
+		for (var i = 0; i < arguments.length; i++) {
+			if (_.isObject(arguments[i]) && arguments[i].registerMiddleware) {
+				var middlewares = arguments[i].registerMiddleware;
+				for (var j = 0; j < middlewares.length; j++) {
+					this[middlewares[j][0]](middlewares[j][1], middlewares[j][2]);
+				}
+			}
+		}
 		this.alterStack.push(arguments);
 	},
 
