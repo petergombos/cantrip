@@ -54,6 +54,12 @@ var Cantrip = {
 		//Set up the server
 		this.app = app;
 
+		//Give access to the data object to middlewares
+		app.use(function(req, res, next) {
+			req.data = Cantrip.data;
+			next();
+		});
+
 		//Get to the target node and save all nodes in between
 		//Throws error if the requested node doesn't exist
 		app.use(this.nodes);
