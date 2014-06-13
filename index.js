@@ -1,5 +1,5 @@
 var express = require('express');
-var _ = require("underscore");
+var _ = require("lodash");
 var fs = require('fs');
 var md5 = require('MD5');
 var cors = require('cors');
@@ -55,27 +55,36 @@ var Cantrip = {
 		//Set up the server
 		this.app = app;
 
-		//Set up middlewares
-
 		//Get to the target node and save all nodes in between
 		app.use(this.nodes);
 
+
+		//Set up middleware
+		this.beforeMiddleware();
+
 		//Set up a get hook on all paths
-		app.get('*', function(request, response) {
-			Cantrip.get(request, response);
-		});
+		app.get('*', this.get);
 
-		app.post("*", function(request, response) {
-			Cantrip.post(request, response);
-		});
+		app.post("*", this.post);
 
-		app.delete("*", function(request, response) {
-			Cantrip.delete(request, response);
-		});
+		app.delete("*", this.delete);
 
-		app.put("*", function(request, response) {
-			Cantrip.put(request, response);
-		});
+		app.put("*", this.put);
+
+		//Call middleware that alter the response object
+		this.alterMiddleware();
+
+		//Handle errors thrown
+		app.use(this.error);
+
+		//Send the response
+		app.use(this.response)
+
+		//Set up 'after' middleware
+		this.afterMiddleware();
+
+		//Sync the data
+		this.use(this.syncData);
 
 		//Start the server
 		this.server = this.app.listen(this.options.port);
@@ -86,6 +95,60 @@ var Cantrip = {
 	 */
 	close: function() {
 		this.server.close();
+	},
+
+
+	beforeStack: [],
+	/**
+	 * Wrapper for express.use to be used before data insertion
+	 */
+	before: function(fn) {
+
+		this.beforeStack.push(fn);
+
+	},
+
+	/**
+	 * Alias for before
+	 */
+	use: function(fn) {
+		this.before(fn);
+	},
+
+	afterStack: [],
+
+	after: function(fn) {
+
+		this.afterStack.push(fn);
+
+	},
+
+	alterStack: [],
+
+	alter: function(fn) {
+		this.alterStack.push(fn);
+	},
+
+	beforeMiddleware: function() {
+
+		for (var i = 0; i < this.beforeStack.length; i++) {
+			this.app.use(this.beforeStack[i]);
+		}
+
+	},
+
+	afterMiddleware: function() {
+
+		for (var i = 0; i < this.afterStack.length; i++) {
+			this.app.use(this.afterStack[i]);
+		}
+
+	},
+
+	alterMiddleware: function() {
+		for (var i = 0; i < this.alterStack.length; i++) {
+			this.app.use(this.alterStack[i]);
+		}
 	},
 
 	nodes: function(req, res, next) {
@@ -105,9 +168,7 @@ var Cantrip = {
 				route = Cantrip.data[path[0]];
 				var metaObject = path.shift();
 			} else {
-				res.status(404).send({
-					"error": "Requested meta object doesn't exist."
-				});
+				return next(new Error("Requested meta object doesn't exist."));
 			}
 			//If the first member of the url is "_meta", set the route root to Cantrip.data
 		} else if (path[0] === "_meta") {
@@ -137,11 +198,7 @@ var Cantrip = {
 				if (temp !== undefined) {
 					route = temp;
 				} else {
-					//If it's still undefined, return
-					res.status(404).send({
-						"error": "Requested node doesn't exist."
-					});
-					return;
+					return next(new Error("Requested node doesn't exist."));
 				}
 			}
 			req.nodes.push(route);
@@ -159,7 +216,7 @@ var Cantrip = {
 	//If options.saveEvery is different from 1, it doesn't save every time.
 	//If options.saveEvery is 0, it never saves
 	counter: 0,
-	saveData: function() {
+	syncData: function() {
 		if (++this.counter === this.options.saveEvery && this.options.saveEvery !== 0) {
 			fs.writeFile(this.options.file, JSON.stringify(this.data), function(err) {
 				if (err) {
@@ -169,22 +226,24 @@ var Cantrip = {
 			this.counter = 0;
 		}
 	},
-	get: function(req, res) {
+	get: function(req, res, next) {
 		var target = _.last(req.nodes);
 		if (_.isObject(target) || _.isArray(target)) {
-			res.send(target);
+			res.body = _.cloneDeep(target);
+			next();
 		} else {
-			res.send({
+			res.body = {
 				value: target
-			});
+			};
+			next();
 		}
 	},
-	post: function(req, res) {
+	post: function(req, res, next) {
 		var target = _.last(req.nodes);
 		//If it's an array, post the new entry to that array
 		if (_.isArray(target)) {
 			//Add ids to all objects within arrays in the sent object
-			this.addMetadataToModels(req.body);
+			Cantrip.addMetadataToModels(req.body);
 			//If the posted body is an object itself, add an id to it
 			if (_.isObject(req.body) && !_.isArray(req.body)) {
 				//Extend the whole object with an _id property, but only if it doesn't already have one
@@ -197,38 +256,38 @@ var Cantrip = {
 			//Check if the given ID already exists in the collection
 			for (var i = 0; i < target.length; i++) {
 				if (target[i]._id === req.body._id) {
-					res.status(400).send({
-						"error": "An object with the same _id already exists in this collection."
+					return next({
+						status: 400,
+						error: "An object with the same _id already exists in this collection."
 					});
-					return;
 				}
 			}
 			//Push it to the target array
 			target.push(req.body);
 			//Send the response
-			res.send(req.body);
-			//Start saving the data
-			this.saveData();
+			res.body = _.cloneDeep(req.body);
+			next();
 		} else {
-			res.status(400).send({
-				"error": "Can't POST to an object. Use PUT instead."
+			return next({
+				status: 400,
+				error: "Can't POST to an object. Use PUT instead."
 			});
 		}
 	},
-	put: function(req, res) {
+	put: function(req, res, next) {
 		var target = _.last(req.nodes);
 		if (_.isObject(target)) {
-			this.addMetadataToModels(req.body);
+			Cantrip.addMetadataToModels(req.body);
 			//If it's an element inside a collection, make sure the overwritten _id is not present in the collection
 			if (req.body._id && target._id && req.body._id !== target._id) {
 				var parent = req.nodes[req.nodes.length - 2];
 				if (parent) {
 					for (var i = 0; i < parent.length; i++) {
 						if (parent[i]._id === req.body._id) {
-							res.status(400).send({
-								"error": "An object with the same _id already exists in this collection."
+							return next({
+								status: 400,
+								error: "An object with the same _id already exists in this collection."
 							});
-							return;
 						}
 					}
 				}
@@ -237,16 +296,16 @@ var Cantrip = {
 			if (target._modifiedDate) target._modifiedDate = (new Date()).getTime();
 			target = _.extend(target, req.body);
 			//Send the response
-			res.send(target);
-			//Start saving the data
-			this.saveData();
+			res.body = _.cloneDeep(target);
+			next();
 		} else {
-			res.status(400).send({
-				"error": "Can't PUT a collection."
+			return next({
+				status: 400,
+				error: "Can't PUT a collection."
 			});
 		}
 	},
-	delete: function(req, res) {
+	delete: function(req, res, next) {
 		//Get the parent node so we can unset the target
 		var parent = req.nodes[req.nodes.length - 2];
 		//Last identifier in the path
@@ -255,9 +314,10 @@ var Cantrip = {
 		if (_.isObject(parent) && !_.isArray(parent)) {
 			//We're not letting users delete the _id
 			if ((index + "")[0] === "_") {
-				res.status(400).send({
-					"error": "You can't delete an object's metadata."
-				});
+				return next({
+									status: 400,
+									error: "You can't delete an object's metadata."
+								});
 			} else {
 				delete parent[index];
 			}
@@ -275,9 +335,8 @@ var Cantrip = {
 			}
 		}
 		//Send the response
-		res.send(parent || {});
-		//Start saving the data
-		this.saveData();
+		res.body = _.cloneDeep(parent || {});
+		next();
 	},
 	//Recursively add _ids to all objects within an array (but not arrays) within the specified object.
 	addMetadataToModels: function(obj) {
@@ -302,6 +361,24 @@ var Cantrip = {
 				this.addMetadataToModels(obj[key]);
 			}
 		}
+	},
+
+	/**
+	 * Send the errors thrown by the get/post/put/delete middleware
+	 */
+	error: function(error, req, res, next) {
+		if (error.status && error.error) {
+			res.status(error.status).send({"error": error.error});
+		} else {
+			res.status(400).send({"error": "An unknown error happened"});
+		}
+	},
+
+	/**
+	 * Send the response created by the get/post/put/delete methods after it was modified by custom middleware
+	 */
+	response: function(req, res, next) {
+		res.send(res.body);
 	}
 }
 
