@@ -55,13 +55,16 @@ var Cantrip = {
 		this.app = app;
 
 		//Get to the target node and save all nodes in between
+		//Throws error if the requested node doesn't exist
 		app.use(this.nodes);
-
 
 		//Set up middleware
 		this.beforeMiddleware();
 
-		//Set up a get hook on all paths
+		//Handle errors thrown so far
+		app.use(this.error);
+
+		//Set default middleware
 		app.get('*', this.get);
 
 		app.post("*", this.post);
@@ -78,7 +81,6 @@ var Cantrip = {
 
 		//Send the response
 		app.use(this.response);
-
 
 		//Set up 'after' middleware
 		this.afterMiddleware();
@@ -102,51 +104,49 @@ var Cantrip = {
 	/**
 	 * Wrapper for express.use to be used before data insertion
 	 */
-	before: function(fn) {
-
-		this.beforeStack.push(fn);
-
+	before: function() {
+		this.beforeStack.push(arguments);
 	},
 
 	/**
 	 * Alias for before
 	 */
-	use: function(fn) {
-		this.before(fn);
+	use: function() {
+		this.before.apply(this, arguments);
 	},
 
 	afterStack: [],
 
-	after: function(fn) {
+	after: function() {
 
-		this.afterStack.push(fn);
+		this.afterStack.push(arguments);
 
 	},
 
 	alterStack: [],
 
-	alter: function(fn) {
-		this.alterStack.push(fn);
+	alter: function() {
+		this.alterStack.push(arguments);
 	},
 
 	beforeMiddleware: function() {
 
 		for (var i = 0; i < this.beforeStack.length; i++) {
-			this.app.use(this.beforeStack[i]);
+			this.app.use.apply(this.app, this.beforeStack[i]);
 		}
 
 	},
 
 	afterMiddleware: function() {
 		for (var i = 0; i < this.afterStack.length; i++) {
-			this.app.use(this.afterStack[i]);
+			this.app.use.apply(this.app, this.afterStack[i]);
 		}
 
 	},
 
 	alterMiddleware: function() {
 		for (var i = 0; i < this.alterStack.length; i++) {
-			this.app.use(this.alterStack[i]);
+			this.app.use.apply(this.app, this.alterStack[i]);
 		}
 	},
 
@@ -167,7 +167,7 @@ var Cantrip = {
 				route = Cantrip.data[path[0]];
 				var metaObject = path.shift();
 			} else {
-				return next(new Error("Requested meta object doesn't exist."));
+				return next({status: 404, error: "Requested meta object doesn't exist."});
 			}
 			//If the first member of the url is "_meta", set the route root to Cantrip.data
 		} else if (path[0] === "_meta") {
@@ -197,7 +197,7 @@ var Cantrip = {
 				if (temp !== undefined) {
 					route = temp;
 				} else {
-					return next(new Error("Requested node doesn't exist."));
+					return next({status: 404, error: "Requested node doesn't exist."});
 				}
 			}
 			req.nodes.push(route);
@@ -370,7 +370,7 @@ var Cantrip = {
 		if (error.status && error.error) {
 			res.status(error.status).send({"error": error.error});
 		} else {
-			res.status(400).send({"error": "An unknown error happened"});
+			res.status(400).send({"error": "An unknown error happened."});
 		}
 	},
 
