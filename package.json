@@ -2,7 +2,7 @@
   "name": "Cantrip",
   "version": "0.0.1",
   "description": "\"Use a REST Api to manage a JSON file\"",
-  "main": "server.js",
+  "main": "index.js",
   "dependencies": {
     "MD5": "~1.2.1",
     "express": "*",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/petergombos/cantrip.git"
+    "url": "https://github.com/KriekApps/Cantrip.git"
   },
   "keywords": [
     "rest",
@@ -34,7 +34,7 @@
   "author": "Kriek",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/petergombos/cantrip/issues"
+    "url": "https://github.com/KriekApps/Cantrip/issues"
   },
-  "homepage": "https://github.com/petergombos/cantrip"
+  "homepage": "https://github.com/KriekApps/Cantrip"
 }

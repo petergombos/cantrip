@@ -399,6 +399,7 @@ var Cantrip = {
 		if (error.status && error.error) {
 			res.status(error.status).send({"error": error.error});
 		} else {
+			console.log(error);
 			res.status(400).send({"error": "An unknown error happened."});
 		}
 	},
