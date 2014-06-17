@@ -25,4 +25,10 @@ Cantrip.options.saveEvery = 1;
  */
 Cantrip.options.file = "data.json";
 
+/**
+ * Optionally you can also set the ip address the express server runs on.
+ * @type {String}
+ */
+Cantrip.options.ip = "127.0.0.1";
+
 Cantrip.start();

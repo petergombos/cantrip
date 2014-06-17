@@ -23,6 +23,7 @@ app.use(cors());
 
 var Cantrip = {
 	options: {
+		ip: "127.0.0.1",
 		port: process.env.PORT || 3000,
 		saveEvery: 1,
 		file: "data.json"
@@ -95,7 +96,7 @@ var Cantrip = {
 		app.use(this.syncData);
 
 		//Start the server
-		this.server = this.app.listen(this.options.port);
+		this.server = this.app.listen(this.options.port, this.options.ip);
 
 	},
 	/**
