@@ -3,7 +3,29 @@ var _ = require("lodash");
 var fs = require('fs');
 var md5 = require('MD5');
 var cors = require('cors');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+var mongodb = require('mongodb').MongoClient;
+
+mongodb.connect('mongodb://127.0.0.1:27017/test', function(err, db) {
+	if (err) throw err;
+
+	var collection = db.collection('test_insert');
+	collection.insert({
+		a: 2
+	}, function(err, docs) {
+
+		collection.count(function(err, count) {
+			console.log(count);
+		});
+
+		// Locate all the entries using find
+		collection.find().toArray(function(err, results) {
+			console.dir(results);
+			// Let's close the db
+			db.close();
+		});
+	});
+});
 
 //Set up express
 var app = express();
@@ -197,7 +219,10 @@ var Cantrip = {
 				route = Cantrip.data[path[0]];
 				var metaObject = path.shift();
 			} else {
-				return next({status: 404, error: "Requested meta object doesn't exist."});
+				return next({
+					status: 404,
+					error: "Requested meta object doesn't exist."
+				});
 			}
 			//If the first member of the url is "_meta", set the route root to Cantrip.data
 		} else if (path[0] === "_meta") {
@@ -227,7 +252,10 @@ var Cantrip = {
 				if (temp !== undefined) {
 					route = temp;
 				} else {
-					return next({status: 404, error: "Requested node doesn't exist."});
+					return next({
+						status: 404,
+						error: "Requested node doesn't exist."
+					});
 				}
 			}
 			req.nodes.push(route);
@@ -345,9 +373,9 @@ var Cantrip = {
 			//We're not letting users delete the _id
 			if ((index + "")[0] === "_") {
 				return next({
-									status: 400,
-									error: "You can't delete an object's metadata."
-								});
+					status: 400,
+					error: "You can't delete an object's metadata."
+				});
 			} else {
 				delete parent[index];
 			}
@@ -398,10 +426,14 @@ var Cantrip = {
 	 */
 	error: function(error, req, res, next) {
 		if (error.status && error.error) {
-			res.status(error.status).send({"error": error.error});
+			res.status(error.status).send({
+				"error": error.error
+			});
 		} else {
 			console.log(error);
-			res.status(400).send({"error": "An unknown error happened."});
+			res.status(400).send({
+				"error": "An unknown error happened."
+			});
 		}
 	},
 
