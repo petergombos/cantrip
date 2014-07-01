@@ -32,3 +32,21 @@ Cantrip.options.file = "data.json";
 Cantrip.options.ip = "127.0.0.1";
 
 Cantrip.start();
+
+Cantrip.onReady = function() {
+	Cantrip.addNode("/foo", "object");
+	
+	Cantrip.addNode("/foo/baz", "object");
+	Cantrip.addNode("/foo/baz/marci", true);
+	Cantrip.addNode("/foo/coll", "array");
+	Cantrip.addNode("/foo/coll/someid", "object");
+	Cantrip.addNode("/foo/coll/someid/pepe", 1);
+	Cantrip.addNode("/foo/array", "array");
+	Cantrip.addNode("/foo/array/0", 1);
+	Cantrip.addNode("/foo/array/1", 2);
+	Cantrip.addNode("/foo/bar", 2);
+
+
+	Cantrip.getNode("/foo");
+	
+}
