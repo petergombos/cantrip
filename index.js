@@ -321,7 +321,7 @@ var Cantrip = {
 
 				var result = {}; //This will hold the resulting object
 				//Handle single ended queries, when all we return is a single value, an empty object or array
-				if (array.length === 1) {
+				if (array.length === 1 && path !== "") {
 					if (array[0].value === "object") result = {};
 					else if (array[0].value === "array") result = [];
 					else result = {
@@ -394,9 +394,15 @@ var Cantrip = {
 						self.setNode(pointer + "/" + key, obj[key]);
 						self.deleteNodes(pointer + "/" + key);
 					} else {
+						var keyToContinue = key;
+						if (obj[key]._id) {
+							keyToContinue = obj[key]._id;
+						}
 						if (_.isArray(obj[key])) self.setNode(pointer + "/" + key, "array");
-						else self.setNode(pointer + "/" + key, "object");
-						getKeys(obj[key], pointer + "/" + key);
+						else {
+							self.setNode(pointer + "/" + keyToContinue, "object");
+						}
+						getKeys(obj[key], pointer + "/" + keyToContinue);
 					}
 				}
 			};
