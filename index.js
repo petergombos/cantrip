@@ -278,7 +278,12 @@ var Cantrip = {
 		}
 
 	},
-	addNode: function(path, value) {
+	/**
+	 * Adds a single node into the database. Updates the document if one exists for the given path, inserts a new one otherwise.
+	 * @param {String} path  The path to add, like /foo/bar
+	 * @param {any} value The value to add to the given path, can be either the strings "object" and "array", or a string, number, boolean.
+	 */
+	setNode: function(path, value, callback) {
 		this.data.update({
 			path: new RegExp(path)
 		}, {
@@ -289,24 +294,39 @@ var Cantrip = {
 			safe: true
 		}, function(err, docs) {
 			err && console.log(err);
+			callback && callback(err, docs);
 		});
 	},
 	/**
 	 * Get a specific node as a JSON object from the db
 	 * @param  {String} path
 	 */
-	getNode: function(path) {
+	getNode: function(path, callback) {
+		if (!callback) throw new Error("This method requires a callback");
 		this.data.find({
 			path: new RegExp(path)
 		}, function(err, res) {
-			err && console.log(err);
+
+			if (err) {
+				callback(err, null);
+				return;
+			}
+
 			res.toArray(function(err, array) {
+
+				if (err) {
+					callback(err, null);
+					return;
+				}
+
 				var result = {}; //This will hold the resulting object
 				//Handle single ended queries, when all we return is a single value, an empty object or array
 				if (array.length === 1) {
 					if (array[0].value === "object") result = {};
 					else if (array[0].value === "array") result = [];
-					else result = { value: array[0].value }; //return a simple value: value object when the end result would be of a basic type
+					else result = {
+						value: array[0].value
+					}; //return a simple value: value object when the end result would be of a basic type
 				}
 				//Dig into the results. We loop through the nodes (objects) returned by the query
 				for (var i = 0; i < array.length; i++) {
@@ -323,7 +343,9 @@ var Cantrip = {
 						previousNode = pointer; //This is a pointer to the previously checked node. Used for determining whether we're inside an array or an object
 						if (j === members.length - 1) { //At the end of the pointer's walk, we add a value based on the node's value property
 							if (node.value === "object") {
-								if (_.isArray(previousNode)) previousNode.push({_id: members[j]});
+								if (_.isArray(previousNode)) previousNode.push({
+									_id: members[j]
+								});
 								else pointer[members[j]] = {};
 							} else if (node.value === "array") {
 								if (_.isArray(previousNode)) previousNode.push([]);
@@ -345,9 +367,41 @@ var Cantrip = {
 						}
 					}
 				}
-				console.log(result);
+				callback(null, result);
 			});
 		});
+	},
+	deleteNodes: function(path) {
+		this.data.remove({
+			path: new RegExp(path + "/")
+		}, function(err, res) {
+
+		});
+	},
+	/**
+	 * Sets the given data, which can be any JSON object or a basic type, to the given path in mongo using the setNode method
+	 * @param {[type]} path [description]
+	 * @param {[type]} data [description]
+	 */
+	setData: function(path, data) {
+		if (!_.isObject(data)) {
+			this.setNode(path, data);
+		} else {
+			var self = this;
+			var getKeys = function(obj, pointer) {
+				for (var key in obj) {
+					if (!_.isObject(obj[key])) { 
+						self.setNode(pointer + "/" + key, obj[key]);
+						self.deleteNodes(pointer + "/" + key);
+					} else {
+						if (_.isArray(obj[key])) self.setNode(pointer + "/" + key, "array");
+						else self.setNode(pointer + "/" + key, "object");
+						getKeys(obj[key], pointer + "/" + key);
+					}
+				}
+			};
+			getKeys(data, path);
+		}
 	},
 	get: function(req, res, next) {
 

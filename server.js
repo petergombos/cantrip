@@ -34,19 +34,33 @@ Cantrip.options.ip = "127.0.0.1";
 Cantrip.start();
 
 Cantrip.onReady = function() {
-	Cantrip.addNode("/foo", "object");
-	
-	Cantrip.addNode("/foo/baz", "object");
-	Cantrip.addNode("/foo/baz/marci", true);
-	Cantrip.addNode("/foo/coll", "array");
-	Cantrip.addNode("/foo/coll/someid", "object");
-	Cantrip.addNode("/foo/coll/someid/pepe", 1);
-	Cantrip.addNode("/foo/array", "array");
-	Cantrip.addNode("/foo/array/0", 1);
-	Cantrip.addNode("/foo/array/1", 2);
-	Cantrip.addNode("/foo/bar", 2);
+	// Cantrip.data.remove(function(err, ds) {
+
+		// Cantrip.setData("", {
+		// 	"foo": {
+		// 		"yo": "dawg",
+		// 		bar: 3
+		// 	}
+		// });
+		// 
+		
+		Cantrip.setData("", {
+			"foo": 2
+		});
+
+		Cantrip.getNode("", function(err, res) {
+			console.log(res);
+		});
+
+		Cantrip.data.find({path: new RegExp(".+")}, function(err, res) {
+			res.toArray(function(err, res) {
+				console.log(res);
+			})
+		})
+
+		
+	// });
 
 
-	Cantrip.getNode("/foo");
 	
 }
