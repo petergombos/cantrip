@@ -20,6 +20,8 @@ module.exports = function(grunt) {
                 matchall: false,
                 extensions: 'js',
                 specNameMatcher: 'Spec',
+                display: "full",
+                summary: true
             },
             all: ['tests/']
         }

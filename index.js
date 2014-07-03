@@ -9,11 +9,10 @@ var bodyParser = require('body-parser')
 var app = express();
 app.use(bodyParser.json());
 app.use(function(err, req, res, next) {
-	res.status(400);
-	res.send({
-		"error": "Invalid JSON supplied in request body."
+	return next({
+		status: 400,
+		error: "Invalid JSON supplied in request body."
 	});
-	next(err);
 });
 app.use(bodyParser.urlencoded());
 //app.use(express.multipart());
@@ -51,6 +50,7 @@ var Cantrip = {
 						status: 404,
 						error: "Requested meta object doesn't exist."
 					}, null);
+					return;
 				}
 				//If the first member of the url is "_meta", set the node root to Cantrip.data
 			} else if (path[0] === "_meta") {
@@ -80,6 +80,7 @@ var Cantrip = {
 							status: 404,
 							error: "Requested node doesn't exist."
 						}, null);
+						return;
 					}
 				}
 			}
@@ -390,7 +391,7 @@ var Cantrip = {
 			Cantrip.dataStore.set(req.path, req.body, function(err, status) {
 				//Send the response
 				res.body = {
-					"status": "success"
+					"success": true
 				};
 				next();
 			});

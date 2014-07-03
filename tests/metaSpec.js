@@ -1,4 +1,5 @@
 var request = require("request");
+var Cantrip = require("./basicSpec.js");
 
 describe("Cantrip's _meta attributes provide a place to store metadata.", function() {
 
@@ -17,13 +18,16 @@ describe("Cantrip's _meta attributes provide a place to store metadata.", functi
 					_auth: false
 				}
 			}, function(error, response, body) {
-				expect(body).toEqual({
-					_contents: {
-						foo: "bar"
-					},
-					_auth: false
+				expect(body).toEqual({success: true});
+				Cantrip.dataStore.get("/_meta", function(err, data) {
+					expect(data).toEqual({
+						_contents: {
+							foo: "bar"
+						},
+						_auth: false
+					});
+					done();
 				});
-				done();
 			});
 		});
 
