@@ -42,7 +42,7 @@ Cantrip.onReady = function() {
 		// 		bar: 3
 		// 	}
 		// });
-		// 
+		
 
 		Cantrip.setData("", {
 			"foo": [{
@@ -58,17 +58,17 @@ Cantrip.onReady = function() {
 			}
 		});
 
-		Cantrip.getNode("", function(err, res) {
-			console.log(res);
-		});
+	// 	Cantrip.getNode("", function(err, res) {
+	// 		console.log(res);
+	// 	});
 
-		Cantrip.data.find({
-			path: new RegExp(".+")
-		}, function(err, res) {
-			res.toArray(function(err, res) {
-				console.log(res);
-			})
-		})
+	// 	Cantrip.data.find({
+	// 		path: new RegExp(".+")
+	// 	}, function(err, res) {
+	// 		res.toArray(function(err, res) {
+	// 			console.log(res);
+	// 		})
+	// 	})
 
 
 	});

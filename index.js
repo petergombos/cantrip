@@ -68,6 +68,16 @@ var Cantrip = {
 		//Get to the target node and save all nodes in between
 		//Throws error if the requested node doesn't exist
 		//app.use(this.nodes);
+		//
+		app.use(function(req, res, next) {
+			req.pathMembers = _.filter(req.path.split("/"), function(string) {
+				return string !== "";
+			});
+			Cantrip.getNode(req.path, function(err, result) {
+				req.node = result;
+				next();
+			});
+		});
 
 		//Set up middleware
 		this.beforeMiddleware();
@@ -97,7 +107,7 @@ var Cantrip = {
 		this.afterMiddleware();
 
 		//Sync the data
-		app.use(this.syncData);
+		// app.use(this.syncData);
 
 		var self = this;
 
@@ -196,72 +206,72 @@ var Cantrip = {
 		}
 	},
 
-	nodes: function(req, res, next) {
-		//Parse the path and save it on the request
-		req.pathMembers = _.filter(req.path.split("/"), function(string) {
-			return string !== "";
-		});
-		var path = req.pathMembers;
+	// nodes: function(req, res, next) {
+	// 	//Parse the path and save it on the request
+	// 	req.pathMembers = _.filter(req.path.split("/"), function(string) {
+	// 		return string !== "";
+	// 	});
+	// 	var path = req.pathMembers;
 
-		//Get the root element based on several factors: whether we have _contents in the JSON, did we try to access something inside a _meta parameter
-		//By default the root is the whole JSON
-		var route = Cantrip.data;
-		//If we're trying to access a meta object
-		if (path.length > 0 && path[0][0] === "_" && path[0] !== "_meta") {
-			//Set the root object to that meta object, or throw an error if it doesn't exist
-			if (Cantrip.data[path[0]] !== undefined) {
-				route = Cantrip.data[path[0]];
-				var metaObject = path.shift();
-			} else {
-				return next({
-					status: 404,
-					error: "Requested meta object doesn't exist."
-				});
-			}
-			//If the first member of the url is "_meta", set the route root to Cantrip.data
-		} else if (path[0] === "_meta") {
-			route = Cantrip.data;
-			var metaObject = path.shift();
-			//If the first member of the url is not a meta object key, then check if we have _contents
-		} else if (Cantrip.data._contents) {
-			route = Cantrip.data._contents;
-		}
+	// 	//Get the root element based on several factors: whether we have _contents in the JSON, did we try to access something inside a _meta parameter
+	// 	//By default the root is the whole JSON
+	// 	var route = Cantrip.data;
+	// 	//If we're trying to access a meta object
+	// 	if (path.length > 0 && path[0][0] === "_" && path[0] !== "_meta") {
+	// 		//Set the root object to that meta object, or throw an error if it doesn't exist
+	// 		if (Cantrip.data[path[0]] !== undefined) {
+	// 			route = Cantrip.data[path[0]];
+	// 			var metaObject = path.shift();
+	// 		} else {
+	// 			return next({
+	// 				status: 404,
+	// 				error: "Requested meta object doesn't exist."
+	// 			});
+	// 		}
+	// 		//If the first member of the url is "_meta", set the route root to Cantrip.data
+	// 	} else if (path[0] === "_meta") {
+	// 		route = Cantrip.data;
+	// 		var metaObject = path.shift();
+	// 		//If the first member of the url is not a meta object key, then check if we have _contents
+	// 	} else if (Cantrip.data._contents) {
+	// 		route = Cantrip.data._contents;
+	// 	}
 
-		req.nodes = []; //This array holds all nodes until we get to the target node
+	// 	req.nodes = []; //This array holds all nodes until we get to the target node
 
-		//Pass in the root ibject as the first node
-		req.nodes.push(route);
-		//Loop through the data by the given paths
-		for (var i = 0; i < path.length; i++) {
-			var temp = route[path[i]];
-			//If we found the given key, assign the route object to its value
-			if (temp !== undefined) {
-				route = route[path[i]];
-				//If the given key doesn't exist, try the _id
-			} else {
-				temp = _.find(route, function(obj) {
-					return obj._id === path[i];
-				});
-				//If it's not undefined, then assign it as the value
-				if (temp !== undefined) {
-					route = temp;
-				} else {
-					return next({
-						status: 404,
-						error: "Requested node doesn't exist."
-					});
-				}
-			}
-			req.nodes.push(route);
-		}
+	// 	//Pass in the root ibject as the first node
+	// 	req.nodes.push(route);
+	// 	//Loop through the data by the given paths
+	// 	for (var i = 0; i < path.length; i++) {
+	// 		var temp = route[path[i]];
+	// 		//If we found the given key, assign the route object to its value
+	// 		if (temp !== undefined) {
+	// 			route = route[path[i]];
+	// 			//If the given key doesn't exist, try the _id
+	// 		} else {
+	// 			temp = _.find(route, function(obj) {
+	// 				return obj._id === path[i];
+	// 			});
+	// 			//If it's not undefined, then assign it as the value
+	// 			if (temp !== undefined) {
+	// 				route = temp;
+	// 			} else {
+	// 				return next({
+	// 					status: 404,
+	// 					error: "Requested node doesn't exist."
+	// 				});
+	// 			}
+	// 		}
+	// 		req.nodes.push(route);
+	// 	}
 
-		//If the first member of the url was a _meta object, readd it to the beginning of the path array, so other middlewares still see the full path
-		if (metaObject) {
-			path.unshift(metaObject);
-		}
+	// 	//If the first member of the url was a _meta object, readd it to the beginning of the path array, so other middlewares still see the full path
+	// 	if (metaObject) {
+	// 		path.unshift(metaObject);
+	// 	}
 
-		next();
-	},
+	// 	next();
+	// },
 	//Save the JSON in memory to the specified JSON file. Runs after every API call, once the answer has been sent.
 	//Uses the async writeFile so it doesn't interrupt other stuff.
 	//If options.saveEvery is different from 1, it doesn't save every time.
@@ -371,6 +381,12 @@ var Cantrip = {
 			});
 		});
 	},
+	getParentNode: function(path, callback) {
+		var parentPath = path.split("/").slice(0, -1).join("/");
+		this.getNode(parentPath, function(err, res) {
+			callback(err, res);
+		});
+	},
 	deleteNodes: function(path) {
 		this.data.remove({
 			path: new RegExp(path + "/")
@@ -410,20 +426,11 @@ var Cantrip = {
 		}
 	},
 	get: function(req, res, next) {
-
-		// var target = _.last(req.nodes);
-		// if (_.isObject(target) || _.isArray(target)) {
-		// 	res.body = _.cloneDeep(target);
-		// 	next();
-		// } else {
-		// 	res.body = {
-		// 		value: target
-		// 	};
-		// 	next();
-		// }
+		res.body = req.node;
+		next();
 	},
 	post: function(req, res, next) {
-		var target = _.last(req.nodes);
+		var target = req.node;
 		//If it's an array, post the new entry to that array
 		if (_.isArray(target)) {
 			//Add ids to all objects within arrays in the sent object
@@ -447,7 +454,7 @@ var Cantrip = {
 				}
 			}
 			//Push it to the target array
-			target.push(req.body);
+			Cantrip.setData(req.path, req.body);
 			//Send the response
 			res.body = _.cloneDeep(req.body);
 			next();
@@ -459,26 +466,11 @@ var Cantrip = {
 		}
 	},
 	put: function(req, res, next) {
-		var target = _.last(req.nodes);
+		var target = req.node;
 		if (_.isObject(target)) {
 			Cantrip.addMetadataToModels(req.body);
-			//If it's an element inside a collection, make sure the overwritten _id is not present in the collection
-			if (req.body._id && target._id && req.body._id !== target._id) {
-				var parent = req.nodes[req.nodes.length - 2];
-				if (parent) {
-					for (var i = 0; i < parent.length; i++) {
-						if (parent[i]._id === req.body._id) {
-							return next({
-								status: 400,
-								error: "An object with the same _id already exists in this collection."
-							});
-						}
-					}
-				}
-			}
 			//If the target had previously had a _modifiedDate property, set it to the current time
-			if (target._modifiedDate) target._modifiedDate = (new Date()).getTime();
-			target = _.extend(target, req.body);
+			Cantrip.setData(req.path, req.body);
 			//Send the response
 			res.body = _.cloneDeep(target);
 			next();
@@ -491,11 +483,10 @@ var Cantrip = {
 	},
 	delete: function(req, res, next) {
 		//Get the parent node so we can unset the target
-		var parent = req.nodes[req.nodes.length - 2];
-		//Last identifier in the path
-		var index = _.last(req.pathMembers);
-		//If it's an object (not an array), then we just unset the key with the keyword delete
-		if (_.isObject(parent) && !_.isArray(parent)) {
+		var parent = Cantrip.getParentNode(req.path, function() {
+
+			//Last identifier in the path
+			var index = _.last(req.path.split("/"));
 			//We're not letting users delete the _id
 			if ((index + "")[0] === "_") {
 				return next({
@@ -503,24 +494,13 @@ var Cantrip = {
 					error: "You can't delete an object's metadata."
 				});
 			} else {
-				delete parent[index];
+				Cantrip.deleteNodes(req.path);
+				//Send the response
+				res.body = {"success": true};
+				next();
 			}
-			//If it's an array, we must remove it by id with the splice method	
-		} else if (_.isArray(parent)) {
-			//If the index is a number, index will be the actual index in the array
-			if (_.isNumber(Number(index)) && !_.isNaN(Number(index))) {
-				parent.splice(index, 1);
-				//If it's a hash (string), we find the target object, get it's index and remove it from the array that way
-			} else {
-				var obj = _.find(parent, function(obj) {
-					return obj._id === index;
-				});
-				parent.splice(_.indexOf(parent, obj), 1);
-			}
-		}
-		//Send the response
-		res.body = _.cloneDeep(parent || {});
-		next();
+
+		});
 	},
 	//Recursively add _ids to all objects within an array (but not arrays) within the specified object.
 	addMetadataToModels: function(obj) {
@@ -568,7 +548,7 @@ var Cantrip = {
 	 */
 	response: function(req, res, next) {
 		res.send(res.body);
-		next();
+		// next();
 	}
 }
 
