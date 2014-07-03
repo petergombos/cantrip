@@ -26,7 +26,7 @@ var Cantrip = {
 		ip: "127.0.0.1",
 		port: process.env.PORT || 3000,
 		saveEvery: 1,
-		namespace: "data"
+		namespace: "data",
 		persistence: jsonPersistence
 	},
 	/**
@@ -54,9 +54,10 @@ var Cantrip = {
 		});
 
 		//Add the loaded persistence layer's methods to the Cantrip object
-		this = _.extend(this, this.options.persistence);
+		_.extend(this, this.options.persistence);
 		//Set up our persistence layer (JSON file or mongodb)
 		this.setupPersistence();
+		this.dataStore.data = this.data;
 
 		//Set up the server
 		this.app = app;

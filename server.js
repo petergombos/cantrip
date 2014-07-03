@@ -31,4 +31,13 @@ Cantrip.options.namespace = "data";
  */
 Cantrip.options.ip = "127.0.0.1";
 
+/**
+ * Switch the default persistence layer. Import your persistence module to add it
+ * @type {Object}
+ */
+//Cantrip.options.persistence = jsonPersistence;
+
 Cantrip.start();
+
+
+
