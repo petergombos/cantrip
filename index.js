@@ -26,7 +26,7 @@ var Cantrip = {
 		ip: "127.0.0.1",
 		port: process.env.PORT || 3000,
 		saveEvery: 1,
-		file: "data.json"
+		namespace: "data.json"
 	},
 	/**
 	 * Starts the server. Sets up the data in memory, creates a file if necessary
@@ -42,15 +42,8 @@ var Cantrip = {
 			}
 		});
 
-		//Set up memory by reading the contents of the file
-		if (!fs.existsSync(this.options.file)) {
-			fs.writeFileSync(this.options.file, "{}");
-		}
-
-		this.data = fs.readFileSync(this.options.file, {
-			encoding: 'utf-8'
-		});
-		this.data = JSON.parse(this.data);
+		//Set up our persistence layer (JSON file or mongodb)
+		this.setupPersistence();
 
 		//Set up the server
 		this.app = app;
@@ -104,6 +97,24 @@ var Cantrip = {
 	 */
 	close: function() {
 		this.server.close();
+	},
+
+	/**
+	 * Sets up the persistence (file, database etc.) required for saving data.
+	 * Also sets up the Cantrip.data attribute which holds functions for accessing the data directly
+	 * By default this means reading a file and loading its contents as JSON into memory
+	 */
+	setupPersistence: function() {
+		//Set up memory by reading the contents of the file
+		if (!fs.existsSync(this.options.namespace)) {
+			fs.writeFileSync(this.options.namespace, "{}");
+		}
+
+		this.data = fs.readFileSync(this.options.namespace, {
+			encoding: 'utf-8'
+		});
+
+		this.data = JSON.parse(this.data);
 	},
 
 
@@ -247,7 +258,7 @@ var Cantrip = {
 	counter: 0,
 	syncData: function(req, res, next) {
 		if (++Cantrip.counter === Cantrip.options.saveEvery && Cantrip.options.saveEvery !== 0) {
-			fs.writeFile(Cantrip.options.file, JSON.stringify(Cantrip.data), function(err) {
+			fs.writeFile(Cantrip.options.namespace, JSON.stringify(Cantrip.data), function(err) {
 				if (err) {
 					console.log(err);
 				}

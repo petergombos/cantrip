@@ -23,7 +23,7 @@ Cantrip.options.saveEvery = 1;
  * Override which file to save to. Default is data.json.
  * @type {String}
  */
-Cantrip.options.file = "data.json";
+Cantrip.options.namespace = "data.json";
 
 /**
  * Optionally you can also set the ip address the express server runs on.
