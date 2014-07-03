@@ -119,7 +119,7 @@ var Cantrip = {
 			});
 		},
 		parent: function(path, callback) {
-			this.get(path.split("/").slice(0,-1).join("/"), function(err, parent) {
+			this.get(path.split("/").slice(0, -1).join("/"), function(err, parent) {
 				callback(err, parent);
 			});
 		}
@@ -370,31 +370,33 @@ var Cantrip = {
 			Cantrip.addMetadataToModels(req.body);
 			//If the target had previously had a _modifiedDate property, set it to the current time
 			if (req.targetNode._modifiedDate) req.body._modifiedDate = (new Date()).getTime();
+			var save = function() {
+				Cantrip.dataStore.set(req.path, req.body, function(err, status) {
+					//Send the response
+					res.body = {
+						"success": true
+					};
+					next();
+				});
+			};
 			//If it's an element inside a collection, make sure the overwritten _id is not present in the collection
-			// TODO implement
-			// if (req.body._id && req.targetNode._id && req.body._id !== req.targetNode._id) {
-			// 	var parent = req.parentNode;
-			// 	if (!parent) {
-			// 		Cantrip.dataStore.parent(req.path, function(err, data) {
-			// 			req.parentNode = data;
-			// 		});
-			// 	}
-			// 	for (var i = 0; i < parent.length; i++) {
-			// 		if (parent[i]._id === req.body._id) {
-			// 			return next({
-			// 				status: 400,
-			// 				error: "An object with the same _id already exists in this collection."
-			// 			});
-			// 		}
-			// 	}
-			// }
-			Cantrip.dataStore.set(req.path, req.body, function(err, status) {
-				//Send the response
-				res.body = {
-					"success": true
-				};
-				next();
-			});
+			if (req.body._id && req.targetNode._id && req.body._id !== req.targetNode._id) {
+				Cantrip.dataStore.parent(req.path, function(err, parent) {
+					req.parentNode = parent;
+					for (var i = 0; i < parent.length; i++) {
+						if (parent[i]._id === req.body._id) {
+							return next({
+								status: 400,
+								error: "An object with the same _id already exists in this collection."
+							});
+						}
+					}
+					//I there was no such problem
+					save();
+				});
+			} else {
+				save();
+			}
 		} else {
 			return next({
 				status: 400,
@@ -418,7 +420,9 @@ var Cantrip = {
 				} else {
 					Cantrip.dataStore.delete(req.path, function() {
 						//Send the response
-						res.body = {"success": true};
+						res.body = {
+							"success": true
+						};
 						next();
 					});
 				}
@@ -426,11 +430,13 @@ var Cantrip = {
 			} else if (_.isArray(parent)) {
 				Cantrip.dataStore.delete(req.path, function() {
 					//Send the response
-					res.body = {"success": true};
+					res.body = {
+						"success": true
+					};
 					next();
 				});
 			}
-			
+
 		});
 	},
 	//Recursively add _ids to all objects within an array (but not arrays) within the specified object.
