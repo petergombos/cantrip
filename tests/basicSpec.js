@@ -10,7 +10,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 		expect(Cantrip).toBeDefined();
 	});
 
-	Cantrip.options.namespace = "tests/test" + Math.floor(Math.random() * 10000000000) + ".json";
+	Cantrip.options.namespace = "test" + Math.floor(Math.random() * 10000000000);
 
 	Cantrip.start();
 
