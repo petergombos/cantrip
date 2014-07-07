@@ -42,7 +42,7 @@ var Cantrip = {
 	/**
 	 * Starts the server. Sets up the data in memory, creates a file if necessary
 	 */
-	start: function() {
+	start: function(callback) {
 
 		//Override options from command line arguments
 		var self = this;
@@ -107,7 +107,7 @@ var Cantrip = {
 
 			//Start the server
 			self.server = self.app.listen(self.options.port, self.options.ip);
-			
+			callback && callback();
 		});
 
 	},
