@@ -56,56 +56,59 @@ var Cantrip = {
 		//Add the loaded persistence layer's methods to the Cantrip object
 		_.extend(this, this.options.persistence);
 		//Set up our persistence layer (JSON file or mongodb)
-		this.setupPersistence();
-		this.dataStore.data = this.data;
+		var self = this;
+		this.setupPersistence(function() {
+			self.dataStore.data = self.data;
 
-		//Set up the server
-		this.app = app;
+			//Set up the server
+			self.app = app;
 
-		//Give access to the data object to middlewares and parse the request path for a helper array
-		app.use(function(req, res, next) {
-			req.data = Cantrip.data;
-			//Parse the path and save it on the request
-			req.pathMembers = _.filter(req.path.split("/"), function(string) {
-				return string !== "";
+			//Give access to the data object to middlewares and parse the request path for a helper array
+			app.use(function(req, res, next) {
+				req.data = Cantrip.data;
+				//Parse the path and save it on the request
+				req.pathMembers = _.filter(req.path.split("/"), function(string) {
+					return string !== "";
+				});
+				next();
 			});
-			next();
+
+			app.use(self.targetNode);
+
+			//Set up middleware
+			self.beforeMiddleware();
+
+			//Handle errors thrown so far
+			app.use(self.error);
+
+			//Set default middleware
+			app.get('*', self.get);
+
+			app.post("*", self.post);
+
+			app.delete("*", self.delete);
+
+			app.put("*", self.put);
+
+			//Call middleware that alter the response object
+			self.alterMiddleware();
+
+			//Handle errors thrown
+			app.use(self.error);
+
+			//Send the response
+			app.use(self.response);
+
+			//Set up 'after' middleware
+			self.afterMiddleware();
+
+			//Sync the data
+			app.use(self.syncData);
+
+			//Start the server
+			self.server = self.app.listen(self.options.port, self.options.ip);
+			
 		});
-
-		app.use(this.targetNode);
-
-		//Set up middleware
-		this.beforeMiddleware();
-
-		//Handle errors thrown so far
-		app.use(this.error);
-
-		//Set default middleware
-		app.get('*', this.get);
-
-		app.post("*", this.post);
-
-		app.delete("*", this.delete);
-
-		app.put("*", this.put);
-
-		//Call middleware that alter the response object
-		this.alterMiddleware();
-
-		//Handle errors thrown
-		app.use(this.error);
-
-		//Send the response
-		app.use(this.response);
-
-		//Set up 'after' middleware
-		this.afterMiddleware();
-
-		//Sync the data
-		app.use(this.syncData);
-
-		//Start the server
-		this.server = this.app.listen(this.options.port, this.options.ip);
 
 	},
 	/**
