@@ -63,6 +63,7 @@ var Cantrip = {
 			//Set up the server
 			self.app = app;
 
+
 			//Give access to the data object to middlewares and parse the request path for a helper array
 			app.use(function(req, res, next) {
 				req.data = Cantrip.data;
@@ -73,6 +74,7 @@ var Cantrip = {
 				next();
 			});
 
+			//Get the target node based on the request path
 			app.use(self.targetNode);
 
 			//Set up middleware
@@ -206,6 +208,26 @@ var Cantrip = {
 	 * Gets the target node from the data. Throws an error if it doesn't exist
 	 */
 	targetNode: function(req, res, next) {
+		//Set _contents as the base path if there is no _meta route specified
+		if (req.path[1] !== "_") {
+			var current = req.path;
+			//Redefine getter
+			Object.defineProperty(req, 'path', {
+			    get: function() {
+			        return "/_contents" + current;
+			    }
+			});
+		}
+		//You can access the actual root if you specify the route /_meta
+		else if (req.path.indexOf("/_meta") === 0) {
+			var current = req.path;
+			//Redefine getter
+			Object.defineProperty(req, 'path', {
+			    get: function() {
+			        return current.replace("_meta", "");
+			    }
+			});
+		}
 		Cantrip.dataStore.get(req.path, function(error, data) {
 			if (error) {
 				return next(error);
@@ -220,14 +242,6 @@ var Cantrip = {
 	//If options.saveEvery is 0, it never saves
 	counter: 0,
 	syncData: function(req, res, next) {
-		if (++Cantrip.counter === Cantrip.options.saveEvery && Cantrip.options.saveEvery !== 0) {
-			fs.writeFile("data/" + Cantrip.options.namespace + ".json", JSON.stringify(Cantrip.data), function(err) {
-				if (err) {
-					console.log(err);
-				}
-			});
-			Cantrip.counter = 0;
-		}
 
 	},
 	get: function(req, res, next) {

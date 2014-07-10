@@ -31,7 +31,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					expect(body).toEqual({
 						success: true
 					});
-					Cantrip.dataStore.get("/", function(err, data) {
+					Cantrip.dataStore.get("/_contents/", function(err, data) {
 						expect(data).toEqual({
 							foo: "bar"
 						});
@@ -52,7 +52,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					}
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					Cantrip.dataStore.get("/foo", function(err, data) {
+					Cantrip.dataStore.get("/_contents/foo", function(err, data) {
 						expect(data).toEqual({
 							string: "some string",
 							collection: []
@@ -71,7 +71,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					}
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					Cantrip.dataStore.get("/foo", function(err, data) {
+					Cantrip.dataStore.get("/_contents/foo", function(err, data) {
 						expect(data).toEqual({
 							string: "other string",
 							collection: []
@@ -281,7 +281,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					json: true,
 				}, function(error, response, body) {
 					expect(body).toEqual({"success": true});
-					Cantrip.dataStore.get("/foo", function(err, data) {
+					Cantrip.dataStore.get("/_contents/foo", function(err, data) {
 						expect(data.string).not.toBeDefined();
 						done();
 					});
@@ -295,7 +295,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					json: true,
 				}, function(error, response, body) {
 					expect(body.error).toBeDefined();
-					Cantrip.dataStore.get("/foo/collection/0", function(err, data) {
+					Cantrip.dataStore.get("/_contents/foo/collection/0", function(err, data) {
 						expect(data._id).toBeDefined();
 						done();
 					});
@@ -309,7 +309,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					json: true,
 				}, function(error, response, body) {
 					expect(body.error).toBeDefined();
-					Cantrip.dataStore.get("/foo/collection/0", function(err, data) {
+					Cantrip.dataStore.get("/_contents/foo/collection/0", function(err, data) {
 						expect(data._modifiedDate).toBeDefined();
 						done();
 					});
@@ -323,7 +323,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					json: true,
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					Cantrip.dataStore.get("/foo/collection", function(err, data) {
+					Cantrip.dataStore.get("/_contents/foo/collection", function(err, data) {
 						expect(data.length).toBe(1);
 						done();
 					});
@@ -337,7 +337,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					json: true,
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					Cantrip.dataStore.get("/foo/collection", function(err, data) {
+					Cantrip.dataStore.get("/_contents/foo/collection", function(err, data) {
 						expect(data).toEqual([]);
 						done();
 					});
@@ -351,7 +351,7 @@ describe("Cantrip is a database-less REST API library saving to a JSON file", fu
 					json: true,
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					Cantrip.dataStore.get("/", function(err, data) {
+					Cantrip.dataStore.get("/_contents/", function(err, data) {
 						expect(data).toEqual({});
 						done();
 					});

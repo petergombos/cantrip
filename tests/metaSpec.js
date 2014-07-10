@@ -19,7 +19,7 @@ describe("Cantrip's _meta attributes provide a place to store metadata.", functi
 				}
 			}, function(error, response, body) {
 				expect(body).toEqual({success: true});
-				Cantrip.dataStore.get("/_meta", function(err, data) {
+				Cantrip.dataStore.get("/", function(err, data) {
 					expect(data).toEqual({
 						_contents: {
 							foo: "bar"
