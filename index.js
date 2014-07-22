@@ -67,6 +67,7 @@ var Cantrip = {
 			//Give access to the data object to middlewares and parse the request path for a helper array
 			app.use(function(req, res, next) {
 				req.data = Cantrip.data;
+				req.dataStore = Cantrip.dataStore;
 				//Parse the path and save it on the request
 				req.pathMembers = _.filter(req.path.split("/"), function(string) {
 					return string !== "";
