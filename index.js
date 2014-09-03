@@ -216,7 +216,8 @@ var Cantrip = {
 			Object.defineProperty(req, 'path', {
 			    get: function() {
 			        return "/_contents" + current;
-			    }
+			    },
+			    configurable: true
 			});
 		}
 		//You can access the actual root if you specify the route /_meta
@@ -226,7 +227,8 @@ var Cantrip = {
 			Object.defineProperty(req, 'path', {
 			    get: function() {
 			        return current.replace("_meta", "");
-			    }
+			    },
+			    configurable: true
 			});
 		}
 		Cantrip.dataStore.get(req.path, function(error, data) {
