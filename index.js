@@ -68,6 +68,7 @@ var Cantrip = {
 			app.use(function(req, res, next) {
 				req.data = Cantrip.data;
 				req.dataStore = Cantrip.dataStore;
+				req.cantrip = self;
 				//Parse the path and save it on the request
 				req.pathMembers = _.filter(req.path.split("/"), function(string) {
 					return string !== "";
