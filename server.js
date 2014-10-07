@@ -1,3 +1,4 @@
+var fs = require("fs");
 var Cantrip = require("./index.js");
 
 /**
@@ -36,6 +37,18 @@ Cantrip.options.ip = "127.0.0.1";
  * @type {Object}
  */
 //Cantrip.options.persistence = jsonPersistence;
+
+/**
+ * Create a https server too
+ * @type {Object}
+ */
+// Cantrip.options.https = {
+// 	key: fs.readFileSync(process.env["HOME"] + '/.credentials/server.key', 'utf8'),
+// 	cert: fs.readFileSync(process.env["HOME"] + '/.credentials/server.crt', 'utf8'),
+// 	port: 443
+// };
+
+
 
 Cantrip.start();
 

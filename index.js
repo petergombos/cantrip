@@ -106,12 +106,22 @@ var Cantrip = {
 			//Set up 'after' middleware
 			self.afterMiddleware();
 
-			//Sync the data
-			app.use(self.syncData);
-
 			//Start the server
-			self.server = self.app.listen(self.options.port, self.options.ip);
-			callback && callback();
+			//Check if we have privateKey and certificate for https
+			if (self.options.https) {
+				var http = require("http");
+				var https = require("https");
+				var httpServer = http.createServer(app);
+				var httpsServer = https.createServer(self.options.https, app);
+
+				httpServer.listen(self.options.port || 3000);
+				httpsServer.listen(self.options.https.port || 443);
+
+				callback && callback();
+			} else {
+				self.server = self.app.listen(self.options.port || 3000, self.options.ip);
+				callback && callback();
+			}
 		});
 
 	},
@@ -245,9 +255,6 @@ var Cantrip = {
 	//If options.saveEvery is different from 1, it doesn't save every time.
 	//If options.saveEvery is 0, it never saves
 	counter: 0,
-	syncData: function(req, res, next) {
-
-	},
 	get: function(req, res, next) {
 		if (_.isObject(req.targetNode) || _.isArray(req.targetNode)) {
 			res.body = _.cloneDeep(req.targetNode);
