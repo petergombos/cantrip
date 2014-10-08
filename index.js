@@ -86,6 +86,14 @@ var Cantrip = {
 				next();
 			});
 
+
+			//Add a "send" middleware to all special middlewares. This should allow you to modify returned values on special middlewares supplied by acl, for example
+			for (var i = 0; i < self.specialStack.length; i++) {
+				app.specialMWRouter.use(self.specialStack[i], function(req, res) {
+					res.send(res.body);
+				});
+			}
+
 			//Use special middleware
 			app.use("/", app.specialMWRouter);
 
@@ -230,9 +238,25 @@ var Cantrip = {
 	},
 
 	/**
+	 * This stack is used for storing all special urls, so a response.send middleware can be added after the application has started
+	 * @type {Array}
+	 */
+	specialStack : [],
+
+	/**
 	 * Register special middleware that shouldn't go through the normal middleware stack
 	 */
 	special: function() {
+		//Add its route to the special Stack, so it can be referenced later
+		this.specialStack.push(arguments[0]);
+		for (var i = 0; i < arguments.length; i++) {
+			if (_.isObject(arguments[i]) && arguments[i].registerMiddleware) {
+				var middlewares = arguments[i].registerMiddleware;
+				for (var j = 0; j < middlewares.length; j++) {
+					this[middlewares[j][0]](middlewares[j][1], middlewares[j][2]);
+				}
+			}
+		}
 		app.specialMWRouter.use.apply(app.specialMWRouter, arguments);
 	},
 
