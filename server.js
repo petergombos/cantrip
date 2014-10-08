@@ -48,8 +48,6 @@ Cantrip.options.ip = "127.0.0.1";
 // 	port: 443
 // };
 
-
-
 Cantrip.start();
 
 

@@ -19,7 +19,17 @@ app.use(bodyParser.urlencoded());
 //app.use(express.multipart());
 app.use(cors());
 
-
+//Set up the special router
+app.specialMWRouter = express.Router();
+app.specialMWRouter.use(bodyParser.json());
+app.specialMWRouter.use(function(err, req, res, next) {
+	return next({
+		status: 400,
+		error: "Invalid JSON supplied in request body."
+	});
+});
+app.specialMWRouter.use(bodyParser.urlencoded());
+app.specialMWRouter.use(cors());
 
 var Cantrip = {
 	options: {
@@ -75,6 +85,9 @@ var Cantrip = {
 				});
 				next();
 			});
+
+			//Use special middleware
+			app.use("/", app.specialMWRouter);
 
 			//Get the target node based on the request path
 			app.use(self.targetNode);
@@ -214,6 +227,13 @@ var Cantrip = {
 		for (var i = 0; i < this.alterStack.length; i++) {
 			this.app.use.apply(this.app, this.alterStack[i]);
 		}
+	},
+
+	/**
+	 * Register special middleware that shouldn't go through the normal middleware stack
+	 */
+	special: function() {
+		app.specialMWRouter.use.apply(app.specialMWRouter, arguments);
 	},
 
 	/**
