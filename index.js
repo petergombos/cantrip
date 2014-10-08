@@ -90,7 +90,16 @@ var Cantrip = {
 			//Add a "send" middleware to all special middlewares. This should allow you to modify returned values on special middlewares supplied by acl, for example
 			for (var i = 0; i < self.specialStack.length; i++) {
 				app.specialMWRouter.use(self.specialStack[i], function(err, req, res, next) {
-					res.send(err);
+					if (error.status && error.error) {
+						res.status(error.status).send({
+							"error": error.error
+						});
+					} else {
+						console.log(error);
+						res.status(400).send({
+							"error": "An unknown error happened."
+						});
+					}
 				});
 				app.specialMWRouter.use(self.specialStack[i], function(req, res) {
 					res.send(res.body);
