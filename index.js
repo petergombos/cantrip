@@ -479,7 +479,7 @@ var Cantrip = {
 	 */
 	response: function(req, res, next) {
 		res.send(res.body);
-		req.on("end", next);
+		res.on("finish", next);
 	}
 }
 
