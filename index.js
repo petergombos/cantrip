@@ -251,6 +251,7 @@ var Cantrip = {
 		for (var i = 0; i < this.afterStack.length; i++) {
 			var pattern = RoutePattern.fromString(this.afterStack[i][0]);
 			if (pattern.matches(url)) {
+				req.params = pattern.match(url).namedParams;
 				this.afterStack[i][1](req, res, function() {});
 			}
 		}
