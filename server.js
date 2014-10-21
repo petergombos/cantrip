@@ -47,6 +47,7 @@ Cantrip.options.ip = "127.0.0.1";
 // 	cert: fs.readFileSync(process.env["HOME"] + '/.credentials/server.crt', 'utf8'),
 // 	port: 443
 // };
+// 
 
 Cantrip.start();
 

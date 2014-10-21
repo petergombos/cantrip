@@ -5,6 +5,7 @@ var md5 = require('MD5');
 var cors = require('cors');
 var bodyParser = require('body-parser')
 var jsonPersistence = require('cantrip-persistence-json');
+var RoutePattern = require("route-pattern");
 
 //Set up express
 var app = express();
@@ -136,8 +137,7 @@ var Cantrip = {
 			//Send the response
 			app.use(self.response);
 
-			//Set up 'after' middleware
-			self.afterMiddleware();
+			// self.afterMiddleware();
 
 			//Start the server
 			//Check if we have privateKey and certificate for https
@@ -236,11 +236,24 @@ var Cantrip = {
 
 	},
 
-	afterMiddleware: function() {
-		for (var i = 0; i < this.afterStack.length; i++) {
-			this.app.use.apply(this.app, this.afterStack[i]);
-		}
+	// @deprecated
+	// afterMiddleware: function() {
+	// 	for (var i = 0; i < this.afterStack.length; i++) {
+	// 		this.app.use.apply(this.app, this.afterStack[i]);
+	// 	}
 
+	// },
+
+	handleAfter: function(req, res) {
+		var url = req.url;
+		url = url.replace("/_contents", "");
+
+		for (var i = 0; i < this.afterStack.length; i++) {
+			var pattern = RoutePattern.fromString(this.afterStack[i][0]);
+			if (pattern.matches(url)) {
+				this.afterStack[i][1](req, res, function() {});
+			}
+		}
 	},
 
 	alterMiddleware: function() {
@@ -478,8 +491,10 @@ var Cantrip = {
 	 * Send the response created by the get/post/put/delete methods after it was modified by custom middleware
 	 */
 	response: function(req, res, next) {
+		res.on("finish", function() {
+			Cantrip.handleAfter(req, res);
+		});
 		res.send(res.body);
-		res.on("finish", next);
 	}
 }
 
