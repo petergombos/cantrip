@@ -231,7 +231,7 @@ var Cantrip = {
 	beforeMiddleware: function() {
 
 		for (var i = 0; i < this.beforeStack.length; i++) {
-			this.app.use.apply(this.app, this.beforeStack[i]);
+			this.app.all.apply(this.app, this.beforeStack[i]);
 		}
 
 	},
@@ -259,7 +259,7 @@ var Cantrip = {
 
 	alterMiddleware: function() {
 		for (var i = 0; i < this.alterStack.length; i++) {
-			this.app.use.apply(this.app, this.alterStack[i]);
+			this.app.all.apply(this.app, this.alterStack[i]);
 		}
 	},
 
