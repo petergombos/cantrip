@@ -84,11 +84,6 @@ var cantrip = {
 			callback();
 		});
 	},
-	//Save the JSON in memory to the specified JSON file. Runs after every API call, once the answer has been sent.
-	//Uses the async writeFile so it doesn't interrupt other stuff.
-	//If options.saveEvery is different from 1, it doesn't save every time.
-	//If options.saveEvery is 0, it never saves
-	counter: 0,
 	get: function(req, res, next) {
 		if (_.isObject(req.targetNode) || _.isArray(req.targetNode)) {
 			res.body = _.cloneDeep(req.targetNode);
@@ -125,7 +120,7 @@ var cantrip = {
 			}
 			//Push it to the target array
 			cantrip.dataStore.set(req.path, req.body, function() {
-				//Send the response
+				//Set response
 				res.body = _.cloneDeep(req.body);
 				next();
 
@@ -144,11 +139,11 @@ var cantrip = {
 			if (req.targetNode._modifiedDate) req.body._modifiedDate = (new Date()).getTime();
 			var save = function() {
 				cantrip.dataStore.set(req.path, req.body, function(err, status) {
-					//Send the response
+					//Set response
 					res.body = {
 						"success": true
 					};
-					next();
+					return next();
 				});
 			};
 			//If it's an element inside a collection, make sure the overwritten _id is not present in the collection
@@ -191,21 +186,21 @@ var cantrip = {
 					});
 				} else {
 					cantrip.dataStore.delete(req.path, function() {
-						//Send the response
+						//Set response
 						res.body = {
 							"success": true
 						};
-						next();
+						return next();
 					});
 				}
 				//If it's an array, we must remove it by id with the splice method	
 			} else if (_.isArray(parent)) {
 				cantrip.dataStore.delete(req.path, function() {
-					//Send the response
+					//Set response
 					res.body = {
 						"success": true
 					};
-					next();
+					return next();
 				});
 			}
 

@@ -16,21 +16,16 @@ app.use(function(err, req, res, next) {
 app.use(bodyParser.urlencoded());
 app.use(cors());
 
-app.use(cantrip({
+app.use("/data", cantrip({
 	namespace: "data/data.json"
 }));
-
-app.get("/", function(req, res, next) {
-	res.body.foo = "bar";
-	next();
-});
 
 app.use(function(req, res, next) {
 	res.send(res.body);
 });
 
 app.use(function(err, req, res, next) {
-	if (err.status) res.status(err.status)
+	if (err.status) res.status(err.status);
 	res.send({
 		error: err.error
 	});
