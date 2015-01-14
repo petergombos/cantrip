@@ -175,7 +175,7 @@ var cantrip = {
 		//Get the parent node so we can unset the target
 		cantrip.dataStore.parent(req.path, function(err, parent) {
 			//Last identifier in the path
-			var index = _.last(req.pathMembers);
+			var index = _.last(req.path.split("/"));
 			//If it's an object (not an array), then we just unset the key with the keyword delete
 			if (_.isObject(parent) && !_.isArray(parent)) {
 				//We're not letting users delete the _id
