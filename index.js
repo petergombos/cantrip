@@ -54,28 +54,6 @@ var cantrip = {
 	 * Gets the target node from the data. Throws an error if it doesn't exist
 	 */
 	targetNode: function(req, res, next, callback) {
-		//Set _contents as the base path if there is no _meta route specified
-		if (req.path[1] !== "_") {
-			var current = req.path;
-			//Redefine getter
-			Object.defineProperty(req, 'path', {
-			    get: function() {
-			        return "/_contents" + current;
-			    },
-			    configurable: true
-			});
-		}
-		//You can access the actual root if you specify the route /_meta
-		else if (req.path.indexOf("/_meta") === 0) {
-			var current = req.path;
-			//Redefine getter
-			Object.defineProperty(req, 'path', {
-			    get: function() {
-			        return current.replace("_meta", "");
-			    },
-			    configurable: true
-			});
-		}
 		this.dataStore.get(req.path, function(error, data) {
 			if (error) {
 				return next(error);
@@ -87,6 +65,12 @@ var cantrip = {
 	get: function(req, res, next) {
 		if (_.isObject(req.targetNode) || _.isArray(req.targetNode)) {
 			res.body = _.cloneDeep(req.targetNode);
+			//If the path is the root, remove all _protected keys from the response
+			if (req.path === "/") {
+				for (var key in res.body) {
+					if (key[0] === "_") delete res.body[key];
+				}
+			}
 			next();
 		} else {
 			res.body = {
