@@ -3,28 +3,6 @@ var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser')
 
-/**
- * All options for cantrip and their default values are listed here.
- * You can overwrite all settings in the command line by passing parameters with a port=2000 like syntax
- */
-
-/**
- * Switch the default persistence layer. Import your persistence module to add it
- * @type {Object}
- */
-//cantrip.options.persistence = jsonPersistence;
-
-/**
- * Create a https server too
- * @type {Object}
- */
-// cantrip.options.https = {
-// 	key: fs.readFileSync(process.env["HOME"] + '/.credentials/server.key', 'utf8'),
-// 	cert: fs.readFileSync(process.env["HOME"] + '/.credentials/server.crt', 'utf8'),
-// 	port: 443
-// };
-// 
-// 
 
 var app = express();
 app.use(bodyParser.json());
@@ -36,10 +14,11 @@ app.use(function(err, req, res, next) {
 });
 
 app.use(bodyParser.urlencoded());
-//app.use(express.multipart());
 app.use(cors());
 
-app.use(cantrip());
+app.use(cantrip({
+	namespace: "data/data.json"
+}));
 
 app.get("/", function(req, res, next) {
 	res.body.foo = "bar";
@@ -51,7 +30,10 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(err, req, res, next) {
-	res.send(err);
+	if (err.status) res.status(err.status)
+	res.send({
+		error: err.error
+	});
 });
 
 app.listen(3000);

@@ -9,10 +9,8 @@ var RoutePattern = require("route-pattern");
 
 var cantrip = {
 	options: {
-		ip: "127.0.0.1",
-		port: process.env.PORT || 3000,
 		saveEvery: 1,
-		namespace: "data",
+		namespace: "data/data.json",
 		persistence: jsonPersistence
 	},
 	/**
@@ -20,26 +18,18 @@ var cantrip = {
 	 * @type {Object}
 	 */
 	dataStore: {
-		get: function(){},
-		set: function(){},
-		delete: function(){},
-		parent: function(){}
+		get: null,
+		set: null,
+		delete: null,
+		parent: null
 	},
 	/**
-	 * Starts the server. Sets up the data in memory, creates a file if necessary
+	 * Initializes data storage
 	 */
-	initialize: function() {
-		//Add the loaded persistence layer's methods to the cantrip object
-		//Set up our persistence layer (JSON file or mongodb)
-		this.options.persistence.options = {
-			namespace: "data"
-		}
-		_.bind(this.options.persistence.setupPersistence, this);
-		this.options.persistence.setupPersistence(function() {
-		});
+	initialize: function(options) {
+		_.extend(this.options, options);
+		this.options.persistence.initialize.call(this);
 		this.dataStore = this.options.persistence.dataStore;
-
-
 	},
 
 	/**
@@ -47,34 +37,23 @@ var cantrip = {
 	 */
 	handle: function(req, res, next) {
 		req.dataStore = cantrip.dataStore;
-		var self = this;
-		this.targetNode(req, function() {
+		cantrip.targetNode(req, res, next, function() {
 			if (req.method === "GET") {
-				self.get(req, res, next);
+				cantrip.get(req, res, next);
 			} else if (req.method === "POST") {
-				self.post(req, res, next);
+				cantrip.post(req, res, next);
 			} else if (req.method === "PUT") {
-				self.put(req, res, next);
+				cantrip.put(req, res, next);
 			} else if (req.method === "DELETE") {
-				self.delete(req, res, next);
+				cantrip.delete(req, res, next);
 			}
 		});
 	},
 
 	/**
-	 * Sets up the persistence (file, database etc.) required for saving data.
-	 * Also sets up the cantrip.data attribute which holds functions for accessing the data directly
-	 * Provided by the persistence layer
-	 * By default this means reading a file and loading its contents as JSON into memory
-	 */
-	setupPersistence: function() {
-		
-	},
-
-	/**
 	 * Gets the target node from the data. Throws an error if it doesn't exist
 	 */
-	targetNode: function(req, callback) {
+	targetNode: function(req, res, next, callback) {
 		//Set _contents as the base path if there is no _meta route specified
 		if (req.path[1] !== "_") {
 			var current = req.path;
@@ -259,7 +238,7 @@ var cantrip = {
 	
 }
 
-module.exports = function() {
-	cantrip.initialize();
+module.exports = function(options) {
+	cantrip.initialize(options);
 	return _.bind(cantrip.handle, cantrip);
 };
