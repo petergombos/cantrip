@@ -37,7 +37,7 @@ var Cantrip = {
 		ip: "127.0.0.1",
 		port: process.env.PORT || 3000,
 		saveEvery: 1,
-		namespace: "data",
+		namespace: "data.json",
 		persistence: jsonPersistence
 	},
 	/**
