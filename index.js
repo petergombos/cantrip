@@ -34,7 +34,6 @@ app.specialMWRouter.use(cors());
 
 var Cantrip = {
 	options: {
-		ip: "127.0.0.1",
 		port: process.env.PORT || 3000,
 		saveEvery: 1,
 		namespace: "data.json",
@@ -152,7 +151,7 @@ var Cantrip = {
 
 				callback && callback();
 			} else {
-				self.server = self.app.listen(self.options.port || 3000);
+				self.server = self.app.listen(self.options.port || 3000, self.options.ip);
 				callback && callback();
 			}
 		});

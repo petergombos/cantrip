@@ -10,7 +10,7 @@ var Cantrip = require("./index.js");
  * Port to run the server on
  * @type {Number}
  */
-Cantrip.options.port = process.env.PORT || 5000;
+Cantrip.options.port = process.env.PORT || 3000;
 
 /**
  * Backup the memory to the JSON file every Nth POST/PUT/DELETE request.
@@ -30,7 +30,7 @@ Cantrip.options.namespace = "data.json";
  * Optionally you can also set the ip address the express server runs on.
  * @type {String}
  */
-Cantrip.options.ip = "127.0.0.1";
+// Cantrip.options.ip = "127.0.0.1";
 
 /**
  * Switch the default persistence layer. Import your persistence module to add it
