@@ -152,7 +152,7 @@ var Cantrip = {
 
 				callback && callback();
 			} else {
-				self.server = self.app.listen(self.options.port || 3000, self.options.ip);
+				self.server = self.app.listen(self.options.port || 3000);
 				callback && callback();
 			}
 		});

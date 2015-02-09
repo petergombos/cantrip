@@ -10,7 +10,7 @@ var Cantrip = require("./index.js");
  * Port to run the server on
  * @type {Number}
  */
-Cantrip.options.port = process.env.PORT || 3000;
+Cantrip.options.port = process.env.PORT || 5000;
 
 /**
  * Backup the memory to the JSON file every Nth POST/PUT/DELETE request.
