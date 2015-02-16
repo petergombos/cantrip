@@ -10,7 +10,7 @@ var Cantrip = require("./index.js");
  * Port to run the server on
  * @type {Number}
  */
-Cantrip.options.port = process.env.PORT || 3000;
+Cantrip.options.port = process.env.PORT || 5000;
 
 /**
  * Backup the memory to the JSON file every Nth POST/PUT/DELETE request.
@@ -25,7 +25,7 @@ Cantrip.options.saveEvery = 1;
  * @type {String}
  */
 
-Cantrip.options.namespace = "data.json";
+Cantrip.options.namespace = "./data/data.json";
 /**
  * Optionally you can also set the ip address the express server runs on.
  * @type {String}
