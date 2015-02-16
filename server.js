@@ -25,7 +25,7 @@ Cantrip.options.saveEvery = 1;
  * @type {String}
  */
 
-Cantrip.options.namespace = "./data/data.json";
+Cantrip.options.namespace = "data/data.json";
 /**
  * Optionally you can also set the ip address the express server runs on.
  * @type {String}
