@@ -44,7 +44,7 @@ require("../index.js")({
 
 			describe("PUT", function() {
 
-				it("should allow you to put the root object", function(done) {
+				it("should allow you to put the root object, overwriting it", function(done) {
 					request({
 						method: "PUT",
 						url: serverUrl,
@@ -56,7 +56,7 @@ require("../index.js")({
 							success: true
 						});
 						done();
-						// cantrip.dataStore.get("/_contents/", function(err, data) {
+						// cantrip.get("/_contents/", function(err, data) {
 						// 	expect(data).toEqual({
 						// 		foo: "bar"
 						// 	});
@@ -65,42 +65,41 @@ require("../index.js")({
 					});
 				});
 
-				it("should allow you to modify previous values", function(done) {
+				it("should allow you to overwrite previous values", function(done) {
 					request({
 						method: "PUT",
 						url: serverUrl,
 						json: {
 							foo: {
 								string: "some string",
-								collection: []
+								soonToBeRemoved: 3
 							}
 						}
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
 						done();
-						// cantrip.dataStore.get("/_contents/foo", function(err, data) {
+						// cantrip.get("/_contents/foo", function(err, data) {
 						// 	expect(data).toEqual({
 						// 		string: "some string",
-						// 		collection: []
+						// 		soonToBeRemoved: 3
 						// 	});
 						// 	done();
 						// });
 					});
 				});
 
-				it("should allow you to put children", function(done) {
+				it("should allow you to put children, and overwrite whole objects", function(done) {
 					request({
 						method: "PUT",
 						url: serverUrl + "foo",
 						json: {
-							string: "other string"
+							collection: []
 						}
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
 						done();
-						// cantrip.dataStore.get("/_contents/foo", function(err, data) {
+						// cantrip.get("/_contents/foo", function(err, data) {
 						// 	expect(data).toEqual({
-						// 		string: "other string",
 						// 		collection: []
 						// 	});
 						// 	done();
@@ -116,7 +115,6 @@ require("../index.js")({
 					}, function(error, response, body) {
 						expect(body).toEqual({
 							foo: {
-								string: "other string",
 								collection: []
 							}
 						});
@@ -234,6 +232,62 @@ require("../index.js")({
 
 			});
 
+			describe("PATCH", function() {
+
+				it("should allow you to send a PATCH request which extends an object without overwriting it", function(done) {
+					request({
+						method: "PATCH",
+						url: serverUrl,
+						json: {
+							bar: {
+								string: "i'm a string",
+								baz: {
+									innerValue: 1
+								}
+							}
+						},
+					}, function(error, response, body) {
+						expect(body).toEqual({success: true});
+						done();
+						// cantrip.get("/_contents/bar", function(err, data) {
+						// 	expect(data).toEqual({
+						// 		string: "i'm a string",
+						// 		baz: 1
+						// 	});
+						// 	done();
+						// });
+					});
+				});
+
+				it("should use deep merge when sending multi-level objects", function(done) {
+					request({
+						method: "PATCH",
+						url: serverUrl,
+						json: {
+							bar: {
+								string: "other string",
+								baz: {
+									innerValue: 2
+								}
+							}
+						},
+					}, function(error, response, body) {
+						expect(body).toEqual({success: true});
+						done();
+						// cantrip.get("/_contents/bar", function(err, data) {
+						// 	expect(data).toEqual({
+						// 		string: "other string",
+						// 		baz: {
+						// 			innerValue: 2
+						// 		}
+						// 	});
+						// 	done();
+						// });
+					});
+				});
+
+			});
+
 			describe("GET", function() {
 
 				it("should get you the whole JSON when requesting the root", function(done) {
@@ -243,9 +297,11 @@ require("../index.js")({
 						json: true,
 					}, function(error, response, body) {
 						expect(body.foo).toBeDefined();
-						expect(body.foo.string).toBe("other string");
 						expect(body.foo.collection.length).toBe(2);
 						expect(body.foo.collection[0].foo).toBe("bar");
+						expect(body.bar).toBeDefined();
+						expect(body.bar.string).toBe("other string");
+						expect(body.bar.baz).toEqual({innerValue: 2});
 						done();
 					});
 				});
@@ -253,7 +309,7 @@ require("../index.js")({
 				it("should get you an object's single property wrapped in an object", function(done) {
 					request({
 						method: "GET",
-						url: serverUrl + "foo/string",
+						url: serverUrl + "bar/string",
 						json: true,
 					}, function(error, response, body) {
 						expect(body).toEqual({
@@ -304,12 +360,12 @@ require("../index.js")({
 				it("should allow you to delete a key from an object", function(done) {
 					request({
 						method: "DELETE",
-						url: serverUrl + "foo/string",
+						url: serverUrl + "bar/string",
 						json: true,
 					}, function(error, response, body) {
 						expect(body).toEqual({"success": true});
 						done();
-						// cantrip.dataStore.get("/_contents/foo", function(err, data) {
+						// cantrip.get("/_contents/bar", function(err, data) {
 						// 	expect(data.string).not.toBeDefined();
 						// 	done();
 						// });
@@ -326,7 +382,7 @@ require("../index.js")({
 
 						expect(body.error).toBeDefined();
 						done();
-						// cantrip.dataStore.get("/_contents/foo/collection/0", function(err, data) {
+						// cantrip.get("/_contents/foo/collection/0", function(err, data) {
 						// 	expect(data._id).toBeDefined();
 						// 	done();
 						// });
@@ -341,7 +397,7 @@ require("../index.js")({
 					}, function(error, response, body) {
 						expect(body.error).toBeDefined();
 						done();
-						// cantrip.dataStore.get("/_contents/foo/collection/0", function(err, data) {
+						// cantrip.get("/_contents/foo/collection/0", function(err, data) {
 						// 	expect(data._modifiedDate).toBeDefined();
 						// 	done();
 						// });
@@ -356,7 +412,7 @@ require("../index.js")({
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
 						done();
-						// cantrip.dataStore.get("/_contents/foo/collection", function(err, data) {
+						// cantrip.get("/_contents/foo/collection", function(err, data) {
 						// 	expect(data.length).toBe(1);
 						// 	done();
 						// });
@@ -371,7 +427,7 @@ require("../index.js")({
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
 						done();
-						// cantrip.dataStore.get("/_contents/foo/collection", function(err, data) {
+						// cantrip.get("/_contents/foo/collection", function(err, data) {
 						// 	expect(data).toEqual([]);
 						// 	done();
 						// });
@@ -385,9 +441,11 @@ require("../index.js")({
 						json: true,
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
+						console.log(body);
 						done();
-						// cantrip.dataStore.get("/_contents/", function(err, data) {
-						// 	expect(data).toEqual({});
+						// cantrip.get("/_contents/", function(err, data) {
+						// 	expect(data.foo).toBeUndefined();
+						// 	expect(data).toBe();
 						// 	done();
 						// });
 					});
