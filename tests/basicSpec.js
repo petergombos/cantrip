@@ -55,13 +55,12 @@ require("../index.js")({
 						expect(body).toEqual({
 							success: true
 						});
-						done();
-						// cantrip.get("/_contents/", function(err, data) {
-						// 	expect(data).toEqual({
-						// 		foo: "bar"
-						// 	});
-						// 	done();
-						// });
+						cantrip.get("/", function(err, data) {
+							expect(data).toEqual({
+								foo: "bar"
+							});
+							done();
+						});
 					});
 				});
 
@@ -77,14 +76,13 @@ require("../index.js")({
 						}
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
-						done();
-						// cantrip.get("/_contents/foo", function(err, data) {
-						// 	expect(data).toEqual({
-						// 		string: "some string",
-						// 		soonToBeRemoved: 3
-						// 	});
-						// 	done();
-						// });
+						cantrip.get("/foo", function(err, data) {
+							expect(data).toEqual({
+								string: "some string",
+								soonToBeRemoved: 3
+							});
+							done();
+						});
 					});
 				});
 
@@ -97,13 +95,12 @@ require("../index.js")({
 						}
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
-						done();
-						// cantrip.get("/_contents/foo", function(err, data) {
-						// 	expect(data).toEqual({
-						// 		collection: []
-						// 	});
-						// 	done();
-						// });
+						cantrip.get("/foo", function(err, data) {
+							expect(data).toEqual({
+								collection: []
+							});
+							done();
+						});
 					});
 				});
 
@@ -248,14 +245,15 @@ require("../index.js")({
 						},
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
-						done();
-						// cantrip.get("/_contents/bar", function(err, data) {
-						// 	expect(data).toEqual({
-						// 		string: "i'm a string",
-						// 		baz: 1
-						// 	});
-						// 	done();
-						// });
+						cantrip.get("/bar", function(err, data) {
+							expect(data).toEqual({
+								string: "i'm a string",
+								baz: {
+									innerValue: 1
+								}
+							});
+							done();
+						});
 					});
 				});
 
@@ -273,16 +271,15 @@ require("../index.js")({
 						},
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
-						done();
-						// cantrip.get("/_contents/bar", function(err, data) {
-						// 	expect(data).toEqual({
-						// 		string: "other string",
-						// 		baz: {
-						// 			innerValue: 2
-						// 		}
-						// 	});
-						// 	done();
-						// });
+						cantrip.get("/bar", function(err, data) {
+							expect(data).toEqual({
+								string: "other string",
+								baz: {
+									innerValue: 2
+								}
+							});
+							done();
+						});
 					});
 				});
 
@@ -364,11 +361,10 @@ require("../index.js")({
 						json: true,
 					}, function(error, response, body) {
 						expect(body).toEqual({"success": true});
-						done();
-						// cantrip.get("/_contents/bar", function(err, data) {
-						// 	expect(data.string).not.toBeDefined();
-						// 	done();
-						// });
+						cantrip.get("/bar", function(err, data) {
+							expect(data.string).not.toBeDefined();
+							done();
+						});
 					});
 				});
 
@@ -381,11 +377,10 @@ require("../index.js")({
 						console.log(body);
 
 						expect(body.error).toBeDefined();
-						done();
-						// cantrip.get("/_contents/foo/collection/0", function(err, data) {
-						// 	expect(data._id).toBeDefined();
-						// 	done();
-						// });
+						cantrip.get("/foo/collection/0", function(err, data) {
+							expect(data._id).toBeDefined();
+							done();
+						});
 					});
 				});
 
@@ -396,11 +391,10 @@ require("../index.js")({
 						json: true,
 					}, function(error, response, body) {
 						expect(body.error).toBeDefined();
-						done();
-						// cantrip.get("/_contents/foo/collection/0", function(err, data) {
-						// 	expect(data._modifiedDate).toBeDefined();
-						// 	done();
-						// });
+						cantrip.get("/foo/collection/0", function(err, data) {
+							expect(data._modifiedDate).toBeDefined();
+							done();
+						});
 					});
 				});
 
@@ -411,11 +405,10 @@ require("../index.js")({
 						json: true,
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
-						done();
-						// cantrip.get("/_contents/foo/collection", function(err, data) {
-						// 	expect(data.length).toBe(1);
-						// 	done();
-						// });
+						cantrip.get("/foo/collection", function(err, data) {
+							expect(data.length).toBe(1);
+							done();
+						});
 					});
 				});
 
@@ -426,11 +419,10 @@ require("../index.js")({
 						json: true,
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
-						done();
-						// cantrip.get("/_contents/foo/collection", function(err, data) {
-						// 	expect(data).toEqual([]);
-						// 	done();
-						// });
+						cantrip.get("/foo/collection", function(err, data) {
+							expect(data.length).toEqual(0);
+							done();
+						});
 					});
 				});
 
@@ -442,12 +434,17 @@ require("../index.js")({
 					}, function(error, response, body) {
 						expect(body).toEqual({success: true});
 						console.log(body);
-						done();
-						// cantrip.get("/_contents/", function(err, data) {
-						// 	expect(data.foo).toBeUndefined();
-						// 	expect(data).toBe();
-						// 	done();
-						// });
+						cantrip.get("/", function(err, data) {
+							expect(data.foo).toBeUndefined();
+							expect(data).toEqual({
+								bar: {
+									baz: {
+										innerValue: 2
+									}
+								}
+							});
+							done();
+						});
 					});
 				});
 
