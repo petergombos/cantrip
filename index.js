@@ -6,15 +6,17 @@ var cors = require('cors');
 var bodyParser = require('body-parser')
 var jsonPersistence = require('cantrip-persistence-json');
 var RoutePattern = require("route-pattern");
-
 module.exports = function cantrip(options, callback) {
-
+	
+	if (typeof options === "function") {
+		callback = options;
+		options = {};
+	}
 	options = _.extend({
-		file: "data/data.json",
-		persistence: jsonPersistence
+		persistence: jsonPersistence(options)
 	}, options);
 
-	options.persistence(options, function(err, dataStore) {
+	options.persistence(function(err, dataStore) {
 
 		if (err) {
 			return callback && typeof callback === 'function' && callback(err);

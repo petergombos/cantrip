@@ -1,10 +1,8 @@
 var express = require('express');
 var cors = require('cors');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 
-require("./index.js")({
-	file: "data/data.json"
-}, function(err, cantrip) {
+require("./index.js")(function(err, cantrip) {
 
 	var app = express();
 	app.use(bodyParser.json());
