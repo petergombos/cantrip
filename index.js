@@ -33,6 +33,8 @@ module.exports = function cantrip(options, callback) {
 					post(req, res, next);
 				} else if (req.method === "PUT") {
 					put(req, res, next);
+				} else if (req.method === "PATCH") {
+					put(req, res, next, true);
 				} else if (req.method === "DELETE") {
 					del(req, res, next);
 				}
@@ -86,7 +88,7 @@ module.exports = function cantrip(options, callback) {
 					}
 				}
 				//Push it to the target array
-				dataStore.set(req.path, req.body, function() {
+				dataStore.set(req.path, req.body, false, function() {
 					//Set response
 					res.body = _.cloneDeep(req.body);
 					next();
@@ -99,13 +101,13 @@ module.exports = function cantrip(options, callback) {
 				});
 			}
 		};
-		var put = function(req, res, next) {
+		var put = function(req, res, next, patch) {
 			if (_.isObject(req.targetNode) && !_.isArray(req.targetNode)) {
 				addMetadataToModels(req.body);
 				//If the target had previously had a _modifiedDate property, set it to the current time
 				if (req.targetNode._modifiedDate) req.body._modifiedDate = (new Date()).getTime();
 				var save = function() {
-					dataStore.set(req.path, req.body, function(err, status) {
+					dataStore.set(req.path, req.body, patch, function(err, status) {
 						//Set response
 						res.body = {
 							"success": true
