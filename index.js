@@ -95,7 +95,7 @@ module.exports = function cantrip(options, callback) {
 			} else {
 				return next({
 					status: 400,
-					error: "Can't POST to an object. Use PUT instead."
+					error: "Can't POST to a resource. Use PUT instead."
 				});
 			}
 		};
@@ -134,7 +134,7 @@ module.exports = function cantrip(options, callback) {
 			} else {
 				return next({
 					status: 400,
-					error: "Can't PUT a collection."
+					error: "Can't PUT a collection. Use POST instead."
 				});
 			}
 		};
