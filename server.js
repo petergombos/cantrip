@@ -1,55 +1,36 @@
-var fs = require("fs");
-var Cantrip = require("./index.js");
+var express = require('express');
+var cors = require('cors');
+var bodyParser = require('body-parser');
 
-/**
- * All options for Cantrip and their default values are listed here.
- * You can overwrite all settings in the command line by passing parameters with a port=2000 like syntax
- */
+require("./index.js")(function(err, cantrip) {
 
-/**
- * Port to run the server on
- * @type {Number}
- */
-Cantrip.options.port = process.env.PORT || 5000;
+	var app = express();
+	app.use(bodyParser.json());
+	app.use(function(err, req, res, next) {
+		return next({
+			status: 400,
+			error: "Invalid JSON supplied in request body."
+		});
+	});
 
-/**
- * Backup the memory to the JSON file every Nth POST/PUT/DELETE request.
- * Default is one, meaning the file is saved on every request.
- * A value of zero means it is never saved.
- * @type {Number}
- */
-Cantrip.options.saveEvery = 1;
+	app.use(bodyParser.urlencoded());
+	app.use(cors());
 
-/**
- * Override which file to save to. Default is data.json.
- * @type {String}
- */
+	app.use(cantrip);
 
-Cantrip.options.namespace = "data/data.json";
-/**
- * Optionally you can also set the ip address the express server runs on.
- * @type {String}
- */
-// Cantrip.options.ip = "127.0.0.1";
+	app.use(function(req, res, next) {
+		res.send(res.body);
+	});
 
-/**
- * Switch the default persistence layer. Import your persistence module to add it
- * @type {Object}
- */
-//Cantrip.options.persistence = jsonPersistence;
+	app.use(function(err, req, res, next) {
+		if (err.status) res.status(err.status);
+		res.send({
+			error: err.error
+		});
+	});
 
-/**
- * Create a https server too
- * @type {Object}
- */
-// Cantrip.options.https = {
-// 	key: fs.readFileSync(process.env["HOME"] + '/.credentials/server.key', 'utf8'),
-// 	cert: fs.readFileSync(process.env["HOME"] + '/.credentials/server.crt', 'utf8'),
-// 	port: 443
-// };
-// 
+	app.listen(3000);
 
-Cantrip.start();
-
+});
 
 
