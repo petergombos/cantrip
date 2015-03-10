@@ -41,6 +41,11 @@ module.exports = function cantrip(options) {
 		}
 		if (_.isObject(targetNode) || _.isArray(targetNode)) {
 			res.body = _.cloneDeep(targetNode);
+			if (req.path === "/") {
+				for (var key in res.body) {
+					if (key[0] === "_") delete res.body[key];
+				}
+			}
 			next();
 		} else {
 			res.body = {
