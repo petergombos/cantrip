@@ -1,16 +1,19 @@
 var _ = require("lodash");
 var fs = require('fs');
 var md5 = require('MD5');
-var dataStore = require('./lib/dataStore');
 
 module.exports = function cantrip(options) {
 	
 	options = options || {};
 
-	var dataStore = dataStore(options);
+	/**
+	 * This dataStore object is the interface through which you can access the raw data of cantrip
+	 * @type {Object}
+	 */
+	var dataStore = require('./lib/dataStore')(options);
 
 	/**
-	 * This method handles the request
+	 * This method is the one that handles the request
 	 */
 	var handle = function(req, res, next) {
 		targetNode(req, res, next, function() {
