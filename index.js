@@ -12,11 +12,21 @@ module.exports = function cantrip(options) {
 	 * @type {Object}
 	 */
 	var dataStore = require('./lib/dataStore')(options);
+	var acl = require('./lib/acl')(options);
 
 	/**
 	 * This method is the one that handles the request
 	 */
 	var handle = function(req, res, next) {
+
+		var access = acl(req, dataStore);
+		if (!access) {
+			return next({
+				status: 403,
+				error: "Access denied."
+			});
+		}
+
 		if (req.method === "GET") {
 			get(req, res, next);
 		} else if (req.method === "POST") {
