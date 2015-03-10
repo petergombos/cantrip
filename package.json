@@ -5,7 +5,6 @@
   "main": "index.js",
   "dependencies": {
     "MD5": "~1.2.1",
-    "cantrip-persistence-json": "git+https://github.com/borlaym/cantrip-persistence-json.git#middleware",
     "lodash": "~2.4.1"
   },
   "devDependencies": {
