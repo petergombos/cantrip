@@ -1,11 +1,8 @@
-var express = require('express');
 var _ = require("lodash");
 var fs = require('fs');
 var md5 = require('MD5');
-var cors = require('cors');
-var bodyParser = require('body-parser')
 var jsonPersistence = require('cantrip-persistence-json');
-var RoutePattern = require("route-pattern");
+
 module.exports = function cantrip(options, callback) {
 	
 	if (typeof options === "function") {
