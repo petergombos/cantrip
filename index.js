@@ -6,6 +6,12 @@ module.exports = function cantrip(options) {
 	
 	options = options || {};
 
+	options = _.extend({
+		groupsField: "groups",
+		idField: "id",
+		userField: "user"
+	}, options);
+
 	/**
 	 * This dataStore object is the interface through which you can access the raw data of cantrip.
 	 * It is exposed on the returned middleware, so you can access its methods through it using cantrip.get() etc.
