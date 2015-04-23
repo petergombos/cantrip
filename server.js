@@ -1,10 +1,7 @@
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var passport = require("passport");
-var BearerStrategy = require("passport-http-bearer");
-
-
+console.log(__dirname);
 var cantrip = require("./index.js")();
 
 var app = express();
@@ -34,6 +31,3 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(3000);
-
-
-

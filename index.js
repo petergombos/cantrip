@@ -7,9 +7,6 @@ module.exports = function cantrip(options) {
 	options = options || {};
 
 	options = _.extend({
-		groupsField: "groups",
-		idField: "id",
-		userField: "user"
 	}, options);
 
 	/**
