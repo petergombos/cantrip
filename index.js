@@ -46,6 +46,32 @@ module.exports = function cantrip(options) {
 		}
 		if (_.isObject(targetNode) || _.isArray(targetNode)) {
 			res.body = _.cloneDeep(targetNode);
+
+			//If the shallow parameter is set, only pass back the first layer of data
+			if (options.shallow || req.query.shallow) {
+				if (_.isObject(targetNode) && !_.isArray(targetNode)) {
+					for (var key in res.body) {
+						if (_.isObject(res.body[key])) {
+							res.body[key] = "[object Object]";
+						}
+						if (_.isArray(res.body[key])) {
+							res.body[key] = "[object Array]";
+						}
+					}
+				} else if (_.isArray(targetNode)) {
+					for (var i = 0; i < res.body.length; i++) {
+						for (var key in res.body[i]) {
+							if (_.isObject(res.body[i][key])) {
+								res.body[i][key] = "[object Object]";
+							}
+							if (_.isArray(res.body[i][key])) {
+								res.body[i][key] = "[object Array]";
+							}
+						}
+					}
+				}
+			}
+			//When requesting the root, don't return items starting with an underscore
 			if (req.path === "/") {
 				for (var key in res.body) {
 					if (key[0] === "_") delete res.body[key];
@@ -86,7 +112,7 @@ module.exports = function cantrip(options) {
 				if (targetNode[i][options.idAttribute] === req.body[options.idAttribute]) {
 					return next({
 						status: 400,
-						error: "An object with the same _id already exists in this collection."
+						error: "An object with the same " + options.idAttribute + " already exists in this collection."
 					});
 				}
 			}
@@ -131,7 +157,7 @@ module.exports = function cantrip(options) {
 					if (parent[i][options.idAttribute] === req.body[options.idAttribute]) {
 						return next({
 							status: 400,
-							error: "An object with the same _id already exists in this collection."
+							error: "An object with the same " + options.idAttribute + " already exists in this collection."
 						});
 					}
 				}

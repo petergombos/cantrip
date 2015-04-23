@@ -55,12 +55,11 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					expect(body).toEqual({
 						success: true
 					});
-					cantrip.get("/", function(err, data) {
-						expect(data).toEqual({
-							foo: "bar"
-						});
-						done();
+					var data = cantrip.get("/");
+					expect(data).toEqual({
+						foo: "bar"
 					});
+					done();
 				});
 			});
 
@@ -76,13 +75,12 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					}
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					cantrip.get("/foo", function(err, data) {
-						expect(data).toEqual({
-							string: "some string",
-							soonToBeRemoved: 3
-						});
-						done();
+					var data = cantrip.get("/foo");
+					expect(data).toEqual({
+						string: "some string",
+						soonToBeRemoved: 3
 					});
+					done();
 				});
 			});
 
@@ -95,12 +93,11 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					}
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					cantrip.get("/foo", function(err, data) {
-						expect(data).toEqual({
-							collection: []
-						});
-						done();
+					var data = cantrip.get("/foo");
+					expect(data).toEqual({
+						collection: []
 					});
+					done();
 				});
 			});
 
@@ -245,15 +242,14 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					},
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					cantrip.get("/bar", function(err, data) {
-						expect(data).toEqual({
-							string: "i'm a string",
-							baz: {
-								innerValue: 1
-							}
-						});
-						done();
+					var data = cantrip.get("/bar");
+					expect(data).toEqual({
+						string: "i'm a string",
+						baz: {
+							innerValue: 1
+						}
 					});
+					done();
 				});
 			});
 
@@ -271,15 +267,14 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					},
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					cantrip.get("/bar", function(err, data) {
-						expect(data).toEqual({
-							string: "other string",
-							baz: {
-								innerValue: 2
-							}
-						});
-						done();
+					var data = cantrip.get("/bar");
+					expect(data).toEqual({
+						string: "other string",
+						baz: {
+							innerValue: 2
+						}
 					});
+					done();
 				});
 			});
 
@@ -361,10 +356,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					json: true,
 				}, function(error, response, body) {
 					expect(body).toEqual({"success": true});
-					cantrip.get("/bar", function(err, data) {
-						expect(data.string).not.toBeDefined();
-						done();
-					});
+					var data = cantrip.get("/bar");
+					expect(data.string).not.toBeDefined();
+					done();
 				});
 			});
 
@@ -377,10 +371,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					console.log(body);
 
 					expect(body.error).toBeDefined();
-					cantrip.get("/foo/collection/0", function(err, data) {
-						expect(data._id).toBeDefined();
-						done();
-					});
+					var data = cantrip.get("/foo/collection/0");
+					expect(data._id).toBeDefined();
+					done();
 				});
 			});
 
@@ -391,10 +384,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					json: true,
 				}, function(error, response, body) {
 					expect(body.error).toBeDefined();
-					cantrip.get("/foo/collection/0", function(err, data) {
-						expect(data._modifiedDate).toBeDefined();
-						done();
-					});
+					var data = cantrip.get("/foo/collection/0");
+					expect(data._modifiedDate).toBeDefined();
+					done();
 				});
 			});
 
@@ -405,10 +397,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					json: true,
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					cantrip.get("/foo/collection", function(err, data) {
-						expect(data.length).toBe(1);
-						done();
-					});
+					var data = cantrip.get("/foo/collection");
+					expect(data.length).toBe(1);
+					done();
 				});
 			});
 
@@ -419,10 +410,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					json: true,
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
-					cantrip.get("/foo/collection", function(err, data) {
-						expect(data.length).toEqual(0);
-						done();
-					});
+					var data = cantrip.get("/foo/collection");
+					expect(data.length).toEqual(0);
+					done();
 				});
 			});
 
@@ -434,17 +424,16 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 				}, function(error, response, body) {
 					expect(body).toEqual({success: true});
 					console.log(body);
-					cantrip.get("/", function(err, data) {
-						expect(data.foo).toBeUndefined();
-						expect(data).toEqual({
-							bar: {
-								baz: {
-									innerValue: 2
-								}
+					var data = cantrip.get("/");
+					expect(data.foo).toBeUndefined();
+					expect(data).toEqual({
+						bar: {
+							baz: {
+								innerValue: 2
 							}
-						});
-						done();
+						}
 					});
+					done();
 				});
 			});
 
