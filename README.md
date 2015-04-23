@@ -1,4 +1,4 @@
 Cantrip
 =======
 
-Databaseless CMS with REST api
+Express middleware that creates an instant REST API for any JSON file

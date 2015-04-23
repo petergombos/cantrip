@@ -1,12 +1,13 @@
 var _ = require("lodash");
 var fs = require('fs');
-var md5 = require('MD5');
+var crypto = require('crypto');
 
 module.exports = function cantrip(options) {
 	
 	options = options || {};
 
 	options = _.extend({
+		idAttribute: "_id" //Specifies what key should be used as id
 	}, options);
 
 	/**
@@ -73,15 +74,16 @@ module.exports = function cantrip(options) {
 			//If the posted body is an object itself, add an id to it
 			if (_.isObject(req.body) && !_.isArray(req.body)) {
 				//Extend the whole object with an _id property, but only if it doesn't already have one
-				req.body = _.extend({
-					_id: md5(JSON.stringify(req.body) + (new Date()).getTime() + Math.random()),
+				var baseObject = {
 					_createdDate: (new Date()).getTime(),
 					_modifiedDate: (new Date()).getTime()
-				}, req.body);
+				};
+				baseObject[options.idAttribute] = crypto.createHash('sha1').update((new Date()).valueOf().toString() + Math.random().toString()).digest('hex');
+				req.body = _.extend(baseObject, req.body);
 			}
 			//Check if the given ID already exists in the collection
 			for (var i = 0; i < targetNode.length; i++) {
-				if (targetNode[i]._id === req.body._id) {
+				if (targetNode[i][options.idAttribute] === req.body[options.idAttribute]) {
 					return next({
 						status: 400,
 						error: "An object with the same _id already exists in this collection."
@@ -123,10 +125,10 @@ module.exports = function cantrip(options) {
 				return next();
 			};
 			//If it's an element inside a collection, make sure the overwritten _id is not present in the collection
-			if (req.body._id && targetNode._id && req.body._id !== targetNode._id) {
+			if (req.body[options.idAttribute] && targetNode[options.idAttribute] && req.body[options.idAttribute] !== targetNode[options.idAttribute]) {
 				var parent = dataStore.parent(req.path)
 				for (var i = 0; i < parent.length; i++) {
-					if (parent[i]._id === req.body._id) {
+					if (parent[i][options.idAttribute] === req.body[options.idAttribute]) {
 						return next({
 							status: 400,
 							error: "An object with the same _id already exists in this collection."
@@ -186,11 +188,12 @@ module.exports = function cantrip(options) {
 				for (var i = 0; i < obj[key].length; i++) {
 					//Assign an id to all objects
 					if (_.isObject(obj[key][i]) && !_.isArray(obj[key][i])) {
-						obj[key][i] = _.extend({
-							_id: md5(JSON.stringify(obj[key][i]) + (new Date()).getTime() + Math.random()),
+						var baseObject = {
 							_createdDate: (new Date()).getTime(),
 							_modifiedDate: (new Date()).getTime()
-						}, obj[key][i]);
+						};
+						baseObject[options.idAttribute] = crypto.createHash('sha1').update((new Date()).valueOf().toString() + Math.random().toString()).digest('hex');
+						obj[key][i] = _.extend(baseObject, obj[key][i]);
 						//Modify the _modifiedDate metadata property
 						obj[key][i]._modifiedDate = (new Date()).getTime();
 					}

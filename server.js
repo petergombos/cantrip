@@ -1,7 +1,6 @@
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-console.log(__dirname);
 var cantrip = require("./index.js")();
 
 var app = express();
