@@ -9,11 +9,6 @@ var cantrip = require("./index.js")();
 
 var app = express();
 
-passport.use("token", new BearerStrategy(function(token, done) {
-	var user = cantrip.get("/_users/" + token)
-	return done(null, user);
-}));
-
 app.use(bodyParser.json());
 app.use(function(err, req, res, next) {
 	return next({
@@ -25,16 +20,6 @@ app.use(function(err, req, res, next) {
 
 app.use(bodyParser.urlencoded());
 app.use(cors());
-app.use(passport.initialize());
-app.use(passport.authenticate("token", {session:false}), function(req, res, next) {
-	console.log("YAY");
-	console.log(req.user);
-	next();
-});
-app.use(function(req, res, next) {
-	console.log("!!!", req.user);
-	next();
-})
 app.use(cantrip);
 
 app.use(function(req, res, next) {
