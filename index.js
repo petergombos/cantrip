@@ -51,7 +51,7 @@ module.exports = function cantrip(options) {
 			if (options.shallow || req.query.shallow) {
 				if (_.isObject(targetNode) && !_.isArray(targetNode)) {
 					for (var key in res.body) {
-						if (_.isObject(res.body[key])) {
+						if (_.isObject(res.body[key]) && !_.isArray(res.body[key])) {
 							res.body[key] = "[object Object]";
 						}
 						if (_.isArray(res.body[key])) {
@@ -61,7 +61,7 @@ module.exports = function cantrip(options) {
 				} else if (_.isArray(targetNode)) {
 					for (var i = 0; i < res.body.length; i++) {
 						for (var key in res.body[i]) {
-							if (_.isObject(res.body[i][key])) {
+							if (_.isObject(res.body[i][key]) && !_.isArray(res.body[i][key])) {
 								res.body[i][key] = "[object Object]";
 							}
 							if (_.isArray(res.body[i][key])) {
@@ -71,6 +71,18 @@ module.exports = function cantrip(options) {
 					}
 				}
 			}
+
+			//Use pagination, if set
+			if (_.isArray(targetNode)) {
+				if (req.query.offset) {
+					res.body = res.body.slice(req.query.offset);
+				}
+				if (req.query.limit) {
+					res.body = res.body.slice(0, req.query.limit);
+				}
+			}
+
+
 			//When requesting the root, don't return items starting with an underscore
 			if (req.path === "/") {
 				for (var key in res.body) {
