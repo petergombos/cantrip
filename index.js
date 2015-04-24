@@ -72,6 +72,23 @@ module.exports = function cantrip(options) {
 				}
 			}
 
+			//Use orderBy, if set
+			if (_.isArray(targetNode) && req.query.orderby) {
+				var orderby = req.query.orderby + "";
+				var reverse = false;
+				if (orderby[0] === "-") {
+					reverse = true;
+					orderby = orderby.slice(1);
+				}
+				res.body = _.sortBy(res.body, function(item) {
+					return item[orderby];
+				});
+
+				if (reverse) {
+					res.body = res.body.reverse();
+				}
+			}
+
 			//Use pagination, if set
 			if (_.isArray(targetNode)) {
 				if (req.query.offset) {
@@ -82,13 +99,26 @@ module.exports = function cantrip(options) {
 				}
 			}
 
-
-			//When requesting the root, don't return items starting with an underscore
-			if (req.path === "/") {
-				for (var key in res.body) {
-					if (key[0] === "_") delete res.body[key];
+			//Only return specific fields if set
+			if (req.query.fields) {
+				var fields = req.query.fields.split(",");
+				if (_.isObject(targetNode) && !_.isArray(targetNode)) {
+					for (var key in res.body) {
+						if (fields.indexOf(key) === -1) {
+							delete res.body[key];
+						}
+					}
+				} else if (_.isArray(targetNode)) {
+					for (var i = 0; i < res.body.length; i++) {
+						for (var key in res.body[i]) {
+							if (fields.indexOf(key) === -1) {
+								delete res.body[i][key];
+							}
+						}
+					}
 				}
 			}
+
 			next();
 		} else {
 			res.body = {
