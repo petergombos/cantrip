@@ -7,7 +7,8 @@ module.exports = function cantrip(options) {
 	options = options || {};
 
 	options = _.extend({
-		idAttribute: "_id" //Specifies what key should be used as id
+		idAttribute: "_id", //Specifies what key should be used as id,
+		shallow: false //Specifies whether objects should return with all nested objects or just the first layer
 	}, options);
 
 	/**

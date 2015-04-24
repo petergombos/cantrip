@@ -1,7 +1,7 @@
 {
-  "name": "Cantrip",
-  "version": "0.0.1",
-  "description": "\"Use a REST Api to manage a JSON file\"",
+  "name": "cantrip",
+  "version": "0.1.0",
+  "description": "Express middleware that creates an instant REST API for any JSON file",
   "main": "index.js",
   "dependencies": {
     "fs-extra": "^0.18.2",
@@ -17,21 +17,21 @@
   },
   "scripts": {
     "test": "grunt test",
-    "start": "node server.js"
+    "start": "node examples/server.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/KriekApps/Cantrip.git"
+    "url": "https://github.com/kriekapps/cantrip.git"
   },
   "keywords": [
     "rest",
     "api",
     "json"
   ],
-  "author": "Kriek",
+  "author": "Kriek <hello@kriek.co.uk>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/KriekApps/Cantrip/issues"
+    "url": "https://github.com/kriekapps/cantrip/issues"
   },
-  "homepage": "https://github.com/KriekApps/Cantrip"
+  "homepage": "https://github.com/kriekapps/cantrip"
 }

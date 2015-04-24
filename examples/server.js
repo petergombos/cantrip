@@ -1,7 +1,7 @@
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var cantrip = require("./index.js")();
+var cantrip = require("../index.js")();
 
 var app = express();
 
@@ -14,7 +14,6 @@ app.use(function(err, req, res, next) {
 });
 
 
-app.use(bodyParser.urlencoded());
 app.use(cors());
 app.use(cantrip);
 

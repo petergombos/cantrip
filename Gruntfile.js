@@ -7,9 +7,9 @@ module.exports = function(grunt) {
     grunt.initConfig({
         nodemon: {
             dev: {
-                script: 'server.js',
+                script: 'examples/server.js',
                 options: {
-                    watch: ['index.js', 'server.js', 'lib/dataStore.js', 'lib/acl.js']
+                    watch: ['index.js', 'examples/server.js', 'lib/dataStore.js', 'lib/acl.js']
                 }
             }
         },
