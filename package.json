@@ -33,7 +33,7 @@
     "json"
   ],
   "author": "Kriek <hello@kriek.co.uk>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/kriekapps/cantrip/issues"
   },

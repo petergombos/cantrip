@@ -92,3 +92,7 @@ You can specify a number of options when calling the cantrip() function to gener
 * saveFrequency: Specifies how many non-GET requests does it take to trigger a saving of data state to the file. Defaults to 1, meaning it will save on every request. If you specify 0, it will never save.
 * shallow: Similar to the GET parameter, but specified as an option when creating the cantrip instance means all GET requests will be shallow.
 
+## License
+
+  [MIT](LICENSE)
+
