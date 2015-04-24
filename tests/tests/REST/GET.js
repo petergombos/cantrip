@@ -187,4 +187,56 @@ describe("GET requests", function() {
 		});
 	});
 
+	it("should only return n number of items from an array when specifying the limit parameter", function(done) {
+		request({
+			method: "GET",
+			url: server.url + 'far?limit=2',
+			json: true,
+		}, function(error, response, body) {
+			body.should.have.length(2);
+			done();
+		});
+	});
+
+	it("should skip n number of items from an array when specifying the offset parameter", function(done) {
+		request({
+			method: "GET",
+			url: server.url + 'far?offset=2',
+			json: true,
+		}, function(error, response, body) {
+			body.should.have.length(initialData.far.length - 2);
+			done();
+		});
+	});
+
+	it("should only return specific fields if the fields parameter is set", function(done) {
+		request({
+			method: "GET",
+			url: server.url + '?fields=foo,faa',
+			json: true,
+		}, function(error, response, body) {
+			body.should.deep.equal({
+				foo: "bar",
+				faa: 2
+			});
+			done();
+		});
+	});
+
+	it("should only return specific fields of items in an array if the fields parameter is set", function(done) {
+		request({
+			method: "GET",
+			url: server.url + 'users?fields=name',
+			json: true,
+		}, function(error, response, body) {
+			body.should.deep.equal([
+				{
+					name: "Márton Borlay"
+				},{
+					name: "Péter Gombos"
+				}]);
+			done();
+		});
+	});
+
 });
