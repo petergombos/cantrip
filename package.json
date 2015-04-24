@@ -8,16 +8,18 @@
     "lodash": "~2.4.1"
   },
   "devDependencies": {
+    "body-parser": "^1.12.3",
+    "chai": "^2.2.0",
+    "cors": "^2.5.3",
+    "express": "^4.12.3",
     "grunt": "~0.4.4",
+    "grunt-cli": "^0.1.13",
     "grunt-contrib-jasmine": "^0.6.3",
-    "grunt-jasmine-node": "~0.2.1",
+    "grunt-mocha-test": "^0.12.7",
     "grunt-nodemon": "~0.2.1",
     "load-grunt-tasks": "~0.4.0",
-    "request": "^2.34.0",
-    "express": "^4.12.3",
-    "cors": "^2.5.3",
-    "body-parser": "^1.12.3",
-    "grunt-cli": "^0.1.13"
+    "mocha": "^2.2.4",
+    "request": "^2.34.0"
   },
   "scripts": {
     "test": "grunt test",

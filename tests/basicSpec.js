@@ -4,6 +4,11 @@ var bodyParser = require('body-parser');
 var cantrip = require("../index.js")({
 	file: "data/test" + Math.floor(Math.random() * 10000000000) + ".json"
 });
+
+var should = require("chai").should();
+var expect = require("chai").expect;
+
+
 //Set up
 var app = express();
 app.use(bodyParser.json());
@@ -37,7 +42,7 @@ var serverUrl = "http://localhost:3001/";
 describe("Cantrip is a connect/express middleware creating a REST API mapping for any JSON file", function() {
 
 	it("should initialize", function() {
-		expect(cantrip).toBeDefined();
+		should.exist(cantrip);
 	});
 
 	describe("Basic REST API functions", function() {
@@ -52,11 +57,11 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						foo: "bar"
 					}
 				}, function(error, response, body) {
-					expect(body).toEqual({
+					body.should.be.deep.equal({
 						success: true
 					});
 					var data = cantrip.get("/");
-					expect(data).toEqual({
+					expect(data).to.deep.equal({
 						foo: "bar"
 					});
 					done();
@@ -74,9 +79,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						}
 					}
 				}, function(error, response, body) {
-					expect(body).toEqual({success: true});
+					expect(body).to.deep.equal({success: true});
 					var data = cantrip.get("/foo");
-					expect(data).toEqual({
+					expect(data).to.deep.equal({
 						string: "some string",
 						soonToBeRemoved: 3
 					});
@@ -92,9 +97,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						collection: []
 					}
 				}, function(error, response, body) {
-					expect(body).toEqual({success: true});
+					expect(body).to.deep.equal({success: true});
 					var data = cantrip.get("/foo");
-					expect(data).toEqual({
+					expect(data).to.deep.equal({
 						collection: []
 					});
 					done();
@@ -107,7 +112,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl,
 					json: true
 				}, function(error, response, body) {
-					expect(body).toEqual({
+					expect(body).to.deep.equal({
 						foo: {
 							collection: []
 						}
@@ -128,7 +133,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						"foo": "bar"
 					}
 				}, function(error, response, body) {
-					expect(body.error).toBeDefined();
+					expect(body.error).to.exist;
 					done();
 				});
 			});
@@ -141,10 +146,10 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						"foo": "bar"
 					}
 				}, function(error, response, body) {
-					expect(body.foo).toEqual("bar");
-					expect(body._id).toBeDefined();
-					expect(body._createdDate).toBeDefined();
-					expect(body._modifiedDate).toBeDefined();
+					expect(body.foo).to.deep.equal("bar");
+					expect(body._id).to.exist;
+					expect(body._createdDate).to.exist;
+					expect(body._modifiedDate).to.exist;
 					done();
 				});
 			});
@@ -158,7 +163,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						"_id": "imanid"
 					}
 				}, function(error, response, body) {
-					expect(body._id).toEqual("imanid");
+					expect(body._id).to.deep.equal("imanid");
 					done();
 				});
 			});
@@ -172,7 +177,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						"_id": "imanid"
 					}
 				}, function(error, response, body) {
-					expect(body.error).toBeDefined();
+					expect(body.error).to.exist;
 					done();
 				});
 			});
@@ -185,7 +190,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						"_id": "imanid"
 					}
 				}, function(error, response, body) {
-					expect(body.error).toBeDefined();
+					expect(body.error).to.exist;
 					done();
 				});
 			});
@@ -200,7 +205,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						"_id": "metatestObject"
 					}
 				}, function(error, response, body) {
-					expect(body._modifiedDate).toEqual(1);
+					expect(body._modifiedDate).to.deep.equal(1);
 					done();
 				});
 			});
@@ -213,7 +218,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						"metatest": "bar"
 					}
 				}, function(error, response, body) {
-					expect(body._modifiedDate).not.toEqual(1);
+					expect(body._modifiedDate).not.to.deep.equal(1);
 					//Deleting this test object
 					request({
 						method: "DELETE",
@@ -241,9 +246,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						}
 					},
 				}, function(error, response, body) {
-					expect(body).toEqual({success: true});
+					expect(body).to.deep.equal({success: true});
 					var data = cantrip.get("/bar");
-					expect(data).toEqual({
+					expect(data).to.deep.equal({
 						string: "i'm a string",
 						baz: {
 							innerValue: 1
@@ -266,9 +271,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 						}
 					},
 				}, function(error, response, body) {
-					expect(body).toEqual({success: true});
+					expect(body).to.deep.equal({success: true});
 					var data = cantrip.get("/bar");
-					expect(data).toEqual({
+					expect(data).to.deep.equal({
 						string: "other string",
 						baz: {
 							innerValue: 2
@@ -288,12 +293,12 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl,
 					json: true,
 				}, function(error, response, body) {
-					expect(body.foo).toBeDefined();
-					expect(body.foo.collection.length).toBe(2);
-					expect(body.foo.collection[0].foo).toBe("bar");
-					expect(body.bar).toBeDefined();
-					expect(body.bar.string).toBe("other string");
-					expect(body.bar.baz).toEqual({innerValue: 2});
+					expect(body.foo).to.exist;
+					expect(body.foo.collection.length).to.equal(2);
+					expect(body.foo.collection[0].foo).to.equal("bar");
+					expect(body.bar).to.exist;
+					expect(body.bar.string).to.equal("other string");
+					expect(body.bar.baz).to.deep.equal({innerValue: 2});
 					done();
 				});
 			});
@@ -304,7 +309,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "bar/string",
 					json: true,
 				}, function(error, response, body) {
-					expect(body).toEqual({
+					expect(body).to.deep.equal({
 						value: "other string"
 					});
 					done();
@@ -317,7 +322,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "nonexistent/bar/baz/foo",
 					json: true,
 				}, function(error, response, body) {
-					expect(body.error).toBeDefined();
+					expect(body.error).to.exist;
 					done();
 				});
 			});
@@ -328,7 +333,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "foo/collection",
 					json: true,
 				}, function(error, response, body) {
-					expect(body.length).toBe(2);
+					expect(body.length).to.equal(2);
 					done();
 				});
 			});
@@ -339,7 +344,7 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "foo/collection?foo=bar&baz=true",
 					json: true,
 				}, function(error, response, body) {
-					expect(body.length).toBe(2);
+					expect(body.length).to.equal(2);
 					done();
 				});
 			});
@@ -355,9 +360,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "bar/string",
 					json: true,
 				}, function(error, response, body) {
-					expect(body).toEqual({"success": true});
+					expect(body).to.deep.equal({"success": true});
 					var data = cantrip.get("/bar");
-					expect(data.string).not.toBeDefined();
+					expect(data.string).not.to.exist;
 					done();
 				});
 			});
@@ -370,9 +375,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 				}, function(error, response, body) {
 					console.log(body);
 
-					expect(body.error).toBeDefined();
+					expect(body.error).to.exist;
 					var data = cantrip.get("/foo/collection/0");
-					expect(data._id).toBeDefined();
+					expect(data._id).to.exist;
 					done();
 				});
 			});
@@ -383,9 +388,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "foo/collection/0/_modifiedDate",
 					json: true,
 				}, function(error, response, body) {
-					expect(body.error).toBeDefined();
+					expect(body.error).to.exist;
 					var data = cantrip.get("/foo/collection/0");
-					expect(data._modifiedDate).toBeDefined();
+					expect(data._modifiedDate).to.exist;
 					done();
 				});
 			});
@@ -396,9 +401,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "foo/collection/0",
 					json: true,
 				}, function(error, response, body) {
-					expect(body).toEqual({success: true});
+					expect(body).to.deep.equal({success: true});
 					var data = cantrip.get("/foo/collection");
-					expect(data.length).toBe(1);
+					expect(data.length).to.equal(1);
 					done();
 				});
 			});
@@ -409,9 +414,9 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "foo/collection/" + id,
 					json: true,
 				}, function(error, response, body) {
-					expect(body).toEqual({success: true});
+					expect(body).to.deep.equal({success: true});
 					var data = cantrip.get("/foo/collection");
-					expect(data.length).toEqual(0);
+					expect(data.length).to.deep.equal(0);
 					done();
 				});
 			});
@@ -422,11 +427,11 @@ describe("Cantrip is a connect/express middleware creating a REST API mapping fo
 					url: serverUrl + "foo",
 					json: true,
 				}, function(error, response, body) {
-					expect(body).toEqual({success: true});
+					expect(body).to.deep.equal({success: true});
 					console.log(body);
 					var data = cantrip.get("/");
-					expect(data.foo).toBeUndefined();
-					expect(data).toEqual({
+					expect(data.foo).not.to.exist;
+					expect(data).to.deep.equal({
 						bar: {
 							baz: {
 								innerValue: 2

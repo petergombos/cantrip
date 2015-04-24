@@ -13,23 +13,21 @@ module.exports = function(grunt) {
                 }
             }
         },
-        jasmine_node: {
-            options: {
-                forceExit: true,
-                match: '.',
-                matchall: false,
-                extensions: 'js',
-                specNameMatcher: 'Spec',
-                display: "full",
-                summary: true
-            },
-            all: ['tests/']
+        mochaTest: {
+            test: {
+                options: {
+                  reporter: 'spec',
+                  quiet: false, // Optionally suppress output to standard out (defaults to false)
+                  clearRequireCache: false // Optionally clear the require cache before running tests (defaults to false)
+                },
+                src: ['tests/**/*.js']
+              }
         }
     });
 
     //console.log(grunt.option.flags());
 
     grunt.registerTask('server', ["nodemon"]);
-    grunt.registerTask('test', ["jasmine_node"]);
+    grunt.registerTask('test', ["mochaTest"]);
 
 };
