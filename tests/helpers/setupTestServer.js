@@ -3,8 +3,15 @@ var bodyParser = require('body-parser');
 var fs = require("fs");
 var initialData = JSON.parse(fs.readFileSync(__dirname + "/../test.json"));
 
+var currentPort = 3001;
+
+function getPortNumber() {
+	return currentPort++;
+}
 
 module.exports = function(cantrip) {
+
+	var port = getPortNumber();
 
 	var app = express();
 	app.use(bodyParser.json());
@@ -29,13 +36,13 @@ module.exports = function(cantrip) {
 	});
 
 
-	app.listen(3001);
+	app.serverInstance = app.listen(port);
 
 	app.resetData = function() {
 		cantrip.put("/", initialData);
 	}
 
-	app.url = "http://localhost:3001/";
+	app.url = "http://localhost:"+port+"/";
 
 	return app;
 

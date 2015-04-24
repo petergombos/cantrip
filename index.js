@@ -175,7 +175,7 @@ module.exports = function cantrip(options) {
 			return next({
 				status: 404,
 				error: "Requested node doesn't exist."
-			})
+			});
 		}
 		//If it's an array, post the new entry to that array
 		if (_.isArray(targetNode)) {

@@ -25,7 +25,7 @@ describe("POST requests", function() {
 			url: server.url,
 			json: {
 				catsAre: "awesome"
-			},
+			}
 		}, function(error, response, body) {
 			body.error.should.exist;
 			response.statusCode.should.equal(400);
@@ -39,7 +39,7 @@ describe("POST requests", function() {
 			url: server.url + "iamnonexistent",
 			json: {
 				catsAre: "awesome"
-			},
+			}
 		}, function(error, response, body) {
 			response.statusCode.should.equal(404);
 			expect(body.error).to.exist;
@@ -54,7 +54,7 @@ describe("POST requests", function() {
 			json: {
 				name: "John Doe",
 				email: "j.doe@gmail.com"
-			},
+			}
 		}, function(error, response, body) {
 			body._id.should.have.length(40);
 			body._modifiedDate.should.be.above(1429879060304);
@@ -64,16 +64,13 @@ describe("POST requests", function() {
 			var _modifiedDate = body._modifiedDate;
 			var _createdDate = body._createdDate;
 
-			request({
-				method: "GET",
-				url: server.url + "users/" + _id,
-				json: true
-			}, function(error, response, body) {
-				body._id.should.equal(_id);
-				body._modifiedDate.should.equal(_modifiedDate);
-				body._createdDate.should.equal(_createdDate);
-				done();
-			});
+
+			var inDatabase = cantrip.get("/users/" + _id);
+
+			inDatabase._id.should.equal(_id);
+			inDatabase._modifiedDate.should.equal(_modifiedDate);
+			inDatabase._createdDate.should.equal(_createdDate);
+			done();
 
 		});
 	});
@@ -86,18 +83,14 @@ describe("POST requests", function() {
 				_id: "customid",
 				name: "John Doe",
 				email: "j.doe@gmail.com"
-			},
+			}
 		}, function(error, response, body) {
 			body._id.should.equal("customid");
 
-			request({
-				method: "GET",
-				url: server.url + "users/customid",
-				json: true
-			}, function(error, response, body) {
-				body._id.should.equal("customid");
-				done();
-			});
+			var inDatabase = cantrip.get("/users/customid");
+
+			inDatabase._id.should.equal("customid");
+			done();
 
 		});
 	});
@@ -110,7 +103,7 @@ describe("POST requests", function() {
 				_id: "31612a41ec88cef52f45cd2de5af7f7aa63cfdc4",
 				name: "John Doe",
 				email: "j.doe@gmail.com"
-			},
+			}
 		}, function(error, response, body) {
 			body.error.should.exist;
 			response.statusCode.should.equal(400);

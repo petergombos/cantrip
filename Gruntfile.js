@@ -22,6 +22,12 @@ module.exports = function(grunt) {
                 },
                 src: ['tests/tests/**/*.js']
               }
+        },
+        watch: {
+            scripts: {
+                files: ["index.js", "lib/dataStore.js", "tests/**/*.js"],
+                tasks: ["mochaTest"]
+            }
         }
     });
 
@@ -29,5 +35,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('server', ["nodemon"]);
     grunt.registerTask('test', ["mochaTest"]);
+    grunt.registerTask('testserver', ["watch"])
 
 };
