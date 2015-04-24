@@ -2,7 +2,7 @@
 cantrip
 =======
 
-Express middleware that creates an instant REST API for any JSON file.
+Express middleware that creates an instant CRUD REST API for any JSON file.
 
 ## Installation
 
@@ -41,9 +41,9 @@ app.use(function(error, req, res, next) {
 app.listen(3000);
 ```
 
-The function cantrip() returns a middleware that matches all routes to their respective nodes in a JSON data structure. You can specify any JSON file to use as the database, but by default an empty data.json file will be created for you.
+The function cantrip() returns a middleware that matches all routes to their respective nodes in a JSON data structure. You can specify any JSON file to be used as the database, but by default an empty data.json file will be created for you.
 
-Note: currently you have to use body-parser in order to process the request in a way so cantrip can handle it. All requests should be the type application/json.
+Note: currently you have to use body-parser in order to process the request in a way so cantrip can handle it. All requests must be with a header content-type set to application/json.
 
 GET requests will return the requested part of the JSON tree.
 POST requests will add a new element to an array.
@@ -80,11 +80,11 @@ There are a number of GET params you can use to target your request more specifi
 - You can only patch an object, not an array
 - It will overwrite the target object with the one you specify
 
-## DELETE
+### DELETE
 - Deletes the target key from its parent object, or deletes an item from an array
 - Won't let you delete an object's _id or other metadata like _createdDate or _modifiedDate
 
-### Options
+## Options
 
 You can specify a number of options when calling the cantrip() function to generate a middleware.
 * file: Path to the JSON file you wish to use. Defaults to a newly created data.json file.

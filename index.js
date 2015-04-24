@@ -3,7 +3,6 @@ var fs = require('fs');
 var crypto = require('crypto');
 
 module.exports = function cantrip(options) {
-	
 	options = options || {};
 
 	options = _.extend({
