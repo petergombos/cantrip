@@ -72,6 +72,47 @@ module.exports = function cantrip(options) {
 				}
 			}
 
+			//Search on shallow data, if set. Can supply either a JSON object of keys and values or just a simple string
+			if (req.query.q && _.isArray(targetNode)) {
+				var json;
+				try {
+					json = JSON.parse(req.query.q);
+				} catch(err) {
+					json = false;
+				}
+
+				if (json) {
+
+					for (var i = 0; i < res.body.length; i++) {
+						var matching = true;
+						for (var key in json) {
+							if ((res.body[i][key] + "").indexOf(json[key]) === -1) {
+								matching = false;
+							}
+						}
+						if (!matching) {
+							delete res.body[i]
+						}
+					}
+					res.body = _.compact(res.body);
+
+				} else {
+					for (var i = 0; i < res.body.length; i++) {
+						var matching = false;
+						for (var key in res.body[i]) {
+							if ((res.body[i][key] + "").indexOf(req.query.q) > -1) {
+								matching = true;
+							}
+						}
+						if (!matching) {
+							delete res.body[i]
+						}
+					}
+					res.body = _.compact(res.body);
+				}
+
+			}
+
 			//Use orderBy, if set
 			if (_.isArray(targetNode) && req.query.orderby) {
 				var orderby = req.query.orderby + "";
