@@ -315,10 +315,10 @@ module.exports = function cantrip(options) {
 		}
 	};
 
-	handle.get = dataStore.get;
-	handle.post = dataStore.post;
-	handle.delete = dataStore.delete;
-	handle.put = dataStore.put;
+	handle.get = dataStore.get.bind(dataStore);
+	handle.post = dataStore.set.bind(dataStore);
+	handle.delete = dataStore.delete.bind(dataStore);
+	handle.put = dataStore.set.bind(dataStore);
 	
 	return handle;
 	
