@@ -1,8 +1,9 @@
-[![build status](https://travis-ci.org/KriekApps/Cantrip.svg?branch=master)](http://travis-ci.org/KriekApps/Cantrip)
-cantrip
-=======
+#cantrip
+---
 
-Express middleware that creates an instant CRUD REST API for any JSON file.
+[![build status](https://api.travis-ci.org/kriekapps/cantrip.svg?branch=master)](http://travis-ci.org/KriekApps/Cantrip)
+
+Cantrip is a databaseless storage middleware for express, it maps your requests automagically to any node in a given JSON document(json file) with basic CURD HTTP requests (GET, POST, PATCH, PUT, DELETE) over a RESTful API.
 
 ## Installation
 
@@ -41,18 +42,17 @@ app.use(function(error, req, res, next) {
 app.listen(3000);
 ```
 
-The function cantrip() returns a middleware that matches all routes to their respective nodes in a JSON data structure. You can specify any JSON file to be used as the database, but by default an empty data.json file will be created for you.
-
-Note: currently you have to use body-parser in order to process the request in a way so cantrip can handle it. All requests must be with a header content-type set to application/json.
-
-GET requests will return the requested part of the JSON tree.
-POST requests will add a new element to an array.
-PUT requests will completely replace the contents of a node.
-PATCH requests will deep merge the contents of a node.
-DELETE requests will delete a node.
-
-## Request Details
+## Examples
 ### GET
+Here is a sample cantrip instance, let's GET whats inside of it:
+```bash
+curl http://cantrip.kriekapps.com/randomID
+```
+
+Returns:
+```json
+{}
+```
 - You will get back the whole JSON file if you request the root.
 - If you request a single property, the result will be an object like {"value": "foo"}
 - You can request objects inside a collection by either putting their index or their id attribute in the url. 
@@ -65,22 +65,85 @@ There are a number of GET params you can use to target your request more specifi
 - *?limit=10* Only return 10 items
 - *?fields=field1,field2* Return only the given fields, separated by commas
 
-### POST
-- You can only post to arrays
-- Your object will automatically get a unique _id, a _createdDate and a _modifiedDate property, unless you specify them yourself. The latter two use JS timestamps.
-- Won't let you post if the given _id already exists in that collection.
+
+### PUT
+Lets PUT some data into the datastore:
+```bash
+curl \
+    -X PUT \
+    -H "Content-type:application/json" \
+    -d '{"cantrip":"rocks"}' \
+    "http://cantrip.kriekapps.com/randomID"
+```
+- You can only put an object, not an array
+- It will overwrite the target object with the one you specify
 
 ### PATCH
+Now lets create a basic collection for our todo list, it is super easy with cantrip you can just PATCH the root object to create an array like so:
+```bash
+curl \
+    -X PATCH \
+    -H "Content-type:application/json" \
+    -d '{"todos":[]}' \
+    "http://cantrip.kriekapps.com/randomID"
+```
 - You can only patch an object, not an array
 - It will overwrite only the properties you specified
 - Will update the object's _modifiedDate property
 - Deep merges multi-level objects
 
-### PUT
-- You can only patch an object, not an array
-- It will overwrite the target object with the one you specify
+### POST
+And now we can just POST any data into our freshly created collection:
+```bash
+curl \
+    -X POST \
+    -H "Content-type:application/json" \
+    -d '{"title":"Buy some milk", "comlated":false}' \
+    "http://cantrip.kriekapps.com/randomID/todos"
+```
+
+Returns:
+```json
+{
+    "_createdDate":1430139024629,
+    "_modifiedDate":1430139024629,
+    "_id":"778b81e247f7d2ae38732ccf0087e2207c71f623",
+    "title":"Buy some milk",
+    "complated" : false
+}
+```
+- You can only post to arrays
+- Your object will automatically get a unique _id, a _createdDate and a _modifiedDate property, unless you specify them yourself. The latter two use JS timestamps.
+- Won't let you post if the given _id already exists in that collection.
+
+Since cantrip maps your data to a RESTful API now you can GET the newly inserted document on the following url by it's index:
+```bash
+curl http://cantrip.kriekapps.com/randomID/todos/0
+```
+or by it's id:
+```bash
+curl http://cantrip.kriekapps.com/randomID/todos/778b81e247f7d2ae38732ccf0087e2207c71f623
+```
+
+So have our milk and now would like to PATCH our todo object to be compleated, all we have to do is:
+
+```bash
+curl \
+    -X PATCH \
+    -H "Content-type:application/json" \
+    -d '{"complated":true}' \
+    "http://cantrip.kriekapps.com/randomID/todos/0"
+```
+
 
 ### DELETE
+Nice, but still in my collection, let's DELETE it, shall we?
+```bash
+curl \
+    -X DELETE \
+    -H "Content-type:application/json" \
+    "http://cantrip.kriekapps.com/randomID/todos/0"
+```
 - Deletes the target key from its parent object, or deletes an item from an array
 - Won't let you delete an object's _id or other metadata like _createdDate or _modifiedDate
 
@@ -95,4 +158,3 @@ You can specify a number of options when calling the cantrip() function to gener
 ## License
 
   [MIT](LICENSE)
-
