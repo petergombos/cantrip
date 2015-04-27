@@ -14,7 +14,7 @@ var cantrip = require("../../../index.js")({
 var server = require("../../helpers/setupTestServer.js")(cantrip);
 
 describe("GET requests", function() {
-	
+
 	beforeEach(function() {
 		server.resetData();
 	});

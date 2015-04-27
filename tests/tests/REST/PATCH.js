@@ -52,7 +52,7 @@ describe("PATCH requests", function() {
 		});
 	});
 
-	it("should return an error when putting a non-existent node", function(done) {
+	it("should return an error when patching a non-existent node", function(done) {
 		request({
 			method: "PATCH",
 			url: server.url + "iamnonexistent",
@@ -149,6 +149,7 @@ describe("PATCH requests", function() {
 			var users = cantrip.get("/users");
 			users[0].addedValue.should.equal("yay");
 			users[1].addedValue.should.equal("yay");
+			done();
 		});
 	});
 

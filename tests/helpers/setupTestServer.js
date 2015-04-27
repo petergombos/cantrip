@@ -38,6 +38,9 @@ module.exports = function(cantrip) {
 
 	app.serverInstance = app.listen(port);
 
+	app.port = port;
+
+
 	app.resetData = function() {
 		cantrip.put("/", initialData);
 	}
