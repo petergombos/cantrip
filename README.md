@@ -1,14 +1,13 @@
 #cantrip
----
 
 [![build status](https://api.travis-ci.org/kriekapps/cantrip.svg?branch=master)](http://travis-ci.org/KriekApps/Cantrip)
 
-Cantrip is a databaseless storage middleware for express, it maps your requests automagically to any node in a given JSON document(json file) with basic CURD HTTP requests (GET, POST, PATCH, PUT, DELETE) over a RESTful API.
+Cantrip is a databaseless storage middleware for express, it maps your requests automagically to any node in a given JSON document(json file) with basic CRUD HTTP requests (GET, POST, PATCH, PUT, DELETE) over a RESTful API.
 
 ## Installation
 
 ```bash
-$ npm install --save cantrip
+$ npm install cantrip
 ```
 
 ## Getting Started
@@ -28,7 +27,7 @@ app.use(function(err, req, res, next) {
 });
 
 app.use(cantrip({
-	idAttribute: "id"
+	file: "data/data.json"
 }));
 
 app.use(function(req, res, next) {
@@ -98,7 +97,7 @@ And now we can just POST any data into our freshly created collection:
 curl \
     -X POST \
     -H "Content-type:application/json" \
-    -d '{"title":"Buy some milk", "comlated":false}' \
+    -d '{"title":"Buy milk", "comleted":false}' \
     "http://cantrip.kriekapps.com/randomID/todos"
 ```
 
@@ -107,9 +106,9 @@ Returns:
 {
     "_createdDate":1430139024629,
     "_modifiedDate":1430139024629,
-    "_id":"778b81e247f7d2ae38732ccf0087e2207c71f623",
-    "title":"Buy some milk",
-    "complated" : false
+    "_id":"some-randomly-generated-id",
+    "title":"Buy milk",
+    "completed" : false
 }
 ```
 - You can only post to arrays
@@ -122,22 +121,22 @@ curl http://cantrip.kriekapps.com/randomID/todos/0
 ```
 or by it's id:
 ```bash
-curl http://cantrip.kriekapps.com/randomID/todos/778b81e247f7d2ae38732ccf0087e2207c71f623
+curl http://cantrip.kriekapps.com/randomID/todos/some-randomly-generated-id
 ```
 
-So have our milk and now would like to PATCH our todo object to be compleated, all we have to do is:
+So we have our milk and now would like to PATCH our todo object to be compleated, all we have to do is:
 
 ```bash
 curl \
     -X PATCH \
     -H "Content-type:application/json" \
-    -d '{"complated":true}' \
+    -d '{"completed":true}' \
     "http://cantrip.kriekapps.com/randomID/todos/0"
 ```
 
 
 ### DELETE
-Nice, but still in my collection, let's DELETE it, shall we?
+Nice, but it's still in my collection, let's DELETE it, shall we?
 ```bash
 curl \
     -X DELETE \
@@ -154,6 +153,23 @@ You can specify a number of options when calling the cantrip() function to gener
 * idAttribute: Specifies what key should act as the id of objects. Defaults to _id.
 * saveFrequency: Specifies how many non-GET requests does it take to trigger a saving of data state to the file. Defaults to 1, meaning it will save on every request. If you specify 0, it will never save.
 * shallow: Similar to the GET parameter, but specified as an option when creating the cantrip instance means all GET requests will be shallow.
+
+## Accessing the data locally
+The cantrip instance returned by the factory function is not only a middleware, but has some accessor methods for the actual data. Use these whenever you need to access or modify the data directly on the server. These functions are synchronious, and their first parameter is a URI string that matches the endpoint you are trying to access.
+
+```js
+app.get("/users/:id", cantrip, function(req, res, next) {
+   //Attach all posts by the user to the response
+   var posts = cantrip.get("/posts");
+   res.body.posts = _.filter(posts, function(post) {
+    return post.author === req.params.id;
+   });
+   next();
+});
+```
+
+## Who is it for?
+It's mainly aimed towards small projects and weekend hacking. Note that it's not finished and is not at all scalable.
 
 ## License
 
