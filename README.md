@@ -1,4 +1,4 @@
-[![build status](https://travis-ci.org/KriekApps/Cantrip.svg?branch=master)](http://travis-ci.org/KriekApps/Cantrip)
+[![build status](https://travis-ci.org/kriekapps/cantrip.svg?branch=master)](http://travis-ci.org/kriekapps/cantrip)
 cantrip
 =======
 
@@ -77,7 +77,7 @@ There are a number of GET params you can use to target your request more specifi
 - Deep merges multi-level objects
 
 ### PUT
-- You can only patch an object, not an array
+- You can only put an object, not an array
 - It will overwrite the target object with the one you specify
 
 ## DELETE
