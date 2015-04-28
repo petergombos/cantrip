@@ -40,5 +40,9 @@
   "bugs": {
     "url": "https://github.com/kriekapps/cantrip/issues"
   },
-  "homepage": "https://github.com/kriekapps/cantrip"
+  "homepage": "https://github.com/kriekapps/cantrip",
+  "contributors": [
+    "Márton Borlay <borlaym@gmail.com>",
+    "Peter gombos <peter@kriek.co.uk>"
+  ]
 }
