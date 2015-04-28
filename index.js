@@ -45,7 +45,7 @@ module.exports = function cantrip(options) {
 			})
 		}
 		if (_.isObject(targetNode) || _.isArray(targetNode)) {
-			res.body = _.cloneDeep(targetNode);
+			res.body = JSON.parse(JSON.stringify(targetNode));
 
 			//If the shallow parameter is set, only pass back the first layer of data
 			if (options.shallow || req.query.shallow) {

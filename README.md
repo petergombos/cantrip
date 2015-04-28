@@ -175,7 +175,7 @@ The delete method is very similar. However, there is no POST, PUT or PATCH metho
 ```js
 app.post("/articles", function(req, res, next) {
    //Add the article to the list of articles by the user
-   cantrip.set("/users/" + req.user.id + "/articles, { title: req.body.title }, true);
+   cantrip.set("/users/" + req.user.id + "/articles", { title: req.body.title }, true);
    next();
 });
 ```
