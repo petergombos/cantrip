@@ -174,7 +174,7 @@ module.exports = function cantrip(options) {
 			return next({
 				status: 404,
 				error: "Requested node doesn't exist."
-			})
+			});
 		}
 		//If it's an array, post the new entry to that array
 		if (_.isArray(targetNode)) {
@@ -257,8 +257,16 @@ module.exports = function cantrip(options) {
 		}
 	};
 	var del = function(req, res, next) {
+		//Check if the target node is existent
+		var targetNode = dataStore.get(req.path);
+		if (_.isNull(targetNode)) {
+			return next({
+				status: 404,
+				error: "Requested node doesn't exist."
+			});
+		}
 		//Get the parent node so we can unset the target
-		var parent = dataStore.parent(req.path)
+		var parent = dataStore.parent(req.path);
 		//Last identifier in the path
 		var index = _.last(req.path.split("/"));
 		//If it's an object (not an array), then we just unset the key with the keyword delete
@@ -314,10 +322,10 @@ module.exports = function cantrip(options) {
 		}
 	};
 
-	handle.get = dataStore.get;
-	handle.post = dataStore.post;
-	handle.delete = dataStore.delete;
-	handle.put = dataStore.put;
+	handle.get = dataStore.get.bind(dataStore);
+	handle.post = dataStore.set.bind(dataStore);
+	handle.delete = dataStore.delete.bind(dataStore);
+	handle.put = dataStore.set.bind(dataStore);
 	
 	return handle;
 	
