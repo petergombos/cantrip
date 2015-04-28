@@ -5,13 +5,7 @@ var expect = require("chai").expect;
 var fs = require("fs");
 var initialData = JSON.parse(fs.readFileSync(__dirname + "/../../test.json"));
 
-var cantrip = require("../../../index.js")({
-	saveFrequency: 0,
-	file: "../../test.json"
-});
-
-
-var server = require("../../helpers/setupTestServer.js")(cantrip);
+var server = require("../../helpers/setupTestServer.js");
 
 describe("POST requests", function() {
 	
@@ -65,7 +59,7 @@ describe("POST requests", function() {
 			var _createdDate = body._createdDate;
 
 
-			var inDatabase = cantrip.get("/users/" + _id);
+			var inDatabase = server.cantrip.get("/users/" + _id);
 
 			inDatabase._id.should.equal(_id);
 			inDatabase._modifiedDate.should.equal(_modifiedDate);
@@ -87,7 +81,7 @@ describe("POST requests", function() {
 		}, function(error, response, body) {
 			body._id.should.equal("customid");
 
-			var inDatabase = cantrip.get("/users/customid");
+			var inDatabase = server.cantrip.get("/users/customid");
 
 			inDatabase._id.should.equal("customid");
 			done();

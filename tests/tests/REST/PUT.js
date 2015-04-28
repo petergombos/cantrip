@@ -5,13 +5,7 @@ var expect = require("chai").expect;
 var fs = require("fs");
 var initialData = JSON.parse(fs.readFileSync(__dirname + "/../../test.json"));
 
-var cantrip = require("../../../index.js")({
-	saveFrequency: 0,
-	file: "../../test.json"
-});
-
-
-var server = require("../../helpers/setupTestServer.js")(cantrip);
+var server = require("../../helpers/setupTestServer.js");
 
 describe("PUT requests", function() {
 
@@ -31,7 +25,7 @@ describe("PUT requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/");
+			var inDatabase = server.cantrip.get("/");
 			inDatabase.should.deep.equal({
 				catsAre: "awesome"
 			});
@@ -79,7 +73,7 @@ describe("PUT requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/faz");
+			var inDatabase = server.cantrip.get("/faz");
 			inDatabase.should.deep.equal({
 				catsAre: "awesome"
 			});

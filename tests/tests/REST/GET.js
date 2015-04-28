@@ -5,13 +5,7 @@ var expect = require("chai").expect;
 var fs = require("fs");
 var initialData = JSON.parse(fs.readFileSync(__dirname + "/../../test.json"));
 
-var cantrip = require("../../../index.js")({
-	saveFrequency: 0,
-	file: "../../test.json"
-});
-
-
-var server = require("../../helpers/setupTestServer.js")(cantrip);
+var server = require("../../helpers/setupTestServer.js");
 
 describe("GET requests", function() {
 

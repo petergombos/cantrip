@@ -4,49 +4,46 @@ var fs = require("fs");
 var initialData = JSON.parse(fs.readFileSync(__dirname + "/../test.json"));
 var _ = require("lodash");
 
-var currentPort = 3001;
+var cantrip = require("../../index.js")({
+	saveFrequency: 0,
+	file: "../../test.json"
+});
 
-function getPortNumber() {
-	return currentPort++;
+var port = 3001;
+var app = express();
+app.use(bodyParser.json());
+app.use(function(err, req, res, next) {
+	return next({
+		status: 400,
+		error: "Invalid JSON supplied in request body."
+	});
+});
+
+app.use(cantrip);
+
+app.use(function(err, req, res, next) {
+if (err.status) res.status(err.status);
+	res.send({
+		error: err.error
+	});
+});
+
+app.use(function(req, res, next) {
+	res.send(res.body);
+});
+
+
+app.serverInstance = app.listen(port);
+
+app.port = port;
+
+
+app.resetData = function() {
+	cantrip.put("/", _.cloneDeep(initialData));
 }
 
-module.exports = function(cantrip) {
+app.url = "http://localhost:"+port+"/";
 
-	var port = getPortNumber();
-	var app = express();
-	app.use(bodyParser.json());
-	app.use(function(err, req, res, next) {
-		return next({
-			status: 400,
-			error: "Invalid JSON supplied in request body."
-		});
-	});
+app.cantrip = cantrip;
 
-	app.use(cantrip);
-
-	app.use(function(err, req, res, next) {
-	if (err.status) res.status(err.status);
-		res.send({
-			error: err.error
-		});
-	});
-
-	app.use(function(req, res, next) {
-		res.send(res.body);
-	});
-
-
-	app.serverInstance = app.listen(port);
-
-	app.port = port;
-
-
-	app.resetData = function() {
-		cantrip.put("/", _.cloneDeep(initialData));
-	}
-
-	app.url = "http://localhost:"+port+"/";
-
-	return app;
-
-}
+module.exports = app;

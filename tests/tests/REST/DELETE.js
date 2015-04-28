@@ -5,13 +5,9 @@ var expect = require("chai").expect;
 var fs = require("fs");
 var initialData = JSON.parse(fs.readFileSync(__dirname + "/../../test.json"));
 
-var cantrip = require("../../../index.js")({
-	saveFrequency: 0,
-	file: "../../test.json"
-});
 
 
-var server = require("../../helpers/setupTestServer.js")(cantrip);
+var server = require("../../helpers/setupTestServer.js");
 
 describe("DELETE requests", function() {
 
@@ -33,7 +29,7 @@ describe("DELETE requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/");
+			var inDatabase = server.cantrip.get("/");
 			expect(inDatabase.users).to.not.exist;
 			done();
 		});
@@ -49,7 +45,7 @@ describe("DELETE requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/users");
+			var inDatabase = server.cantrip.get("/users");
 			inDatabase.should.have.length(1);
 			done();
 		});
@@ -65,7 +61,7 @@ describe("DELETE requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/users");
+			var inDatabase = server.cantrip.get("/users");
 			inDatabase.should.have.length(1);
 			done();
 		});

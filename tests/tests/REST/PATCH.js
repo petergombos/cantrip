@@ -5,13 +5,7 @@ var expect = require("chai").expect;
 var fs = require("fs");
 var initialData = JSON.parse(fs.readFileSync(__dirname + "/../../test.json"));
 
-var cantrip = require("../../../index.js")({
-	saveFrequency: 0,
-	file: "../../test.json"
-});
-
-
-var server = require("../../helpers/setupTestServer.js")(cantrip);
+var server = require("../../helpers/setupTestServer.js");
 
 describe("PATCH requests", function() {
 
@@ -31,7 +25,7 @@ describe("PATCH requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/");
+			var inDatabase = server.cantrip.get("/");
 			inDatabase.catsAre.should.equal("awesome");
 			inDatabase.users.should.exist;
 			done();
@@ -78,7 +72,7 @@ describe("PATCH requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/faz");
+			var inDatabase = server.cantrip.get("/faz");
 			inDatabase.boo.should.equal("awesome");
 			inDatabase.baa.should.equal(3);
 			done();
@@ -100,7 +94,7 @@ describe("PATCH requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/users/0");
+			var inDatabase = server.cantrip.get("/users/0");
 			inDatabase._modifiedDate.should.be.above(now);
 			done();
 		});
@@ -125,7 +119,7 @@ describe("PATCH requests", function() {
 				success: true
 			});
 
-			var inDatabase = cantrip.get("/");
+			var inDatabase = server.cantrip.get("/");
 			inDatabase.faa.should.equal(3);
 			inDatabase.foo.should.equal("bar");
 			inDatabase.faz.boo.should.equal("bee");
@@ -150,7 +144,7 @@ describe("PATCH requests", function() {
 				bay: 10
 			}
 		}, function(error, response, body) {
-			var inDatabase = cantrip.get("/faz");
+			var inDatabase = server.cantrip.get("/faz");
 			inDatabase.boo.should.equal(8);
 			inDatabase.baa.should.equal(3);
 			inDatabase.bar.should.deep.equal([
