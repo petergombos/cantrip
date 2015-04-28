@@ -138,17 +138,43 @@ describe("PATCH requests", function() {
 		});
 	});
 
-	it("should deep merge objects when there is an array involved", function(done) {
+	it("should ignore arrays while patching", function(done) {
 		request({
 			method: "PATCH",
-			url: server.url + "users",
+			url: server.url + "faz",
 			json: {
-				addedValue: "yay"
+				boo: 8,
+				bar: {
+					gee: 4
+				},
+				bay: 10
 			}
 		}, function(error, response, body) {
-			var users = cantrip.get("/users");
-			users[0].addedValue.should.equal("yay");
-			users[1].addedValue.should.equal("yay");
+			var inDatabase = cantrip.get("/faz");
+			inDatabase.boo.should.equal(8);
+			inDatabase.baa.should.equal(3);
+			inDatabase.bar.should.deep.equal([
+				{
+					"_createdDate": 1429879264012,
+					"_modifiedDate": 1429879264012,
+					"id": "a7dd76700e2ae7cd5de7a6e03c15b77b5406e42b",
+					"foo": "aaa"
+				},
+				{
+					"_createdDate": 1429879269206,
+					"_modifiedDate": 1429879269206,
+					"id": "6661c5b2d3c1d032f6cd8cae4468bdaee2428dcf",
+					"foo": "aaa"
+				},
+				{
+					"_createdDate": 1429879273117,
+					"_modifiedDate": 1429879273117,
+					"id": "a5e50a4c5dccb02a61090972fc5f121e9a61eede",
+					"foo": "aab"
+				}
+			]);
+			expect(inDatabase.bar[0].gee).to.not.exist;
+			inDatabase.bay.should.equal(10);
 			done();
 		});
 	});
