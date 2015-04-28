@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var fs = require("fs");
 var initialData = JSON.parse(fs.readFileSync(__dirname + "/../test.json"));
+var _ = require("lodash");
 
 var currentPort = 3001;
 
@@ -12,7 +13,6 @@ function getPortNumber() {
 module.exports = function(cantrip) {
 
 	var port = getPortNumber();
-
 	var app = express();
 	app.use(bodyParser.json());
 	app.use(function(err, req, res, next) {
@@ -42,7 +42,7 @@ module.exports = function(cantrip) {
 
 
 	app.resetData = function() {
-		cantrip.put("/", initialData);
+		cantrip.put("/", _.cloneDeep(initialData));
 	}
 
 	app.url = "http://localhost:"+port+"/";

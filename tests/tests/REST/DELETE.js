@@ -19,6 +19,10 @@ describe("DELETE requests", function() {
 		server.resetData();
 	});
 
+	afterEach(function() {
+		server.resetData();
+	});
+
 	it("should allow you to delete a key from an object", function(done) {
 		request({
 			method: "DELETE",

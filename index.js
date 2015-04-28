@@ -258,8 +258,16 @@ module.exports = function cantrip(options) {
 		}
 	};
 	var del = function(req, res, next) {
+		//Check if the target node is existent
+		var targetNode = dataStore.get(req.path);
+		if (_.isNull(targetNode)) {
+			return next({
+				status: 404,
+				error: "Requested node doesn't exist."
+			});
+		}
 		//Get the parent node so we can unset the target
-		var parent = dataStore.parent(req.path)
+		var parent = dataStore.parent(req.path);
 		//Last identifier in the path
 		var index = _.last(req.path.split("/"));
 		//If it's an object (not an array), then we just unset the key with the keyword delete
