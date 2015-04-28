@@ -1,6 +1,6 @@
 #cantrip
 
-[![build status](https://api.travis-ci.org/kriekapps/cantrip.svg?branch=master)](http://travis-ci.org/KriekApps/Cantrip)
+[![build status](https://api.travis-ci.org/kriekapps/cantrip.svg?branch=master)](http://travis-ci.org/kriekApps/cantrip)
 
 Cantrip is a databaseless storage middleware for express, it maps your requests automagically to any node in a given JSON document(json file) with basic CRUD HTTP requests (GET, POST, PATCH, PUT, DELETE) over a RESTful API.
 
