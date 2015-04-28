@@ -129,10 +129,10 @@ describe("GET requests", function() {
 		});
 	});
 
-	it("should search for a string in all keys on the first layer of objects when specifying a q parameter", function(done) {
+	it("should search for a string in all keys on the first layer of objects when specifying a q parameter (case insensitive)", function(done) {
 		request({
 			method: "GET",
-			url: server.url + "far?q=zzz",
+			url: server.url + "far?q=zZz",
 			json: true,
 		}, function(error, response, body) {
 			body.should.have.length(3);
@@ -140,10 +140,10 @@ describe("GET requests", function() {
 		});
 	});
 
-	it("should also search based on a JSON object we pass in", function(done) {
+	it("should also search based on a JSON object we pass in (case insensitive values)", function(done) {
 		request({
 			method: "GET",
-			url: server.url + 'far?q={"foo":"zzz","bar": 123}',
+			url: server.url + 'far?q={"foo":"zZz","bar": 123}',
 			json: true,
 		}, function(error, response, body) {
 			body.should.have.length(2);

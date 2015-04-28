@@ -86,7 +86,7 @@ module.exports = function cantrip(options) {
 					for (var i = 0; i < res.body.length; i++) {
 						var matching = true;
 						for (var key in json) {
-							if ((res.body[i][key] + "").indexOf(json[key]) === -1) {
+							if ((res.body[i][key] + "").toLowerCase().indexOf((json[key] + "").toLowerCase()) === -1) {
 								matching = false;
 							}
 						}
@@ -100,7 +100,7 @@ module.exports = function cantrip(options) {
 					for (var i = 0; i < res.body.length; i++) {
 						var matching = false;
 						for (var key in res.body[i]) {
-							if ((res.body[i][key] + "").indexOf(req.query.q) > -1) {
+							if ((res.body[i][key] + "").toLowerCase().indexOf((req.query.q + "").toLowerCase()) > -1) {
 								matching = true;
 							}
 						}
