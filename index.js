@@ -183,9 +183,10 @@ module.exports = function cantrip(options) {
 			//If the posted body is an object itself, add an id to it
 			if (_.isObject(req.body) && !_.isArray(req.body)) {
 				//Extend the whole object with an _id property, but only if it doesn't already have one
+				var date = (new Date()).getTime();
 				var baseObject = {
-					_createdDate: (new Date()).getTime(),
-					_modifiedDate: (new Date()).getTime()
+					_createdDate: date,
+					_modifiedDate: date
 				};
 				baseObject[options.idAttribute] = crypto.createHash('sha1').update((new Date()).valueOf().toString() + Math.random().toString()).digest('hex');
 				req.body = _.extend(baseObject, req.body);
@@ -223,7 +224,7 @@ module.exports = function cantrip(options) {
 		if (_.isObject(targetNode) && !_.isArray(targetNode)) {
 			addMetadataToModels(req.body);
 			//If the target had previously had a _modifiedDate property, set it to the current time
-			if (targetNode._modifiedDate) req.body._modifiedDate = (new Date()).getTime();
+			if (targetNode._modifiedDate && patch) req.body._modifiedDate = (new Date()).getTime();
 
 			var save = function() {
 				dataStore.set(req.path, req.body, patch);
@@ -271,20 +272,12 @@ module.exports = function cantrip(options) {
 		var index = _.last(req.path.split("/"));
 		//If it's an object (not an array), then we just unset the key with the keyword delete
 		if (_.isObject(parent) && !_.isArray(parent)) {
-			//We're not letting users delete the _id
-			if ((index + "")[0] === "_") {
-				return next({
-					status: 400,
-					error: "You can't delete an object's metadata."
-				});
-			} else {
-				dataStore.delete(req.path)
-				//Set response
-				res.body = {
-					"success": true
-				};
-				return next();
-			}
+			dataStore.delete(req.path)
+			//Set response
+			res.body = {
+				"success": true
+			};
+			return next();
 			//If it's an array, we must remove it by id with the splice method	
 		} else if (_.isArray(parent)) {
 			dataStore.delete(req.path)
@@ -305,9 +298,10 @@ module.exports = function cantrip(options) {
 				for (var i = 0; i < obj[key].length; i++) {
 					//Assign an id to all objects
 					if (_.isObject(obj[key][i]) && !_.isArray(obj[key][i])) {
+						var date = (new Date()).getTime();
 						var baseObject = {
-							_createdDate: (new Date()).getTime(),
-							_modifiedDate: (new Date()).getTime()
+							_createdDate: date,
+							_modifiedDate: date
 						};
 						baseObject[options.idAttribute] = crypto.createHash('sha1').update((new Date()).valueOf().toString() + Math.random().toString()).digest('hex');
 						obj[key][i] = _.extend(baseObject, obj[key][i]);

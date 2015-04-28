@@ -53,6 +53,7 @@ describe("POST requests", function() {
 			body._id.should.have.length(40);
 			body._modifiedDate.should.be.above(1429879060304);
 			body._createdDate.should.be.above(1429879060304);
+			body._createdDate.should.equal(body._modifiedDate);
 
 			var _id = body._id;
 			var _modifiedDate = body._modifiedDate;
