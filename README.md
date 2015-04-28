@@ -146,7 +146,6 @@ $ curl \
     "http://cantrip.kriekapps.com/randomID/todos/0"
 ```
 - Deletes the target key from its parent object, or deletes an item from an array
-- Won't let you delete an object's _id or other metadata like _createdDate or _modifiedDate
 
 ## Options
 
