@@ -59,12 +59,13 @@ Returns:
 - You can request objects inside a collection by either putting their index or their id attribute in the url. 
 
 There are a number of GET params you can use to target your request more specifically:
-- shallow=true: Return only the first layer of keys, not nested objects. Objects will have the value "[object Object]", arrays will have "[object Array]".
-- q=searchstring: Search in an array. If the value is a simple string, it will return all objects with any value (on the first layer) containing the given string. If it is a JSON object, matches only items where their specific properties include the given value.
-- orderby=key: Order the results in an array by the given key. If the key is prepended by a minus sign, the order will be descending instead of ascending
-- offset=10: Offset the results by 10 items
-- limit=10: Only return 10 items
-- fields=field1,field2: Return only the given fields, separated by commas
+
+* *?shallow=true* Return only the first layer of keys, not nested objects. Objects will have the value "[object Object]", arrays will have "[object Array]".
+* *?q=searchstring* Search in an array. If the value is a simple string, it will return all objects with any value (on the first layer) containing the given string. If it is a JSON object, matches only items where their specific properties include the given value.
+* *?orderby=key* Order the results in an array by the given key. If the key is prepended by a minus sign, the order will be descending instead of ascending
+* *?offset=10* Offset the results by 10 items
+* *?limit=10* Only return 10 items
+* *?fields=field1,field2* Return only the given fields, separated by commas
 
 
 ### PUT
