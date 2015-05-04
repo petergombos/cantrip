@@ -47,6 +47,8 @@ describe("DELETE requests", function() {
 
 			var inDatabase = server.cantrip.get("/users");
 			inDatabase.should.have.length(1);
+			var tryingToGetIt = server.cantrip.get("/users/31612a41ec88cef52f45cd2de5af7f7aa63cfdc4");
+			expect(tryingToGetIt).to.be.null;
 			done();
 		});
 	});

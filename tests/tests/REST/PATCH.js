@@ -133,6 +133,7 @@ describe("PATCH requests", function() {
 	});
 
 	it("should overwrite arrays while patching", function(done) {
+		var creatingIndexes = server.cantrip.get("/faz/bar/6661c5b2d3c1d032f6cd8cae4468bdaee2428dcf");
 		request({
 			method: "PATCH",
 			url: server.url + "faz",
@@ -151,6 +152,8 @@ describe("PATCH requests", function() {
 				gee : 4
 			});
 			inDatabase.bay.should.equal(10);
+			var checkIfThereIsIndex = server.cantrip.get("/faz/bar/6661c5b2d3c1d032f6cd8cae4468bdaee2428dcf");
+			expect(checkIfThereIsIndex).to.be.null;
 			done();
 		});
 	});

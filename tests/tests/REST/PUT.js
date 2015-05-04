@@ -13,7 +13,8 @@ describe("PUT requests", function() {
 		server.resetData();
 	});
 
-	it("should allow you to put the root object, overwriting it", function(done) {
+	it("should allow you to put the root object, overwriting it (and deleting existing indexes)", function(done) {
+		var creatingIndexes = server.cantrip.get("/users/31612a41ec88cef52f45cd2de5af7f7aa63cfdc4");
 		request({
 			method: "PUT",
 			url: server.url,
@@ -29,6 +30,9 @@ describe("PUT requests", function() {
 			inDatabase.should.deep.equal({
 				catsAre: "awesome"
 			});
+
+			var isThereAnIndex = server.cantrip.get("/users/31612a41ec88cef52f45cd2de5af7f7aa63cfdc4");
+			expect(isThereAnIndex).to.be.null;
 			done();
 		});
 	});
@@ -62,6 +66,7 @@ describe("PUT requests", function() {
 	});
 
 	it("should allow you to override any object's keys", function(done) {
+		var creatingIndexes = server.cantrip.get("/faz/bar/6661c5b2d3c1d032f6cd8cae4468bdaee2428dcf");
 		request({
 			method: "PUT",
 			url: server.url + "faz",
@@ -77,6 +82,9 @@ describe("PUT requests", function() {
 			inDatabase.should.deep.equal({
 				catsAre: "awesome"
 			});
+
+			var checkIfThereIsIndex = server.cantrip.get("/faz/bar/6661c5b2d3c1d032f6cd8cae4468bdaee2428dcf");
+			expect(checkIfThereIsIndex).to.be.null;
 			done();
 		});
 	});
