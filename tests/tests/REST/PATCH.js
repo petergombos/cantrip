@@ -85,7 +85,7 @@ describe("PATCH requests", function() {
 
 		request({
 			method: "PATCH",
-			url: server.url + "users/0",
+			url: server.url + "users/31612a41ec88cef52f45cd2de5af7f7aa63cfdc4",
 			json: {
 				boo: "awesome"
 			}
@@ -94,7 +94,7 @@ describe("PATCH requests", function() {
 				success: true
 			});
 
-			var inDatabase = server.cantrip.get("/users/0");
+			var inDatabase = server.cantrip.get("/users/31612a41ec88cef52f45cd2de5af7f7aa63cfdc4");
 			inDatabase._modifiedDate.should.be.above(now);
 			done();
 		});

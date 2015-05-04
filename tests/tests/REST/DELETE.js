@@ -35,22 +35,6 @@ describe("DELETE requests", function() {
 		});
 	});
 
-	it("should allow you to delete an item from an array by their index", function(done) {
-		request({
-			method: "DELETE",
-			url: server.url + "users/0",
-			json: true
-		}, function(error, response, body) {
-			body.should.deep.equal({
-				success: true
-			});
-
-			var inDatabase = server.cantrip.get("/users");
-			inDatabase.should.have.length(1);
-			done();
-		});
-	});
-
 	it("should allow you to delete an item from an array by their id", function(done) {
 		request({
 			method: "DELETE",

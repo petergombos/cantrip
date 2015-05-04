@@ -56,7 +56,7 @@ Returns:
 ```
 - You will get back the whole JSON file if you request the root.
 - If you request a single property, the result will be an object like {"value": "foo"}
-- You can request objects inside a collection by either putting their index or their id attribute in the url. 
+- You can request objects inside a collection by either putting their id attribute in the url. 
 
 There are a number of GET params you can use to target your request more specifically:
 - *?shallow=true* Return only the first layer of keys, not nested objects. Objects will have the value "[object Object]", arrays will have "[object Array]".
@@ -117,11 +117,7 @@ Returns:
 - Your object will automatically get a unique _id, a _createdDate and a _modifiedDate property, unless you specify them yourself. The latter two use JS timestamps.
 - Won't let you post if the given _id already exists in that collection.
 
-Since cantrip maps your data to a RESTful API now you can GET the newly inserted document on the following url by it's index:
-```bash
-$ curl http://cantrip.kriekapps.com/randomID/todos/0
-```
-or by it's id:
+Since cantrip maps your data to a RESTful API now you can GET the newly inserted document on the following url by its id:
 ```bash
 $ curl http://cantrip.kriekapps.com/randomID/todos/some-randomly-generated-id
 ```
@@ -133,7 +129,7 @@ $ curl \
     -X PATCH \
     -H "Content-type:application/json" \
     -d '{"completed":true}' \
-    "http://cantrip.kriekapps.com/randomID/todos/0"
+    "http://cantrip.kriekapps.com/randomID/todos/some-randomly-generated-id"
 ```
 
 
@@ -143,7 +139,7 @@ Nice, but it's still in my collection, let's DELETE it, shall we?
 $ curl \
     -X DELETE \
     -H "Content-type:application/json" \
-    "http://cantrip.kriekapps.com/randomID/todos/0"
+    "http://cantrip.kriekapps.com/randomID/todos/some-randomly-generated-id"
 ```
 - Deletes the target key from its parent object, or deletes an item from an array
 

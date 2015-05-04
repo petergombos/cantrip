@@ -70,17 +70,6 @@ describe("GET requests", function() {
 		});
 	});
 
-	it("should return an item from an array by specifying its index", function(done) {
-		request({
-			method: "GET",
-			url: server.url + "users/0",
-			json: true,
-		}, function(error, response, body) {
-			body.should.deep.equal(initialData.users[0]);
-			done();
-		});
-	});
-
 	it("should return an item from an array by specifying its _id", function(done) {
 		request({
 			method: "GET",
