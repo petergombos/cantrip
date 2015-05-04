@@ -151,6 +151,7 @@ You can specify a number of options when calling the cantrip() function to gener
 * idAttribute: Specifies what key should act as the id of objects. Defaults to _id.
 * saveFrequency: Specifies how many non-GET requests does it take to trigger a saving of data state to the file. Defaults to 1, meaning it will save on every request. If you specify 0, it will never save.
 * shallow: Similar to the GET parameter, but specified as an option when creating the cantrip instance means all GET requests will be shallow.
+* indexing: You can allow in-memory indexing of arrays by the item ids. It's turned off by default, but if you have large datasets, you might want to turn it on, otherwise looking up objects will take a bit more time, since it iterates through the whole array. The first request will be a bit longer though, because that's when it builds up the index hash.
 
 ## Accessing the data without a request
 The cantrip instance returned by the factory function is not only a middleware, but has some accessor methods for the actual data. Use these whenever you need to access or modify the data directly on the server. These functions are synchronious, and their first parameter is a URI string that matches the endpoint you are trying to access. On error a null value will be returned.
