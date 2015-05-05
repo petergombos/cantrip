@@ -152,6 +152,7 @@ $ curl \
 ## Options
 
 You can specify a number of options when calling the cantrip() function to generate a middleware.
+
 * file: Path to the JSON file you wish to use. Defaults to a newly created and empty data.json file.
 * idAttribute: Specifies what key should act as the id of objects. Defaults to _id.
 * saveFrequency: Specifies how many non-GET requests does it take to trigger a saving of data state to the file. Defaults to 1, meaning it will save on every request. If you specify 0, it will never save.
