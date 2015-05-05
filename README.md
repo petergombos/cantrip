@@ -50,7 +50,7 @@ Here the cantrip server runs on the *randomID* path of the API, so sending a GET
 $ curl "http://cantrip.kriek.io/randomID/"
 ```
 
-And sure enough, it returns an empty object. Of course we could have initialized it with any JSON data. In that case, this request would return the whole JSON object.
+And sure enough, it returns an empty object. Of course we could have initialized it with any JSON data. In that case, this request would have returned the whole JSON object.
 ```json
 {}
 ```
