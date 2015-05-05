@@ -1,6 +1,6 @@
 {
   "name": "cantrip",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Express middleware that creates an instant REST API for any JSON file",
   "main": "index.js",
   "dependencies": {
