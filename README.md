@@ -1,6 +1,6 @@
 #cantrip
 
-[![build status](https://api.travis-ci.org/kriekapps/cantrip.svg?branch=master)](http://travis-ci.org/kriekapps/cantrip)
+[![build status](https://api.travis-ci.org/kriekapps/cantrip.svg?branch=master)](https://travis-ci.org/kriekapps/cantrip)
 
 Cantrip is a simple express middleware that maps REST API calls to their matching nodes inside any JSON document. It's super fast to set up, but can also handle more complex tasks since it works well with other parts of your application. We use it all the time for small projects, weekend hacking and quick prototyping.
 
@@ -47,7 +47,7 @@ You can use cantrip on all requests or just a single route, your choice. It work
 ### GET
 Here the cantrip server runs on the *randomID* path of the API, so sending a GET request to the following URL will return the root of our JSON object:
 ```bash
-$ curl "http://cantrip.kriek.io/randomID/"
+$ curl "https://cantrip.kriek.io/randomID/"
 ```
 
 And sure enough, it returns an empty object. Of course we could have initialized it with any JSON data. In that case, this request would have returned the whole JSON object.
@@ -77,8 +77,8 @@ The PUT method is used to overwrite values. To modify the keys of an object, sen
 $ curl \
     -X PUT \
     -H "Content-type:application/json" \
-    -d '{"cantrip":"rocks"}' \
-    "http://cantrip.kriek.io/randomID/"
+    -d '{"foo":"bar"}' \
+    "https://cantrip.kriek.io/randomID/"
 ```
 - You can only PUT an object, not an array
 - It will overwrite the target object with the one you specify in the request body.
@@ -90,7 +90,7 @@ $ curl \
     -X PATCH \
     -H "Content-type:application/json" \
     -d '{"todos":[]}' \
-    "http://cantrip.kriek.io/randomID/"
+    "https://cantrip.kriek.io/randomID/"
 ```
 Note that the key *cantrip* is still present, since we didn't specify any modifications to it. Keep in mind, that:
 
@@ -106,7 +106,7 @@ $ curl \
     -X POST \
     -H "Content-type:application/json" \
     -d '{"title":"Buy milk", "completed":false}' \
-    "http://cantrip.kriek.io/randomID/todos"
+    "https://cantrip.kriek.io/randomID/todos"
 ```
 
 Returns:
@@ -125,7 +125,7 @@ Returns:
 
 As mentioned before, you can link to this object by using its unique id:
 ```bash
-$ curl "http://cantrip.kriek.io/randomID/todos/some-randomly-generated-id"
+$ curl "https://cantrip.kriek.io/randomID/todos/some-randomly-generated-id"
 ```
 
 So we have our to-do now, and we would like to switch it to completed. This can be accomplished with a PATCH request:
@@ -135,7 +135,7 @@ $ curl \
     -X PATCH \
     -H "Content-type:application/json" \
     -d '{"completed":true}' \
-    "http://cantrip.kriek.io/randomID/todos/some-randomly-generated-id"
+    "https://cantrip.kriek.io/randomID/todos/some-randomly-generated-id"
 ```
 
 
@@ -145,7 +145,7 @@ DELETE requests can be used to delete a key from an object or an item from a col
 $ curl \
     -X DELETE \
     -H "Content-type:application/json" \
-    "http://cantrip.kriek.io/randomID/todos/some-randomly-generated-id"
+    "https://cantrip.kriek.io/randomID/todos/some-randomly-generated-id"
 ```
 - Deletes the target key from its parent object, or deletes an item from an array
 
