@@ -45,9 +45,9 @@ Use can use cantrip on all requests or just a single route, your choice. It work
 
 ## Examples
 ### GET
-Here is a sample cantrip instance, let's GET whats inside of it:
+Here is a sample cantrip instance, let's GET what's inside of it:
 ```bash
-$ curl "http://cantrip.kriekapps.com/randomID"
+$ curl "http://cantrip.kriekapps.com/randomID/"
 ```
 
 Returns:
@@ -56,7 +56,7 @@ Returns:
 ```
 - You will get back the whole JSON file if you request the root.
 - If you request a single property, the result will be an object like {"value": "foo"}
-- You can request objects inside a collection by either putting their id attribute in the url. 
+- You can request objects inside a collection by putting their id attribute in the url. 
 
 There are a number of GET params you can use to target your request more specifically:
 
@@ -75,19 +75,19 @@ $ curl \
     -X PUT \
     -H "Content-type:application/json" \
     -d '{"cantrip":"rocks"}' \
-    "http://cantrip.kriekapps.com/randomID"
+    "http://cantrip.kriekapps.com/randomID/"
 ```
 - You can only put an object, not an array
 - It will overwrite the target object with the one you specify
 
 ### PATCH
-Now lets create a basic collection for our todo list, it is super easy with cantrip you can just PATCH the root object to create an array like so:
+Now let's create a basic collection for our todo list. With cantrip, you can just PATCH the root object to create an array like so:
 ```bash
 $ curl \
     -X PATCH \
     -H "Content-type:application/json" \
     -d '{"todos":[]}' \
-    "http://cantrip.kriekapps.com/randomID"
+    "http://cantrip.kriekapps.com/randomID/"
 ```
 - You can only patch an object, not an array
 - It will overwrite only the properties you specified
@@ -95,12 +95,12 @@ $ curl \
 - Deep merges multi-level objects
 
 ### POST
-And now we can just POST any data into our freshly created collection:
+And now we can just POST any data into our newly created collection:
 ```bash
 $ curl \
     -X POST \
     -H "Content-type:application/json" \
-    -d '{"title":"Buy milk", "comleted":false}' \
+    -d '{"title":"Buy milk", "completed":false}' \
     "http://cantrip.kriekapps.com/randomID/todos"
 ```
 
@@ -123,7 +123,7 @@ Since cantrip maps your data to a RESTful API now you can GET the newly inserted
 $ curl http://cantrip.kriekapps.com/randomID/todos/some-randomly-generated-id
 ```
 
-So we have our milk and now would like to PATCH our todo object to be compleated, all we have to do is:
+So we have our milk and now would like to PATCH our todo object to be completed, all we have to do is:
 
 ```bash
 $ curl \
@@ -150,7 +150,7 @@ You can specify a number of options when calling the cantrip() function to gener
 * file: Path to the JSON file you wish to use. Defaults to a newly created data.json file.
 * idAttribute: Specifies what key should act as the id of objects. Defaults to _id.
 * saveFrequency: Specifies how many non-GET requests does it take to trigger a saving of data state to the file. Defaults to 1, meaning it will save on every request. If you specify 0, it will never save.
-* shallow: Similar to the GET parameter, but specified as an option when creating the cantrip instance means all GET requests will be shallow.
+* shallow: Similar to the GET parameter of the same name, but specified as an option when creating the cantrip instance means all GET requests will be shallow.
 * indexing: You can allow in-memory indexing of arrays by the item ids. It's turned off by default, but if you have large datasets, you might want to turn it on, otherwise looking up objects will take a bit more time, since it iterates through the whole array. The first request will be a bit longer though, because that's when it builds up the index hash.
 
 ## Accessing the data without a request
