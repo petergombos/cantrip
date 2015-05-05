@@ -2,7 +2,7 @@
 
 [![build status](https://api.travis-ci.org/kriekapps/cantrip.svg?branch=master)](http://travis-ci.org/kriekapps/cantrip)
 
-Cantrip is a databaseless storage middleware for express, it maps your requests automagically to any node in a given JSON document(json file) with basic CRUD HTTP requests (GET, POST, PATCH, PUT, DELETE) over a RESTful API.
+Cantrip is a simple express middleware that maps REST API calls to their matching nodes inside any JSON document. It's super fast to set up, but can also handle more complex tasks since it works well with other parts of your application. We use it all the time for small projects, weekend hacking and quick prototyping.
 
 ## Installation
 
@@ -41,35 +41,38 @@ app.use(function(error, req, res, next) {
 app.listen(3000);
 ```
 
-Use can use cantrip on all requests or just a single route, your choice. It works just like any middleware. After called, it will do any data manipulation it is supposed to (and able to) do, then write return data on res.body, so make sure you send that to the user! If there happens to be any errors along the way, like trying to access a route that doesn't exist, cantrip will call next() with an error object, that has suggested status and message fields. Handle it the way you want to!
+You can use cantrip on all requests or just a single route, your choice. It works just like any other middleware. After called, it will do any data manipulation it is supposed to (and able to) do, then write return data on res.body, so make sure you send that to the user! If there happen to be any errors along the way, like trying to access a route that doesn't exist, cantrip will call next() with an error object, that has suggested status and message fields. Handle it the way you want to!
 
 ## Examples
 ### GET
-Here is a sample cantrip instance, let's GET what's inside of it:
+Here the cantrip server runs on the *randomID* path of the API, so sending a GET request to the following URL will return the root of our JSON object:
 ```bash
 $ curl "http://cantrip.kriekapps.com/randomID/"
 ```
 
-Returns:
+And sure enough, it returns an empty object. Of course we could have initialized it with any JSON data. In that case, this request would return the whole JSON object.
 ```json
 {}
 ```
+Things to remember:
+
 - You will get back the whole JSON file if you request the root.
-- If you request a single property, the result will be an object like {"value": "foo"}
-- You can request objects inside a collection by putting their id attribute in the url. 
+- If you request a single property, the result will be wrapped in an object like this: *{"value": "foo"}*.
+- You can request objects inside a collection by putting their id attribute in the url. For example: requesting */articles/e155662caaf5be046a0f0a61930c4b4e917f0ea8* will return the article with the given ID.
+- Trying to get a non-existent path will result in an error.
 
 There are a number of GET params you can use to target your request more specifically:
 
 * *?shallow=true* Return only the first layer of keys, not nested objects. Objects will have the value "[object Object]", arrays will have "[object Array]".
 * *?q=searchstring* Search in an array. If the value is a simple string, it will return all objects with any value (on the first layer) containing the given string. If it is a JSON object, matches only items where their specific properties include the given value.
-* *?orderby=key* Order the results in an array by the given key. If the key is prepended by a minus sign, the order will be descending instead of ascending
-* *?offset=10* Offset the results by 10 items
-* *?limit=10* Only return 10 items
+* *?orderby=key* Order the results in an array by the given key. If the key is prefixed by a minus sign, the order will be descending instead of ascending
+* *?offset=10* Offset the results by *n* items
+* *?limit=10* Only return *n* items
 * *?fields=field1,field2* Return only the given fields, separated by commas
 
 
 ### PUT
-Lets PUT some data into the datastore:
+The PUT method is used to overwrite values. To modify the keys of an object, send a PUT request to that object, along with the data you wish to set to it. In this example, we will be overwriting our empty root object.
 ```bash
 $ curl \
     -X PUT \
@@ -77,11 +80,11 @@ $ curl \
     -d '{"cantrip":"rocks"}' \
     "http://cantrip.kriekapps.com/randomID/"
 ```
-- You can only put an object, not an array
-- It will overwrite the target object with the one you specify
+- You can only PUT an object, not an array
+- It will overwrite the target object with the one you specify in the request body.
 
 ### PATCH
-Now let's create a basic collection for our todo list. With cantrip, you can just PATCH the root object to create an array like so:
+PATCH is used when you want to modify an object, but don't want to overwrite it completely. The keys you send will replace existing ones or append themselves to the object (basically merging the two together) and leave the rest alone. Let's create a basic collection for a todo list, once again on the root object.
 ```bash
 $ curl \
     -X PATCH \
@@ -89,13 +92,15 @@ $ curl \
     -d '{"todos":[]}' \
     "http://cantrip.kriekapps.com/randomID/"
 ```
-- You can only patch an object, not an array
+Note that the key *cantrip* is still present, since we didn't specify any modifications to it. Keep in mind, that:
+
+- You can only PATCH an object, not an array
 - It will overwrite only the properties you specified
-- Will update the object's _modifiedDate property
+- Will update the object's _modifiedDate property, if it has one
 - Deep merges multi-level objects
 
 ### POST
-And now we can just POST any data into our newly created collection:
+Arrays rarely contain basic data types. Most of the time you will be populating them by sending a POST request to their URL. This will insert the object in your request body to the end of the array, as well as making sure it has a unique id, a creation and last modification dates. Let's make a single to-do item and send it to our previously created collection:
 ```bash
 $ curl \
     -X POST \
@@ -114,16 +119,16 @@ Returns:
     "completed" : false
 }
 ```
-- You can only post to arrays
+- You can only POST to arrays
 - Your object will automatically get a unique _id, a _createdDate and a _modifiedDate property, unless you specify them yourself. The latter two use JS timestamps.
-- Won't let you post if the given _id already exists in that collection.
+- Sends back an error if you specified an _id yourself and that _id already exists in the collection.
 
-Since cantrip maps your data to a RESTful API now you can GET the newly inserted document on the following url by its id:
+As mentioned before, you can link to this object by using its unique id:
 ```bash
 $ curl http://cantrip.kriekapps.com/randomID/todos/some-randomly-generated-id
 ```
 
-So we have our milk and now would like to PATCH our todo object to be completed, all we have to do is:
+So we have our to-do now, and we would like to switch it to completed. This can be accomplished with a PATCH request:
 
 ```bash
 $ curl \
@@ -135,7 +140,7 @@ $ curl \
 
 
 ### DELETE
-Nice, but it's still in my collection, let's DELETE it, shall we?
+DELETE requests can be used to delete a key from an object or an item from a collection, though in many cases you can achieve the same thing using PUT requests on the parent object. Deleting the previously inserted to-do item looks like this:
 ```bash
 $ curl \
     -X DELETE \
@@ -147,10 +152,10 @@ $ curl \
 ## Options
 
 You can specify a number of options when calling the cantrip() function to generate a middleware.
-* file: Path to the JSON file you wish to use. Defaults to a newly created data.json file.
+* file: Path to the JSON file you wish to use. Defaults to a newly created and empty data.json file.
 * idAttribute: Specifies what key should act as the id of objects. Defaults to _id.
 * saveFrequency: Specifies how many non-GET requests does it take to trigger a saving of data state to the file. Defaults to 1, meaning it will save on every request. If you specify 0, it will never save.
-* shallow: Similar to the GET parameter of the same name, but specified as an option when creating the cantrip instance means all GET requests will be shallow.
+* shallow: Similar to the GET parameter of the same name, but when specified as an option during the creation of the cantrip instance means that all GET requests will be shallow.
 * indexing: You can allow in-memory indexing of arrays by the item ids. It's turned off by default, but if you have large datasets, you might want to turn it on, otherwise looking up objects will take a bit more time, since it iterates through the whole array. The first request will be a bit longer though, because that's when it builds up the index hash.
 
 ## Accessing the data without a request
@@ -167,7 +172,7 @@ app.get("/users/:id", function(req, res, next) {
 });
 ```
 
-The delete method is very similar. However, there is no POST, PUT or PATCH method, only a *set* action, that takes a second argument, which defines the data you wish to save. The third parameter signifies whether you want to use a PUT (false) or PATCH (true) -like method.
+The delete method is very similar. However, there are no POST, PUT or PATCH methods, only a *set* action, that takes a second argument, which defines the data you wish to save. The third parameter signifies whether you want to use a PUT (false) or PATCH (true) -like method.
 
 ```js
 app.post("/articles", function(req, res, next) {
