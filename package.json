@@ -1,7 +1,7 @@
 {
   "name": "cantrip",
   "version": "0.1.2",
-  "description": "Express middleware that creates an instant REST API for any JSON file",
+  "description": "Express middleware that binds a REST API to any JSON file with zero configuration",
   "main": "index.js",
   "dependencies": {
     "fs-extra": "^0.18.2",

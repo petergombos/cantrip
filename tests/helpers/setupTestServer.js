@@ -39,7 +39,7 @@ app.port = port;
 
 
 app.resetData = function() {
-	cantrip.put("/", _.cloneDeep(initialData));
+	cantrip.set("/", _.cloneDeep(initialData));
 }
 
 app.url = "http://localhost:"+port+"/";

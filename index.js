@@ -317,9 +317,8 @@ module.exports = function cantrip(options) {
 	};
 
 	handle.get = dataStore.get.bind(dataStore);
-	handle.post = dataStore.set.bind(dataStore);
 	handle.delete = dataStore.delete.bind(dataStore);
-	handle.put = dataStore.set.bind(dataStore);
+	handle.set = dataStore.set.bind(dataStore);
 	
 	return handle;
 	
