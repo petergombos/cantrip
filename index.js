@@ -224,7 +224,7 @@ module.exports = function cantrip(options) {
 		if (_.isObject(targetNode) && !_.isArray(targetNode)) {
 			addMetadataToModels(req.body);
 			//If the target had previously had a _modifiedDate property, set it to the current time
-			if (targetNode._modifiedDate && patch) req.body._modifiedDate = (new Date()).getTime();
+			if (targetNode._modifiedDate) req.body._modifiedDate = (new Date()).getTime();
 
 			var save = function() {
 				dataStore.set(req.path, req.body, patch);

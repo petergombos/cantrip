@@ -89,4 +89,25 @@ describe("PUT requests", function() {
 		});
 	});
 
+	it("should leave metadata untouched when overriding an object in an array", function(done) {
+		request({
+			method: "PUT",
+			url: server.url + "users/31612a41ec88cef52f45cd2de5af7f7aa63cfdc4",
+			json: {
+				foo: "bar"
+			}
+		}, function(error, response, body) {
+			body.should.deep.equal({
+				success: true
+			});
+			var inDatabase = server.cantrip.get("/users/31612a41ec88cef52f45cd2de5af7f7aa63cfdc4");
+			inDatabase._id.should.equal("31612a41ec88cef52f45cd2de5af7f7aa63cfdc4");
+			inDatabase._modifiedDate.should.be.above(1429879060304);
+			inDatabase._createdDate.should.equal(1429879060304);
+			inDatabase.foo.should.equal("bar");
+			expect(inDatabase.email).to.not.exist;
+			done();
+		});
+	});
+
 });
