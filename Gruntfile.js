@@ -9,7 +9,7 @@ module.exports = function(grunt) {
             dev: {
                 script: 'examples/simple/server.js',
                 options: {
-                    watch: ['index.js', 'examples/server.js', 'lib/dataStore.js', 'lib/acl.js']
+                    watch: ['index.js', 'examples/**/*.js', 'lib/dataStore.js', 'lib/acl.js']
                 }
             }
         },

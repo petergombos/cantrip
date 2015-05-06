@@ -94,6 +94,7 @@ $ curl \
 ```
 - You can only PUT an object, not an array
 - It will overwrite the target object with the one you specify in the request body. In this case, if we sent a GET request for settings, the resulting object would only contain the *title* key, not *foo*.
+- Will not override the _id and _createdDate keys if modifying an item inside an array, unless you provide new values for these properties. In other words, after a PUT request the item will still have an _id and will still be able to be referenced with it.
 
 ### PATCH
 PATCH is used when you want to modify an object, but don't want to overwrite it completely. The keys you send will replace existing ones or append themselves to the object (basically merging the two together) and leave the rest alone. Let's add another property to our settings.
@@ -181,6 +182,11 @@ app.post("/articles", function(req, res, next) {
 
 ## Who is it for?
 It's mainly aimed towards small projects and weekend hacking. Note that it's not finished yet and is not at all scalable.
+
+
+## More examples
+You can find more examples and use cases in the [examples folder](https://github.com/kriekapps/cantrip/tree/master/examples).
+
 
 ## License
 
