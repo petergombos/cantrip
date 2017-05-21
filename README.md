@@ -1,8 +1,13 @@
-#cantrip
+<div align="center">
+  <br/>
+  <img src="http://kriek.io.s3-website-eu-west-1.amazonaws.com/cantrip/img/cantrip_logo.svg" width="300" />
+  <br/>
+</div>
 
+---
+
+## Creates an instant yet flexible REST API that binds to any JSON file
 [![build status](https://api.travis-ci.org/kriekapps/cantrip.svg?branch=master)](https://travis-ci.org/kriekapps/cantrip)
-
-[https://kriek.co.uk/cantrip](https://kriek.co.uk/cantrip)
 
 Cantrip is a simple express middleware that maps REST API calls to their matching nodes inside any JSON document. It's super fast to set up, but can also handle more complex tasks since it works well with other parts of your application. We use it all the time for small projects, weekend hacking and quick prototyping.
 
@@ -49,7 +54,7 @@ You can use cantrip on all requests or just a single route, your choice. It work
 ### GET
 Here the cantrip server runs on the *randomID* path of the API, so sending a GET request to the following URL will return the root of our JSON object:
 ```bash
-$ curl "https://cantrip.kriek.io/randomID/"
+$ curl "/"
 ```
 
 In this example, our initial data looks like this, but of course you can use any JSON file to act as a basis for the server. If you don't specify one, cantrip will initialize with an empty object.
@@ -90,7 +95,7 @@ $ curl \
     -X PUT \
     -H "Content-type:application/json" \
     -d '{"title":"Sample to-do App"}' \
-    "https://cantrip.kriek.io/randomID/settings"
+    "/settings"
 ```
 - You can only PUT an object, not an array
 - It will overwrite the target object with the one you specify in the request body. In this case, if we sent a GET request for settings, the resulting object would only contain the *title* key, not *foo*.
@@ -103,7 +108,7 @@ $ curl \
     -X PATCH \
     -H "Content-type:application/json" \
     -d '{"backgroundColor":"#aaaaaa"}' \
-    "https://cantrip.kriek.io/randomID/settings"
+    "/settings"
 ```
 Note that the key *title* is still present, since we didn't specify any modifications to it. Keep in mind, that:
 
@@ -119,7 +124,7 @@ $ curl \
     -X POST \
     -H "Content-type:application/json" \
     -d '{"text":"Try cantrip"}' \
-    "https://cantrip.kriek.io/randomID/todos"
+    "/todos"
 ```
 
 Returns:
@@ -142,7 +147,7 @@ DELETE requests can be used to delete a key from an object or an item from a col
 $ curl \
     -X DELETE \
     -H "Content-type:application/json" \
-    "https://cantrip.kriek.io/randomID/todos/778b81e247f7d2ae38732ccf0087e2207c71f623"
+    "/todos/778b81e247f7d2ae38732ccf0087e2207c71f623"
 ```
 - Deletes the target key from its parent object, or deletes an item from an array
 
@@ -185,7 +190,7 @@ It's mainly aimed towards small projects and weekend hacking. Note that it's not
 
 
 ## More examples
-You can find more examples and use cases in the [examples folder](https://github.com/kriekapps/cantrip/tree/master/examples).
+You can find more examples and use cases in the [examples folder](https://github.com/petergombos/cantrip/tree/master/examples).
 
 
 ## License
